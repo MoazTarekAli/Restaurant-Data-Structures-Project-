@@ -135,7 +135,9 @@ bool Queue<T>:: dequeue(T& frntEntry)
 	Node<T>* nodeToDeletePtr = frontPtr;
 	frntEntry = frontPtr->getItem();
 	frontPtr = frontPtr->getNext();
+
 	// Queue is not empty; remove front
+
 	if (nodeToDeletePtr == backPtr)	 // Special case: one node in queue
 		backPtr = nullptr ;	
 		

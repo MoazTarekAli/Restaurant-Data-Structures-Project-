@@ -37,6 +37,7 @@ public:
 			// validation for the first item in the stack
 
 			top = pusher;
+
 		}
 		else {
 

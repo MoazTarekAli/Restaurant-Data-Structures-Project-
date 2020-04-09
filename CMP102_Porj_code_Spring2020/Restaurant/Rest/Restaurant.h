@@ -23,8 +23,6 @@ private:
 	Queue<Order*> DEMO_Queue;	//Important: This is just for demo
 	/// ==>
 	
-	
-	
 	//
 	// TODO: Add More Data Members As Needed
 	//
@@ -36,7 +34,7 @@ public:
 	
 	void ExecuteEvents(int TimeStep);	//executes all events at current timestep
 	void RunSimulation();
-
+	void InteractiveMode();
 	
 
 
