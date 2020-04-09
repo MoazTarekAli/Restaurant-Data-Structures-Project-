@@ -67,6 +67,10 @@ void Restaurant::FillDrawingList()
 	//To add orders it should call function  void GUI::AddToDrawingList(Order* pOrd);
 	//To add Cooks it should call function  void GUI::AddToDrawingList(Cook* pCc);
 
+
+
+
+
 }
 
 

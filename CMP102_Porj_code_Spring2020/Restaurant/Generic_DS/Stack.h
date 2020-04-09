@@ -28,7 +28,7 @@ public:
 
 	void push(T entry)
 	{
-		// Create a 
+		// Create a new node for the entry
 
 		Node<T>* pusher = new Node<T>(entry);
 
