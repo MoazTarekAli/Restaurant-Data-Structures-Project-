@@ -68,7 +68,7 @@ public:
 
 	// Adds new item to the linkedlist assigning it to the tail of the list
 
-	void Append(T entry)
+	bool Append(T entry)
 	{
 		// Create new node to insert in the list
 
@@ -80,23 +80,23 @@ public:
 
 			head = tail = appender; 
 			count++;
-			return;
+			return true;
 		}
 
 		tail->setNext(appender);
 		tail = appender;
 		count++;
-		return;
+		return true;
 	}
 
 	// Insert function to add an item to the linked list in given position
 
-	void Insert(const T item, int index)
+	bool Insert(const T item, int index)
 	{
 		// Step 1: Check if the index inserted is out of bounds to terminate if true
 
 		if (!(index >= 0 && index < count))
-			return;
+			return false;
 
 		Node<T>* traverser = head;				// Node pointer to traverse our list
 		Node<T>* newitem = new Node<T>(item);	// Create a new node to insert into the list
@@ -111,7 +111,7 @@ public:
 			newitem->setNext(head);
 			head = newitem;
 			count++;
-			return;
+			return true;
 		}
 
 		//	Special case handling inserting in the last index replacing the head
@@ -121,7 +121,7 @@ public:
 			tail->setNext(newitem);
 			tail = newitem;
 			count++;
-			return;
+			return true;
 		}
 
 		//	Step 3: loop to traverse to the given index
@@ -137,8 +137,9 @@ public:
 		traverser->setNext(newitem);
 		
 		//	Step 5: increasing count
-
+		
 		count++; 
+		return true;
 
 	}
 
@@ -157,12 +158,12 @@ public:
 		tail = head;
 	}
 
-	void Delete(int index)
+	bool Delete(int index)
 	{
-		// Check if the index inserted is out of bounds to terminate if true
+		// Check if the index inserted is out of bounds to terminate with false if the condition is true
 
 		if (!(index >= 0 && index < count))
-			return;
+			return false;
 
 		// Temporary pointer to delete and free the allocated memory
 
@@ -172,7 +173,7 @@ public:
 		{
 			head = head->getNext();
 			delete tempDel;
-			return;
+			return true;
 		}
 		
 		// Traversing pointer to go to given index to delete
@@ -189,9 +190,9 @@ public:
 
 		traverseToDel->setNext(tempDel->getNext());
 		delete tempDel;
-
+		return true;
 	}
 
 
-};
+}; // end Linked List
 #endif

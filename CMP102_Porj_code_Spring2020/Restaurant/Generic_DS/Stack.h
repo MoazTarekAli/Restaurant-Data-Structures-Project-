@@ -2,6 +2,10 @@
 #include <iostream>
 #include "Node.h"
 
+#ifndef __Stack_H_
+#define __Stack_H_
+
+
 using namespace std;
 
 template < typename T>
@@ -21,12 +25,12 @@ public:
 	~Stack()	
 	{
 		// Stack destructor that pops all items of stack to delete them
-
+		T destructor;
 		while (top)
-			pop();
+			pop(destructor);
 	}
 
-	void push(T entry)
+	bool push(T entry)
 	{
 		// Create a new node for the entry
 
@@ -37,7 +41,7 @@ public:
 			// validation for the first item in the stack
 
 			top = pusher;
-
+			return true;
 		}
 		else {
 
@@ -48,6 +52,8 @@ public:
 			// Changes the current top to the last entered item as stack is LIFO
 
 			top = pusher;
+
+			return true;
 		}
 	}
 	
@@ -64,26 +70,30 @@ public:
 
 	// "Pops" the stack returning the item on the "top" of the stack which is the last entered item 
 
-	T pop()
+	bool pop(T& entry)
 	{
 		if (IsEmpty())	// Validation incase the stack is empty 
-			return -1;	// return -1 in case of empty
+			return false;	// return false in case of empty
 
-		T item = top->getItem();	// stores the item in the top of the stack
+		entry = top->getItem();		// stores the item at the top of the stack
 		Node<T>* tempDel = top;		// Temporary pointer to delete the top
 		top = top->getNext();		// moves the top of the stack
 		delete tempDel;				// Delete action
-		return item;
+		return true;
 	}
 
-	T peek()
+	bool peek(T& item)
 	{
-		if (top)			// Checks if the stack is empty to avoid returning a NULL ptr
-			return top;		// Returns the top item in the stack
+		if (!IsEmpty())	// Checks if the stack isn't empty to return true 
+		{
+			item = top->getItem();		// stores the item located at the top of the stack
+			return true;				// Returns the top item in the stack
+		}
+
+		// If the stack is empty it should return false
+
 		
-		// If the stack is empty it should return -1
-
-		return -1;
+		return false;
 	}
-};
-
+}; // end stack
+#endif
