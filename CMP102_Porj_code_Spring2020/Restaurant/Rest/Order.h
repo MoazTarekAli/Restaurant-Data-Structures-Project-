@@ -19,6 +19,7 @@ protected:
 	
 	//
 	// TODO: Add More Data Members As Needed
+	int Size;
 	//
 
 public:
@@ -37,6 +38,7 @@ public:
 	
 	//
 	// TODO: Add More Member Functions As Needed
+	int GetSize();
 	//
 
 };
