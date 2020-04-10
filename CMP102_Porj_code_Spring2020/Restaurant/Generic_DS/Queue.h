@@ -213,6 +213,13 @@ T* Queue<T>::toArray(int& count)
 		p = p->getNext();
 	}
 	return Arr;
+
+	// getter for counter to know the number of nodes in queue
+
+	int getCounter()
+	{
+		return counter;
+	}
 }
 
 #endif

@@ -127,8 +127,13 @@ public:
 		frontEntry = front->getItem();			// stores the front's item inside the passed argument
 		return true;							// returns true to show that queue isn't empty and front's item is stored
 	}
+	
+	// getter for count to know the number of nodes in queue
 
-
+	int getCount()
+	{
+		return count;
+	}
 
 }; // end queue
 #endif
