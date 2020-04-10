@@ -192,28 +192,28 @@ returns: The array of T. (nullptr if Queue is empty)
 template <typename T>
 T* Queue<T>::toArray(int& count)
 {
-	count=0;
+	count = 0;
 
-	if(!frontPtr)
+	if (!frontPtr)
 		return nullptr;
 	//counting the no. of items in the Queue
 	Node<T>* p = frontPtr;
-	while(p)
+	while (p)
 	{
 		count++;
 		p = p->getNext();
 	}
 
 
-	T* Arr= new T[count];
+	T* Arr = new T[count];
 	p = frontPtr;
-	for(int i=0; i<count;i++)
+	for (int i = 0; i < count; i++)
 	{
 		Arr[i] = p->getItem();
 		p = p->getNext();
 	}
 	return Arr;
-
+}
 	// getter for counter to know the number of nodes in queue
 
 	int getCounter()
