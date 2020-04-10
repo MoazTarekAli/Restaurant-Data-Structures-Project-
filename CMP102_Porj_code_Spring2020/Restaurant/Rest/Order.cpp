@@ -44,3 +44,8 @@ ORD_STATUS Order::getStatus() const
 	return status;
 }
 
+int Order::GetSize()
+{
+	return Size;
+}
+

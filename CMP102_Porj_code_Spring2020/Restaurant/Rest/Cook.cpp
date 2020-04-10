@@ -37,13 +37,14 @@ void Cook::setType(ORD_TYPE t)
 
 //new functions:-
 
-Cook::Cook(int i, ORD_TYPE t, int s , int b)
+Cook::Cook(int i, ORD_TYPE t, int s, int b, int max)
 {
 	ID = i;
 	type = t;
 	speed = s;
 	Break_time = b;
 	Number_of_served_orders = 0;
+	Max_Orders = max;
 	Order_being_served = nullptr;
 	Available = true;
 }
@@ -62,6 +63,7 @@ void Cook::SetOrder(Order o)
 		return;
 	Order_being_served = &o;
 	Available = false;
+	o.setStatus(SRV);
 	Number_of_served_orders++;
 }
 
@@ -78,5 +80,16 @@ void Cook::SetAvailable(bool a)
 bool Cook::GetAvailable()
 {
 	return Available;
+}
+
+bool Cook::NeedBreak()
+{
+	if (Max_Orders == Number_of_served_orders)
+	{
+		Available = false;
+		Number_of_served_orders = 0;
+		return true;
+	}
+	return false;
 }
 

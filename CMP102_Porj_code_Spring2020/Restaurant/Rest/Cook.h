@@ -12,6 +12,7 @@ class Cook
 
 	//new data members:-
 	int Number_of_served_orders;
+	int Max_Orders;
 	int Break_time;
 	Order* Order_being_served;
 	bool Available; 
@@ -26,11 +27,11 @@ public:
 	
 	//new function:-
 
-	Cook(int,ORD_TYPE,int,int);
+	Cook(int,ORD_TYPE,int,int,int);
 	int Time_taken_to_finish_current_order();
 	void SetOrder(Order);
 	Order* GetOrder();
 	void SetAvailable(bool);
 	bool GetAvailable();
-
+	bool NeedBreak();
 };
