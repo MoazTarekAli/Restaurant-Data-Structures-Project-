@@ -44,8 +44,52 @@ ORD_STATUS Order::getStatus() const
 	return status;
 }
 
-int Order::GetSize()
+void Order::setSize(int size)
+{
+	Size = size;
+}
+
+int Order::getSize()
 {
 	return Size;
 }
 
+void Order::setMoney(double money)
+{
+	totalMoney = money;
+}
+
+double Order::getMoney()
+{
+	return totalMoney;
+}
+
+void Order::setArrTime(int time)
+{
+	ArrTime = time;
+}
+
+int Order::getArrTime()
+{
+	return ArrTime;
+}
+
+void Order::setServTime(int time)
+{
+	ServTime = time;
+}
+
+int Order::getServTime()
+{
+	return ServTime;
+}
+
+void Order::setFinishTime(int time)
+{
+	FinishTime = time;
+}
+
+int Order::getFinishTime()
+{
+	return FinishTime;
+}

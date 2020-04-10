@@ -52,6 +52,36 @@ void Restaurant::ExecuteEvents(int CurrentTimeStep)
 
 }
 
+//void Restaurant::addtoNormalQueue(Order* pOrd)
+//{
+//	NORMAL_Queue.enqueue(pOrd);
+//}
+//
+//void Restaurant::addtoVeganQueue(Order* pOrd)
+//{
+//	VEGAN_Queue.enqueue(pOrd);
+//}
+//
+//void Restaurant::addtoVIPQueue(Order* pOrd,int prio)
+//{
+//	VIP_Queue.enqueue(pOrd,prio);
+//}
+
+void Restaurant::addtoQueue(Order* pOrd,const int prio=0)
+{
+	switch (pOrd->GetType())
+	{
+	case 0:
+		NORMAL_Queue.enqueue(pOrd);
+		break;
+	case 1:
+		VEGAN_Queue.enqueue(pOrd);
+		break;
+	case 2:
+		VIP_Queue.enqueue(pOrd, prio);
+		break;
+	}
+}
 
 Restaurant::~Restaurant()
 {

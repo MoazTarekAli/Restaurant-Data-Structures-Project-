@@ -38,7 +38,22 @@ public:
 	
 	//
 	// TODO: Add More Member Functions As Needed
-	int GetSize();
+
+	void setSize(int size);
+	int getSize();
+
+	void setMoney(double money);
+	double getMoney();
+
+	void setArrTime(int time);
+	int getArrTime();
+
+	void setServTime(int time);
+	int getServTime();
+
+	void setFinishTime(int time);
+	int getFinishTime();
+
 	//
 
 };
