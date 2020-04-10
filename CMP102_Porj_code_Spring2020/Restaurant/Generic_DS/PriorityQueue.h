@@ -1,9 +1,9 @@
 #pragma once
-#include <iostream>
-#include "PriorityNode.h"
-
 #ifndef __PriorityQueue_H_
 #define __PriorityQueue_H_
+
+#include <iostream>
+#include "PriorityNode.h"
 
 using namespace std;
 
