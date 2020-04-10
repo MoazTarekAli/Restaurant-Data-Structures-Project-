@@ -51,6 +51,8 @@ private :
 	
 	Node<T>* backPtr;
 	Node<T>* frontPtr;
+	int counter;
+
 public :
 	Queue();	
 	bool isEmpty() const ;
@@ -73,6 +75,7 @@ Queue<T>::Queue()
 {
 	backPtr=nullptr;
 	frontPtr=nullptr;
+	counter = 0;			//	Queue is empty so count of nodes should equal 0
 
 }
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -108,10 +111,11 @@ bool Queue<T>::enqueue( const T& newEntry)
 	Node<T>* newNodePtr = new Node<T>(newEntry);
 	// Insert the new node
 	if (isEmpty())
-		frontPtr = newNodePtr; // The queue is empty
+		frontPtr = newNodePtr;			// The queue is empty
 	else
-		backPtr->setNext(newNodePtr); // The queue was not empty
-	backPtr = newNodePtr; // New node is at back
+		backPtr->setNext(newNodePtr);	// The queue was not empty
+	backPtr = newNodePtr;				// New node is at back
+	counter++;							//	Increment number of nodes in queue
 	return true ;
 } // end enqueue
 
@@ -143,7 +147,7 @@ bool Queue<T>:: dequeue(T& frntEntry)
 		
 	// Free memory reserved by the dequeued node
 	delete nodeToDeletePtr;
-
+	counter--;	// decrement number of nodes in queue
 
 	return true;
 

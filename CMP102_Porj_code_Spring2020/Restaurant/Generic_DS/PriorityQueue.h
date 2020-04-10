@@ -11,7 +11,8 @@ template <typename T>
 class PriorityQueue
 {
 
-	PriorityNode<T>* front;		// Pointer to the first node in the queue
+	PriorityNode<T>* front;		//	Pointer to the first node in the queue
+	int count;					//	Count number of nodes in queue
 
 public:
 
@@ -19,12 +20,14 @@ public:
 
 	PriorityQueue()
 	{
-		front = nullptr;	// Initializes the front pointer to nullptr to show an empty queue
+		front = nullptr;	//	Initializes the front pointer to nullptr to show an empty queue
+		count = 0;			//	Queue is empty so count of nodes should equal 0
 	}
 
 	~PriorityQueue()
 	{
 		// Priority Queue destructor
+		count = 0;
 		T destructor;
 		while (front)
 			dequeue(destructor);
@@ -54,6 +57,7 @@ public:
 		if (isEmpty())
 		{
 			front = NewNodePtr;		//	assign the new node as the first node in queue
+			count++;				//	Increment number of nodes in queue
 			return true;			//	node added to queue terminate with true
 		}
 
@@ -64,6 +68,7 @@ public:
 		{
 			NewNodePtr->setNext(front);		//	sets the front of the queue to the new node's next pointer
 			front = NewNodePtr;				//	sets the new node as the new front
+			count++;						//	Increment number of nodes in queue
 			return true;					//	node added to queue terminate with true
 		}
 		else
@@ -84,6 +89,7 @@ public:
 
 			NewNodePtr->setNext(temp2);			//	Sets the new node pointer between temp 1 and temp 2
 			temp->setNext(NewNodePtr);
+			count++;							//	Increment number of nodes in queue
 			return true;						//	node added to queue terminate with true
 		}
 	}
@@ -104,7 +110,7 @@ public:
 		front = front->getNext();					// moves the front of the queue to the second highest priority
 		
 		delete tempDel;								// delete action
-
+		count--;									// decrement number of nodes in queue
 		return true;								// Confirms dequeuing action and free-ing memory
 	}
 
