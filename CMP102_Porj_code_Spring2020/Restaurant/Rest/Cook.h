@@ -3,7 +3,7 @@
 #include "..\Defs.h"
 #include "..\Rest\Order.h"
 
-#pragma once
+
 class Cook
 {
 	int ID;

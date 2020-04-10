@@ -84,10 +84,11 @@ bool Cook::GetAvailable()
 
 bool Cook::NeedBreak()
 {
-	if (Max_Orders == Number_of_served_orders)
+	if (Number_of_served_orders == 0)
+		return false;
+	if ( Number_of_served_orders % Max_Orders==0)
 	{
 		Available = false;
-		Number_of_served_orders = 0;
 		return true;
 	}
 	return false;

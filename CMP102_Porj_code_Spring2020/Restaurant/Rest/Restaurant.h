@@ -20,7 +20,7 @@ private:
 	
 	/// ==> 
 	//	DEMO-related members. Should be removed in phases 1&2
-	Queue<Order*> DEMO_Queue;	//Important: This is just for demo
+	//Queue<Order*> DEMO_Queue;	//Important: This is just for demo
 	/// ==>
 	
 	//
@@ -47,8 +47,8 @@ public:
 
 /// ===================    DEMO-related functions. Should be removed in phases 1&2   ================= 
 
-	void Just_A_Demo();	//just to show a demo and should be removed in phase1 1 & 2
-	void AddtoDemoQueue(Order* po);	//adds an order to the demo queue
+	//void Just_A_Demo();	//just to show a demo and should be removed in phase1 1 & 2
+	//void AddtoDemoQueue(Order* po);	//adds an order to the demo queue
 
 /// ================================================================================================== 
 

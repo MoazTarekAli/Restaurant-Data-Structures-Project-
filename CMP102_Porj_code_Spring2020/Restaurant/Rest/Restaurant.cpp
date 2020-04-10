@@ -25,8 +25,8 @@ void Restaurant::RunSimulation()
 		break;
 	case MODE_SLNT:
 		break;
-	case MODE_DEMO:
-		Just_A_Demo();
+	//case MODE_DEMO:
+		//Just_A_Demo();
 
 	};
 
@@ -79,8 +79,7 @@ void Restaurant::InteractiveMode()
 	Event* pE;
 	
 }
-
-
+/*
 //////////////////////////////////////////////////////////////////////////////////////////////
 /// ==> 
 ///  DEMO-related functions. Should be removed in phases 1&2
@@ -204,4 +203,4 @@ void Restaurant::AddtoDemoQueue(Order *pOrd)
 /// ==> end of DEMO-related function
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-
+*/
