@@ -34,6 +34,8 @@ private:
 	Queue<Order*> VEGAN_Queue;
 	PriorityQueue<Order*> VIP_Queue;
 	LinkedList<Cook*> COOK_LIST;
+	Queue<Order*> finished_Queue;
+	Queue<Order*> served_Queue;
 	int ncooks;
 public:
 	

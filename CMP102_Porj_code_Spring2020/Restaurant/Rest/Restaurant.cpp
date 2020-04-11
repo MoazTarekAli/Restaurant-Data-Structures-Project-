@@ -106,7 +106,7 @@ void Restaurant::FillDrawingList()
 	}
 	
 	//adding unfinished orders
-	int normal_count, vegan_count, vip_count;
+	int normal_count = 0, vegan_count = 0, vip_count = 0;
 	Order** Normal = NORMAL_Queue.toArray(normal_count);
 	Order** vegan = VEGAN_Queue.toArray(vegan_count);
 	Order** vip = VIP_Queue.toArray(vip_count);
@@ -138,7 +138,20 @@ void Restaurant::FillDrawingList()
 		pGUI->AddToDrawingList(&all_orders[i]);
 	}
 
+	//adding served orders
+	int served_count = 0;
+	Order** served = served_Queue.toArray(served_count);
+	for (int i = 0; i < served_count; i++)
+	{
+		pGUI->AddToDrawingList(served[i]);
+	}
 	//adding finished orders
+	int finished_count=0;
+	Order** finished = finished_Queue.toArray(finished_count);
+	for (int i = 0; i < finished_count; i++)
+	{
+		pGUI->AddToDrawingList(finished[i]);
+	}
 }
 
 

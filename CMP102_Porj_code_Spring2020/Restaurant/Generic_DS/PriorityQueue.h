@@ -144,7 +144,7 @@ public:
 
 		//counting the no. of items in the Queue
 
-		Node<T>* p = front;
+		PriorityNode<T>* p = front;
 		while (p)
 		{
 			counter++;
