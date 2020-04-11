@@ -193,6 +193,40 @@ public:
 		return true;
 	}
 
+	T gethead()
+	{
+		return head;
+	}
+
+	T getEntry(int index)
+	{
+		// Step 1: Check if the index inserted is out of bounds to terminate if true
+
+		if (index < 0 && index > count)
+		{
+		      return NULL;            // return -1 if out of bounds
+		}
+
+		if (index == 0)
+		{
+			return head->getItem();
+		}
+
+		if (index == count)
+		{
+			return tail->getItem();
+		}
+
+		Node<T>* getterTraverse = head;
+
+		for (int i = 0; i < index; i++)
+		{
+			getterTraverse = getterTraverse->getNext();
+		}
+
+		return getterTraverse->getItem();
+
+	}
 
 }; // end Linked List
 #endif

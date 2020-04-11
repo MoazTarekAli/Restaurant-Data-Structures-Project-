@@ -53,7 +53,7 @@ int Cook::Time_taken_to_finish_current_order()
 {
 	if (Available)
 		return 0;
-	double Time = static_cast<double> (Order_being_served->GetSize()) / speed;
+	double Time = static_cast<double> (Order_being_served->getSize()) / speed;
 	return ceil(Time);
 }
 

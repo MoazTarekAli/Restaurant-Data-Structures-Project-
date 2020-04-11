@@ -67,7 +67,7 @@ void Restaurant::ExecuteEvents(int CurrentTimeStep)
 //	VIP_Queue.enqueue(pOrd,prio);
 //}
 
-void Restaurant::addtoQueue(Order* pOrd,const int prio=0)
+void Restaurant::addtoQueue(Order* pOrd,const int prio)
 {
 	switch (pOrd->GetType())
 	{
@@ -96,11 +96,49 @@ void Restaurant::FillDrawingList()
 	//It should get orders from orders lists/queues/stacks/whatever (same for Cooks)
 	//To add orders it should call function  void GUI::AddToDrawingList(Order* pOrd);
 	//To add Cooks it should call function  void GUI::AddToDrawingList(Cook* pCc);
+	
+	//adding cooks to gui
+	for (int i = 0; i < ncooks; i++)
+	{
 
+		pGUI->AddToDrawingList(COOK_LIST.getEntry(i));
 
+	}
+	
+	//adding unfinished orders
+	int normal_count, vegan_count, vip_count;
+	Order** Normal = NORMAL_Queue.toArray(normal_count);
+	Order** vegan = VEGAN_Queue.toArray(vegan_count);
+	Order** vip = VIP_Queue.toArray(vip_count);
+	int sum = normal_count + vegan_count + vip_count;
+	Order* all_orders =new Order [sum];
+	for (int i = 0; i < sum; i++)
+	{
+		if (i < normal_count)
+			all_orders[i] = *Normal[i];
+		else if (i < normal_count + vegan_count)
+			all_orders[i] = *vegan[i - normal_count];
+		else if (i < normal_count + vegan_count + vip_count)
+			all_orders[i] = *vip[i - normal_count - vegan_count];
+	}
 
+	for (int i = 1; i < sum; i++)
+	{
+		Order key = all_orders[i];
+		int j = i - 1;
+		while (j >= 0 && (all_orders[j].getArrTime() > key.getArrTime()))
+		{
+			all_orders[j + 1] = all_orders[j];
+			j = j - 1;
+		}
+		all_orders[j + 1] = key;
+	}
+	for (int i = 0; i < sum; i++)
+	{
+		pGUI->AddToDrawingList(&all_orders[i]);
+	}
 
-
+	//adding finished orders
 }
 
 

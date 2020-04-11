@@ -81,7 +81,7 @@ public:
 			//	while loop to keep running as long as the second node doesn't point to null
 			//	aswell as the priority of the node is more than the new node's priority
 
-			while (temp2 and temp2->getPriority() >= priority)
+			while (temp2 && temp2->getPriority() >= priority)
 			{
 				temp = temp->getNext();
 				temp2 = temp2->getNext();
@@ -135,6 +135,32 @@ public:
 		return count;
 	}
 
+	T* toArray(int& counter)
+	{
+		counter = 0;
+
+		if (!front)
+			return nullptr;
+
+		//counting the no. of items in the Queue
+
+		Node<T>* p = front;
+		while (p)
+		{
+			counter++;
+			p = p->getNext();
+		}
+
+
+		T* Arr = new T[counter];
+		p = front;
+		for (int i = 0; i < counter; i++)
+		{
+			Arr[i] = p->getItem();
+			p = p->getNext();
+		}
+		return Arr;
+	}
 }; // end queue
 #endif
 

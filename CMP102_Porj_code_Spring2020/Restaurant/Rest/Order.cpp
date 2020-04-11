@@ -93,3 +93,8 @@ int Order::getFinishTime()
 {
 	return FinishTime;
 }
+
+Order::Order()
+{
+
+}
