@@ -83,6 +83,7 @@ void Restaurant::addtoQueue(Order* pOrd,const int prio)
 	}
 }
 
+
 Restaurant::~Restaurant()
 {
 		if (pGUI)
@@ -111,22 +112,22 @@ void Restaurant::FillDrawingList()
 	Order** vegan = VEGAN_Queue.toArray(vegan_count);
 	Order** vip = VIP_Queue.toArray(vip_count);
 	int sum = normal_count + vegan_count + vip_count;
-	Order* all_orders =new Order [sum];
+	Order** all_orders =new Order* [sum];
 	for (int i = 0; i < sum; i++)
 	{
 		if (i < normal_count)
-			all_orders[i] = *Normal[i];
+			all_orders[i] = Normal[i];
 		else if (i < normal_count + vegan_count)
-			all_orders[i] = *vegan[i - normal_count];
+			all_orders[i] = vegan[i - normal_count];
 		else if (i < normal_count + vegan_count + vip_count)
-			all_orders[i] = *vip[i - normal_count - vegan_count];
+			all_orders[i] = vip[i - normal_count - vegan_count];
 	}
 
 	for (int i = 1; i < sum; i++)
 	{
-		Order key = all_orders[i];
+		Order* key = all_orders[i];
 		int j = i - 1;
-		while (j >= 0 && (all_orders[j].getArrTime() > key.getArrTime()))
+		while (j >= 0 && (all_orders[j]->getArrTime() > key->getArrTime()))
 		{
 			all_orders[j + 1] = all_orders[j];
 			j = j - 1;
@@ -135,9 +136,9 @@ void Restaurant::FillDrawingList()
 	}
 	for (int i = 0; i < sum; i++)
 	{
-		pGUI->AddToDrawingList(&all_orders[i]);
+		pGUI->AddToDrawingList(all_orders[i]);
 	}
-
+	delete[] all_orders;
 	//adding served orders
 	int served_count = 0;
 	Order** served = served_Queue.toArray(served_count);
@@ -151,6 +152,28 @@ void Restaurant::FillDrawingList()
 	for (int i = 0; i < finished_count; i++)
 	{
 		pGUI->AddToDrawingList(finished[i]);
+	}
+}
+
+void Restaurant::cancel(int ID)
+{
+	int count;
+	int flag=-1;
+	Order** NORMAL = NORMAL_Queue.toArray(count);
+	for (int i = 0; i < count; i++)
+	{
+		if (NORMAL[i]->GetID() == ID)
+			flag = i;
+	}
+	for (int i = 0; i < count; i++)
+	{
+		Order* x;
+		NORMAL_Queue.dequeue(x);
+	}
+	for (int i = 0; i < count; i++)
+	{
+		if (i != flag)
+			NORMAL_Queue.enqueue(NORMAL[i]);
 	}
 }
 

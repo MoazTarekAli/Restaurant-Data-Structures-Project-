@@ -59,6 +59,7 @@ public:
 	//void addtoVIPQueue(Order* pO, int prio);
 
 	void addtoQueue(Order* pO, const int prio=0);
+	void cancel(int ID);
 
 	void simpleSimulator();
 	
