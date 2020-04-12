@@ -39,6 +39,7 @@ public:
 	//
 	// TODO: Add More Member Functions As Needed
 	Order();
+	Order(int id, ORD_TYPE r_Type,int size, double money, int aritime);
 	void setSize(int size);
 	int getSize();
 

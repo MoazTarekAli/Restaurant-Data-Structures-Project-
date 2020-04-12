@@ -98,3 +98,16 @@ Order::Order()
 {
 
 }
+
+Order::Order(int id, ORD_TYPE r_Type, int s, double money, int aritime)
+{
+	ID = id;
+	type = r_Type;
+	Size = s;
+	totalMoney = money;
+	ArrTime = aritime;
+	ServTime = 0;
+	FinishTime = 0;
+}
+
+

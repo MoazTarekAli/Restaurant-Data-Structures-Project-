@@ -2,9 +2,11 @@
 #include "..\Rest\Restaurant.h"
 
 
-ArrivalEvent::ArrivalEvent(int eTime, int oID, ORD_TYPE oType):Event(eTime, oID)
+ArrivalEvent::ArrivalEvent(int eTime, int oID, ORD_TYPE oType, double oMoney, int s):Event(eTime, oID)
 {
 	OrdType = oType;
+	size = s;
+	OrdMoney = oMoney;
 }
 
 void ArrivalEvent::Execute(Restaurant* pRest)
@@ -12,7 +14,8 @@ void ArrivalEvent::Execute(Restaurant* pRest)
 	//This function should create an order and fills its data 
 	// Then adds it to normal, vegan, or VIP order lists that you will create in phase1
 	
-	Order* pOrd = new Order(OrderID, OrdType);
+	Order* pOrd = new Order(OrderID, OrdType, size, OrdMoney, EventTime);
+
 	if (OrdType < 2)
 	{
 		pRest->addtoQueue(pOrd);

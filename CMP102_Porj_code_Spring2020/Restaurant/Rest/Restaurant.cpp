@@ -22,6 +22,7 @@ void Restaurant::RunSimulation()
 	switch (mode)	//Add a function for each mode in next phases
 	{
 	case MODE_INTR:
+		simpleSimulator();
 		break;
 	case MODE_STEP:
 		break;
@@ -202,7 +203,6 @@ void Restaurant::simpleSimulator()
 {
 
 	//place of loading calling
-
 	while (!(EventsQueue.isEmpty() && NORMAL_Queue.isEmpty() && VEGAN_Queue.isEmpty() && VIP_Queue.isEmpty() && served_Queue.isEmpty()))
 	{
 		ExecuteEvents(TimeSteps);
