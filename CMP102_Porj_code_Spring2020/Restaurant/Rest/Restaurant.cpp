@@ -208,19 +208,19 @@ void Restaurant::simpleSimulator()
 		ExecuteEvents(TimeSteps);
 
 		Order* normal,* vegan,* vip;
-		while (NORMAL_Queue.peekFront(normal))
+		if (NORMAL_Queue.peekFront(normal))
 		{
 			NORMAL_Queue.dequeue(normal);
 			normal->setStatus(SRV);
 			served_Queue.enqueue(normal);
 		}
-		while (VEGAN_Queue.peekFront(vegan))
+		if (VEGAN_Queue.peekFront(vegan))
 		{
 			VEGAN_Queue.dequeue(vegan);
 			vegan->setStatus(SRV);
 			served_Queue.enqueue(vegan);
 		}
-		while (VIP_Queue.peekFront(vip))
+		if (VIP_Queue.peekFront(vip))
 		{
 			VIP_Queue.dequeue(vip);
 			vip->setStatus(SRV);
@@ -229,42 +229,14 @@ void Restaurant::simpleSimulator()
 
 		if (TimeSteps % 5 == 0)
 		{
-			Order* serv;
-			while (served_Queue.peekFront(serv))
+			Order* finished;
+			for (int i = 0; i < 3; i++)
 			{
-				int count;
-				Order** served =  served_Queue.toArray(count);
-				int normal_flag = -1, vip_flag = -1, vegan_flag = -1;
-				for (int i = 0; i < count; i++)
+				if (served_Queue.peekFront(finished))
 				{
-					ORD_TYPE type_flag = served[i]->GetType();
-					if (type_flag == TYPE_NRM && normal_flag == -1)
-					{
-						normal_flag = i;
-						served[i]->setStatus(DONE);
-						finished_Queue.enqueue(served[i]);
-					}
-					if (type_flag == TYPE_VGAN && vegan_flag == -1)
-					{
-						vegan_flag = i;
-						served[i]->setStatus(DONE);
-						finished_Queue.enqueue(served[i]);
-					}
-					if (type_flag == TYPE_VIP && vip_flag == -1)
-					{
-						vip_flag = i;
-						served[i]->setStatus(DONE);
-						finished_Queue.enqueue(served[i]);
-					}
-				}
-				for (int i = 0; i < count; i++)
-				{
-					served_Queue.dequeue(serv);
-				}
-				for (int i = 0; i < count; i++)
-				{
-					if (!(i == normal_flag && i == vip_flag && i == vegan_flag))
-						served_Queue.enqueue(served[i]);
+					served_Queue.dequeue(finished);
+					finished->setStatus(SRV);
+					finished_Queue.enqueue(finished);
 				}
 			}
 
