@@ -205,22 +205,25 @@ void Restaurant::simpleSimulator()
 
 	while (!(EventsQueue.isEmpty() && NORMAL_Queue.isEmpty() && VEGAN_Queue.isEmpty() && VIP_Queue.isEmpty() && served_Queue.isEmpty()))
 	{
-		EventPerformer(TimeSteps);
+		ExecuteEvents(TimeSteps);
 
 		Order* normal,* vegan,* vip;
 		while (NORMAL_Queue.peekFront(normal))
 		{
 			NORMAL_Queue.dequeue(normal);
+			normal->setStatus(SRV);
 			served_Queue.enqueue(normal);
 		}
 		while (VEGAN_Queue.peekFront(vegan))
 		{
 			VEGAN_Queue.dequeue(vegan);
+			vegan->setStatus(SRV);
 			served_Queue.enqueue(vegan);
 		}
 		while (VIP_Queue.peekFront(vip))
 		{
 			VIP_Queue.dequeue(vip);
+			vip->setStatus(SRV);
 			served_Queue.enqueue(vip);
 		}
 
@@ -229,14 +232,53 @@ void Restaurant::simpleSimulator()
 			Order* serv;
 			while (served_Queue.peekFront(serv))
 			{
-				int check = serv->GetType();
-				
+				int count;
+				Order** served =  served_Queue.toArray(count);
+				int normal_flag = -1, vip_flag = -1, vegan_flag = -1;
+				for (int i = 0; i < count; i++)
+				{
+					ORD_TYPE type_flag = served[i]->GetType();
+					if (type_flag == TYPE_NRM && normal_flag == -1)
+					{
+						normal_flag = i;
+						served[i]->setStatus(DONE);
+						finished_Queue.enqueue(served[i]);
+					}
+					if (type_flag == TYPE_VGAN && vegan_flag == -1)
+					{
+						vegan_flag = i;
+						served[i]->setStatus(DONE);
+						finished_Queue.enqueue(served[i]);
+					}
+					if (type_flag == TYPE_VIP && vip_flag == -1)
+					{
+						vip_flag = i;
+						served[i]->setStatus(DONE);
+						finished_Queue.enqueue(served[i]);
+					}
+				}
+				for (int i = 0; i < count; i++)
+				{
+					served_Queue.dequeue(serv);
+				}
+				for (int i = 0; i < count; i++)
+				{
+					if (!(i == normal_flag && i == vip_flag && i == vegan_flag))
+						served_Queue.enqueue(served[i]);
+				}
 			}
 
 
 		}
+		FillDrawingList();
+		pGUI->UpdateInterface();
 
+		pGUI->PrintMessage("Press to continue");
+		pGUI->waitForClick();
+		pGUI->PrintMessage("");
+		pGUI->ResetDrawingList();
 
+		TimeSteps++;
 	}
 
 
