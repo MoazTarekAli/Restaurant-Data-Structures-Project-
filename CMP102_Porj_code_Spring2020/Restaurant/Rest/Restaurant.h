@@ -37,6 +37,7 @@ private:
 	Queue<Order*> finished_Queue;
 	Queue<Order*> served_Queue;
 	int ncooks;
+	int TimeSteps;
 public:
 	
 	Restaurant();
@@ -60,7 +61,7 @@ public:
 
 	void addtoQueue(Order* pO, const int prio=0);
 	void cancel(int ID);
-
+	void EventPerformer(int);
 	void simpleSimulator();
 	
 

@@ -9,6 +9,8 @@ using namespace std;
 
 Restaurant::Restaurant() 
 {
+	ncooks = 0;
+	TimeSteps = 1;
 	pGUI = NULL;
 }
 
@@ -182,6 +184,63 @@ void Restaurant::InteractiveMode()
 {
 	Event* pE;
 	
+}
+
+void Restaurant::EventPerformer(int timestep)
+{
+	Event* temp;
+	while (EventsQueue.peekFront(temp))
+	{
+		if (timestep < temp->getEventTime())
+			return;
+		temp->Execute(this);
+		EventsQueue.dequeue(temp);
+	}
+}
+
+void Restaurant::simpleSimulator()
+{
+
+	//place of loading calling
+
+	while (!(EventsQueue.isEmpty() && NORMAL_Queue.isEmpty() && VEGAN_Queue.isEmpty() && VIP_Queue.isEmpty() && served_Queue.isEmpty()))
+	{
+		EventPerformer(TimeSteps);
+
+		Order* normal,* vegan,* vip;
+		while (NORMAL_Queue.peekFront(normal))
+		{
+			NORMAL_Queue.dequeue(normal);
+			served_Queue.enqueue(normal);
+		}
+		while (VEGAN_Queue.peekFront(vegan))
+		{
+			VEGAN_Queue.dequeue(vegan);
+			served_Queue.enqueue(vegan);
+		}
+		while (VIP_Queue.peekFront(vip))
+		{
+			VIP_Queue.dequeue(vip);
+			served_Queue.enqueue(vip);
+		}
+
+		if (TimeSteps % 5 == 0)
+		{
+			Order* serv;
+			while (served_Queue.peekFront(serv))
+			{
+				int check = serv->GetType();
+				
+			}
+
+
+		}
+
+
+	}
+
+
+
 }
 /*
 //////////////////////////////////////////////////////////////////////////////////////////////
