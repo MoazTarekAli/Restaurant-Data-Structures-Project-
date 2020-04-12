@@ -37,58 +37,49 @@ void Cook::setType(ORD_TYPE t)
 
 //new functions:-
 
-Cook::Cook(int i, ORD_TYPE t, int s, int b, int max)
-{
-	ID = i;
-	type = t;
-	speed = s;
-	Break_time = b;
-	Number_of_served_orders = 0;
-	Max_Orders = max;
-	Order_being_served = nullptr;
-	Available = true;
-}
+Cook::Cook(int ID_, ORD_TYPE type_, int speed_, int breakTime_, int maxOrders_) :
+	ID(ID_), type(type_), speed(speed_), breakTime(breakTime_), maxOrders(maxOrders_),
+	numberOfServedOrders(0), orderBeingServed(nullptr), available(true) {}
 
-int Cook::Time_taken_to_finish_current_order()
+int Cook::timeToFinishOrder()
 {
-	if (Available)
+	if (available)
 		return 0;
-	double Time = static_cast<double> (Order_being_served->getSize()) / speed;
+	double Time = static_cast<double> (orderBeingServed->getSize()) / speed;
 	return ceil(Time);
 }
 
-void Cook::SetOrder(Order o)
+void Cook::setOrder(Order o)
 {
-	if (!Available)
+	if (!available)
 		return;
-	Order_being_served = &o;
-	Available = false;
+	orderBeingServed = &o;
+	available = false;
 	o.setStatus(SRV);
-	Number_of_served_orders++;
+	numberOfServedOrders++;
 }
 
-Order* Cook::GetOrder()
+Order* Cook::getOrder() const
 {
-	return Order_being_served;
+	return orderBeingServed;
 }
 
-void Cook::SetAvailable(bool a)
+void Cook::setAvailable(bool a)
 {
-	Available = a;
+	available = a;
 }
 
-bool Cook::GetAvailable()
+bool Cook::getAvailable() const
 {
-	return Available;
+	return available;
 }
 
-bool Cook::NeedBreak()
+bool Cook::needBreak()
 {
-	if (Number_of_served_orders == 0)
-		return false;
-	if ( Number_of_served_orders % Max_Orders==0)
+	if (numberOfServedOrders == 0) return false;
+	if (numberOfServedOrders % maxOrders==0)
 	{
-		Available = false;
+		available = false;
 		return true;
 	}
 	return false;

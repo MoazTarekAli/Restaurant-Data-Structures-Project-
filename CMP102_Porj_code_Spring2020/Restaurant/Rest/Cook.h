@@ -11,11 +11,11 @@ class Cook
 	int speed;		//dishes it can prepare in one clock tick (in one timestep)
 
 	//new data members:-
-	int Number_of_served_orders;
-	int Max_Orders;
-	int Break_time;
-	Order* Order_being_served;
-	bool Available; 
+	int numberOfServedOrders;
+	int maxOrders;
+	int breakTime;
+	Order* orderBeingServed;
+	bool available; 
 
 public:
 	Cook();
@@ -27,11 +27,11 @@ public:
 	
 	//new function:-
 
-	Cook(int,ORD_TYPE,int,int,int);
-	int Time_taken_to_finish_current_order();
-	void SetOrder(Order);
-	Order* GetOrder();
-	void SetAvailable(bool);
-	bool GetAvailable();
-	bool NeedBreak();
+	Cook(int _ID, ORD_TYPE _type, int _speed, int _breakTime, int _maxOrders);
+	int timeToFinishOrder();
+	void setOrder(Order o);
+	Order* getOrder() const;
+	void setAvailable(bool a);
+	bool getAvailable() const;
+	bool needBreak();
 };
