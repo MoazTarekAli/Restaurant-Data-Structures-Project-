@@ -60,7 +60,6 @@ public :
 	bool dequeue(T& frntEntry);  
 	bool peekFront(T& frntEntry)  const;
 	T* toArray(int& count);	//returns array of T (array if items)
-	int getCounter();
 	~Queue();
 };
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -214,12 +213,6 @@ T* Queue<T>::toArray(int& count)
 		p = p->getNext();
 	}
 	return Arr;
-}
-	// getter for counter to know the number of nodes in queue
-template <typename T>
-int Queue<T>::getCounter()
-{
-	return counter;
 }
 
 #endif
