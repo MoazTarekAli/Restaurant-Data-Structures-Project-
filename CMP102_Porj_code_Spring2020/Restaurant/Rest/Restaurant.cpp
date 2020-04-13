@@ -389,27 +389,29 @@ void Restaurant::SimpleSimulator()
 		ExecuteEvents(totalTimeSteps);
 		pGUI->PrintMessage(to_string(totalTimeSteps));
 		Order* normal,* vegan,* vip;
-		if (normalOrderQueue.peekFront(normal) )
+		if (normalOrderQueue.peekFront(normal) && normalCookCount)
 		{
 			normalOrderQueue.dequeue(normal);
 			normal->SetStatus(SRV);
 			normal->SetServTime(totalTimeSteps);
 			servedQueue.enqueue(normal);
+			normalCookCount--;
 		}
-		if (veganOrderQueue.peekFront(vegan) )
+		if (veganOrderQueue.peekFront(vegan) && veganCookCount)
 		{
 			veganOrderQueue.dequeue(vegan);
 			vegan->SetStatus(SRV);
 			vegan->SetServTime(totalTimeSteps);
 			servedQueue.enqueue(vegan);
+			veganCookCount--;
 		}
-		if (vipOrderQueue.peekFront(vip) )
+		if (vipOrderQueue.peekFront(vip) && vipCookCount)
 		{
 			vipOrderQueue.dequeue(vip);
 			vip->SetStatus(SRV);
 			vip->SetServTime(totalTimeSteps);
 			servedQueue.enqueue(vip);
-			
+			vipCookCount--;
 		}
 
 		if (totalTimeSteps % 5 == 0)
@@ -423,6 +425,18 @@ void Restaurant::SimpleSimulator()
 					finished->SetStatus(DONE);
 					finished->SetFinishTime(totalTimeSteps);
 					finishedQueue.enqueue(finished);
+					switch (finished->GetType())
+					{
+					case(TYPE_NRM):
+						normalCookCount++;
+						break;
+					case(TYPE_VGAN):
+						veganCookCount++;
+						break;
+					case(TYPE_VIP):
+						vipCookCount++;
+						break;
+					}
 				}
 			}
 		}
@@ -433,7 +447,7 @@ void Restaurant::SimpleSimulator()
 		pGUI->PrintMessage("");
 		pGUI->ResetDrawingList();
 
-		totalTimeSteps++;S
+		totalTimeSteps++;
 	}
 	pGUI->waitForClick();
 }
