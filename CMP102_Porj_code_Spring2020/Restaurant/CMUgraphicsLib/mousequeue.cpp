@@ -25,7 +25,7 @@ mqueue::~mqueue() {
    }
 }
 	
-void mqueue::insert(mqueuenode* mqueNode) {
+void mqueue::Insert(mqueuenode* mqueNode) {
 
     if(mqueNode == NULL) {
         return;

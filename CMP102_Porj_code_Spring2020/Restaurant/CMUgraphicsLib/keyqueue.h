@@ -42,7 +42,7 @@ class kqueue {
 	kqueue();
 	~kqueue();
 	
-	void insert(kqueuenode* kqueNode);
+	void Insert(kqueuenode* kqueNode);
 	kqueuenode* Remove();
 };
 

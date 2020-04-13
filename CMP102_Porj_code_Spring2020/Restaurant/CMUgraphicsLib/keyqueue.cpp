@@ -25,7 +25,7 @@ kqueue::~kqueue() {
    }
 }
 	
-void kqueue::insert(kqueuenode* kqueNode) {
+void kqueue::Insert(kqueuenode* kqueNode) {
 
     if(kqueNode == NULL) {
         return;

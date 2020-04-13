@@ -36,7 +36,7 @@ public:
 
 		Node<T>* pusher = new Node<T>(entry);
 
-		if (isEmpty())	// Function returns true for an empty stack
+		if (IsEmpty())	// Function returns true for an empty stack
 		{
 			// validation for the first item in the stack
 
@@ -59,7 +59,7 @@ public:
 	
 	// Checks if the Stack is Empty 
 
-	bool isEmpty()
+	bool IsEmpty()
 	{
 
 		if (top)			// Checks that the top doesn't point to a null pointer
@@ -72,7 +72,7 @@ public:
 
 	bool pop(T& entry)
 	{
-		if (isEmpty())	// Validation incase the stack is empty 
+		if (IsEmpty())	// Validation incase the stack is empty 
 			return false;	// return false in case of empty
 
 		entry = top->getItem();		// stores the item at the top of the stack
@@ -84,7 +84,7 @@ public:
 
 	bool peek(T& item)
 	{
-		if (!isEmpty())	// Checks if the stack isn't empty to return true 
+		if (!IsEmpty())	// Checks if the stack isn't empty to return true 
 		{
 			item = top->getItem();		// stores the item located at the top of the stack
 			return true;				// Returns the top item in the stack

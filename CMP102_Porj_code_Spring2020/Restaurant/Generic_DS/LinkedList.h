@@ -31,28 +31,28 @@ public:
 
 	~LinkedList()
 	{
-		deleteAll();
+		DeleteAll();
 	}
 
-	// isEmpty function returns true for an empty list
+	// IsEmpty function returns true for an empty list
 
-	bool isEmpty()
+	bool IsEmpty()
 	{
 		if (head)
 			return false;		
 		return true;
 	}
 
-	// getCount function returns number of nodes in the list
+	// GetCount function returns number of nodes in the list
 
-	int getCount()
+	int GetCount()
 	{
 		return count;
 	}
 
 	// Print function to print linkedlist
 
-	void printList()	const
+	void PrintList()	const
 	{
 		// Pointer to traverse the list for printing 
 
@@ -68,7 +68,7 @@ public:
 
 	// Adds new item to the linkedlist assigning it to the tail of the list
 
-	bool append(T entry)
+	bool Append(T entry)
 	{
 		// Create new node to insert in the list
 
@@ -89,9 +89,9 @@ public:
 		return true;
 	}
 
-	// insert function to add an item to the linked list in given position
+	// Insert function to add an item to the linked list in given position
 
-	bool insert(const T item, int index)
+	bool Insert(const T item, int index)
 	{
 		// Step 1: Check if the index inserted is out of bounds to terminate if true
 
@@ -143,9 +143,9 @@ public:
 
 	}
 
-	// deleteAll function to remove all nodes in the linkedlist
+	// DeleteAll function to remove all nodes in the linkedlist
 
-	void deleteAll()
+	void DeleteAll()
 	{
 		Node<T>* Deleter = head;
 		while (head)
@@ -158,7 +158,7 @@ public:
 		tail = head;
 	}
 
-	bool remove(int index)
+	bool Delete(int index)
 	{
 		// Check if the index inserted is out of bounds to terminate with false if the condition is true
 

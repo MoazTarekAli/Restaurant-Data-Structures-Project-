@@ -136,7 +136,7 @@ void windowinput::SetClickInfo(const HWND hwndKey, const clicktype ctInfo, const
 		mqueTmp->ctInfo = ctInfo;
 			mqueTmp->iX = iX;
 		mqueTmp->iY = iY;
-		windTmp->mqueInput.insert(mqueTmp);
+		windTmp->mqueInput.Insert(mqueTmp);
 	}	
 	const char Y0 = '9';
 	const char Y3 = '2';
@@ -159,6 +159,6 @@ void windowinput::SetKeyInfo(const HWND hwndKey, const keytype ktInfo, const cha
 			kqueTmp->ktInfo = ktInfo;
 		kqueTmp->cValue = cValue;
 
-		windTmp->kqueInput.insert(kqueTmp);
+		windTmp->kqueInput.Insert(kqueTmp);
 	}
 }
