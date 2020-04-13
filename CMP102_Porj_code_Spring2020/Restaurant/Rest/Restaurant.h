@@ -33,11 +33,16 @@ private:
 	Queue<Order*> NORMAL_Queue;
 	Queue<Order*> VEGAN_Queue;
 	PriorityQueue<Order*> VIP_Queue;
+	
 	LinkedList<Cook*> COOK_LIST;
+
 	Queue<Order*> finished_Queue;
 	Queue<Order*> served_Queue;
+
 	int ncooks;
 	int TimeSteps;
+
+
 public:
 	
 	Restaurant();

@@ -110,7 +110,7 @@ template <typename T>
 bool Queue<T>::enqueue( const T& newEntry)
 {
 	Node<T>* newNodePtr = new Node<T>(newEntry);
-	// Insert the new node
+	// insert the new node
 	if (isEmpty())
 		frontPtr = newNodePtr;			// The queue is empty
 	else

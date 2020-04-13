@@ -161,8 +161,11 @@ void Restaurant::FillDrawingList()
 void Restaurant::cancel(int ID)
 {
 	int count;
+
 	int flag=-1;
+
 	Order** NORMAL = NORMAL_Queue.toArray(count);
+
 	for (int i = 0; i < count; i++)
 	{
 		if (NORMAL[i]->GetID() == ID)

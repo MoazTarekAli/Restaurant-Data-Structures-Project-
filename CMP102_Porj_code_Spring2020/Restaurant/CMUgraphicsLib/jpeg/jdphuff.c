@@ -567,7 +567,7 @@ decode_mcu_AC_refine (j_decompress_ptr cinfo, JBLOCKROW *MCU_data)
 
   if (EOBRUN > 0) {
     /* Scan any remaining coefficient positions after the end-of-band
-     * (the last newly nonzero coefficient, if any).  Append a correction
+     * (the last newly nonzero coefficient, if any).  append a correction
      * bit to each already-nonzero coefficient.  A correction bit is 1
      * if the absolute value of the coefficient must be increased.
      */

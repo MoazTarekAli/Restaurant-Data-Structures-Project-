@@ -51,7 +51,7 @@ class mqueue {
 	mqueue();
 	~mqueue();
 	
-	void Insert(mqueuenode* mqueNode);
+	void insert(mqueuenode* mqueNode);
 	mqueuenode* Remove();
 };
 
