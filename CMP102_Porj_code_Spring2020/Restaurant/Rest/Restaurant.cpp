@@ -107,7 +107,7 @@ void Restaurant::FillDrawingList()
 	//adding cooks to gui
 	for (int i = 0; i < totalCookCount; ++i)
 	{
-		pGUI->AddToDrawingList(allCooks.getEntry(i));
+		pGUI->AddToDrawingList(allCooksAvailable.getEntry(i));
 	}
 	
 	//adding unfinished orders
@@ -275,7 +275,7 @@ void Restaurant::LoadRestaurant(ifstream& inFile)
 		for (int j = 0; j < cookCounts[i]; ++j)
 		{
 			Cook* pCook = new Cook(++currentID, ordTypes[i], cookSpeeds[i], breakDurations[i], ordersBeforeBreak);
-			allCooks.Append(pCook);
+			allCooksAvailable.Append(pCook);
 			cookStacks[i].push(pCook);
 		}
 	}

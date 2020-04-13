@@ -38,7 +38,7 @@ private:
 	Queue<Order*> normalOrderQueue;
 	Queue<Order*> veganOrderQueue;
 	PriorityQueue<Order*> vipOrderQueue;
-	LinkedList<Cook*> allCooks;
+	LinkedList<Cook*> allCooksAvailable;
 	Stack<Cook*> normalCookAvailable;
 	Stack<Cook*> veganCookAvailable;
 	Stack<Cook*> vipCookAvailable;
