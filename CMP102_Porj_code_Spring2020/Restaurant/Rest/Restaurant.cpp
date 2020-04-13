@@ -240,7 +240,7 @@ void Restaurant::LoadRestaurant(ifstream& inFile)
 		&stepsBeforeAutoPromotion, &numberOfEvents
 	};
 	// looping over the variables and storing the data from the input file in them
-	for (int i = 0; i < 11; ++i)
+	for (int i = 0; i < 12; ++i)
 	{
 		if (inFile.eof())
 		{
@@ -295,6 +295,7 @@ void Restaurant::LoadRestaurant(ifstream& inFile)
 				return;
 			}
 			char orderTypeInput;
+			inFile >> orderTypeInput;
 			ORD_TYPE orderType;
 			switch (orderTypeInput)
 			{
@@ -357,27 +358,31 @@ void Restaurant::SimpleSimulator()
 {
 
 	//place of loading calling
+	LoadRestaurant("C:\\Users\\3600\\Desktop\\test.txt");
 	while (!(EventsQueue.isEmpty() && normalOrderQueue.isEmpty() && veganOrderQueue.isEmpty() && vipOrderQueue.isEmpty() && servedQueue.isEmpty()))
 	{
 		ExecuteEvents(totalTimeSteps);
-
+		pGUI->PrintMessage(to_string(totalTimeSteps));
 		Order* normal,* vegan,* vip;
 		if (normalOrderQueue.peekFront(normal))
 		{
 			normalOrderQueue.dequeue(normal);
 			normal->SetStatus(SRV);
+			normal->SetServTime(totalTimeSteps);
 			servedQueue.enqueue(normal);
 		}
 		if (veganOrderQueue.peekFront(vegan))
 		{
 			veganOrderQueue.dequeue(vegan);
 			vegan->SetStatus(SRV);
+			vegan->SetServTime(totalTimeSteps);
 			servedQueue.enqueue(vegan);
 		}
 		if (vipOrderQueue.peekFront(vip))
 		{
 			vipOrderQueue.dequeue(vip);
 			vip->SetStatus(SRV);
+			vip->SetServTime(totalTimeSteps);
 			servedQueue.enqueue(vip);
 		}
 
@@ -389,7 +394,8 @@ void Restaurant::SimpleSimulator()
 				if (servedQueue.peekFront(finished))
 				{
 					servedQueue.dequeue(finished);
-					finished->SetStatus(SRV);
+					finished->SetStatus(DONE);
+					finished->SetFinishTime(totalTimeSteps);
 					finishedQueue.enqueue(finished);
 				}
 			}
@@ -400,13 +406,14 @@ void Restaurant::SimpleSimulator()
 		pGUI->UpdateInterface();
 
 		pGUI->PrintMessage("Press to continue");
+		pGUI->PrintMessage(to_string(totalTimeSteps));
 		pGUI->waitForClick();
 		pGUI->PrintMessage("");
 		pGUI->ResetDrawingList();
 
 		totalTimeSteps++;
 	}
-
+	pGUI->waitForClick();
 
 
 }

@@ -104,6 +104,7 @@ Order::Order(int id, ORD_TYPE r_Type, int s, double money, int aritime)
 	ID = id;
 	type = r_Type;
 	Size = s;
+	status = WAIT;
 	totalMoney = money;
 	ArrTime = aritime;
 	ServTime = 0;
