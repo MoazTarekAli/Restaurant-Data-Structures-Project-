@@ -50,7 +50,7 @@ string GUI::GetString() const
 		else if (Key != 8)
 			Label += Key;
 		
-		PrintMessage(Label);
+		PrintMessage(Label + " ");
 	}
 }
 
