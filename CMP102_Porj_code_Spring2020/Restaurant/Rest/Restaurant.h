@@ -38,13 +38,20 @@ private:
 	Queue<Order*> normalOrderQueue;
 	Queue<Order*> veganOrderQueue;
 	PriorityQueue<Order*> vipOrderQueue;
-	LinkedList<Cook*> cookList;
+	LinkedList<Cook*> allCooks;
+	Stack<Cook*> normalCookAvailable;
+	Stack<Cook*> veganCookAvailable;
+	Stack<Cook*> vipCookAvailable;
+	PriorityQueue<Cook*> normalCookUnavailable;
+	PriorityQueue<Cook*> veganCookUnavailable;
+	PriorityQueue<Cook*> vipCookUnavailable;
+	Queue<Cook*> cooksOnBreak;
 	Queue<Order*> finishedQueue;
 	Queue<Order*> servedQueue;
-	int numberOfCooks;
-	int numberOfNormalCooks;
-	int	numberOfVeganCooks;
-	int numberOfVipCooks;
+	int totalCookCount;
+	int normalCookCount;
+	int	veganCookCount;
+	int vipCookCount;
 	int totalTimeSteps;
 public:
 	

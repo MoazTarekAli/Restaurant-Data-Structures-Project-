@@ -10,7 +10,7 @@ using namespace std;
 
 Restaurant::Restaurant() 
 {
-	numberOfCooks = 0;
+	totalCookCount = 0;
 	totalTimeSteps = 1;
 	pGUI = NULL;
 }
@@ -105,11 +105,9 @@ void Restaurant::FillDrawingList()
 	//To add Cooks it should call function  void GUI::AddToDrawingList(Cook* pCc);
 	
 	//adding cooks to gui
-	for (int i = 0; i < numberOfCooks; i++)
+	for (int i = 0; i < totalCookCount; ++i)
 	{
-
-		pGUI->AddToDrawingList(cookList.getEntry(i));
-
+		pGUI->AddToDrawingList(allCooks.getEntry(i));
 	}
 	
 	//adding unfinished orders
@@ -162,9 +160,9 @@ void Restaurant::FillDrawingList()
 	//adding timesteps , number of available cooks , number of waiting orders
 	pGUI->PrintMessage(
 		"Current time step : " + to_string(totalTimeSteps) + '\n' +
-		"Number of available normal cooks : " + to_string(numberOfNormalCooks) + '\n' +
-		"Number of available vegan cooks : " + to_string(numberOfVeganCooks) + '\n' +
-		"Number of available vip cooks : " + to_string(numberOfVipCooks) + '\n' +
+		"Number of available normal cooks : " + to_string(normalCookCount) + '\n' +
+		"Number of available vegan cooks : " + to_string(veganCookCount) + '\n' +
+		"Number of available vip cooks : " + to_string(vipCookCount) + '\n' +
 		"Number of waiting normal orders : " + to_string(normal_count) + '\n' +
 		"Number of waiting vegan orders : " + to_string(vegan_count) + '\n'+
 		"Number of waiting vip orders : " + to_string(vip_count) + '\n' +
@@ -230,7 +228,7 @@ void Restaurant::LoadRestaurant(ifstream& inFile)
 	// loading values
 
 	// initializing the variables to be used to store the data from the input file
-	int normalCookCount, veganCookCount, vipCookCount;
+	int normalCookCountInput, veganCookCountInput, vipCookCountInput;
 	int normalCookSpeed, veganCookSpeed, vipCookSpeed;
 	int ordersBeforeBreak, normalBreakDuration, veganBreakDuration, vipBreakDuration;
 	int stepsBeforeAutoPromotion, numberOfEvents;
@@ -238,7 +236,7 @@ void Restaurant::LoadRestaurant(ifstream& inFile)
 	// to store the data from the input file
 	int* inputValues[] =
 	{
-		&normalCookCount, &veganCookCount, &vipCookCount,
+		&normalCookCountInput, &veganCookCountInput, &vipCookCountInput,
 		&normalCookSpeed, &veganCookSpeed, &vipCookSpeed,
 		&ordersBeforeBreak, &normalBreakDuration, &veganBreakDuration, &vipBreakDuration,
 		&stepsBeforeAutoPromotion, &numberOfEvents
@@ -258,14 +256,15 @@ void Restaurant::LoadRestaurant(ifstream& inFile)
 	// creating cooks
 
 	// updating the number of cooks data member
-	numberOfNormalCooks = normalCookCount;
-	numberOfVeganCooks = veganCookCount;
-	numberOfVipCooks = vipCookCount;
-	numberOfCooks = normalCookCount + veganCookCount + vipCookCount;
+	normalCookCount = normalCookCountInput;
+	veganCookCount = veganCookCountInput;
+	vipCookCount = vipCookCountInput;
+	totalCookCount = normalCookCount + veganCookCount + vipCookCount;
 	// creating arrays of different cook values in order to easily loop over them
 	// to creat the cooks
 	int cookCounts[] = { normalCookCount, veganCookCount, vipCookCount };
 	int cookSpeeds[] = { normalCookSpeed, veganCookSpeed, vipCookSpeed };
+	Stack<Cook*> cookStacks[] = { normalCookAvailable, veganCookAvailable, vipCookAvailable };
 	int breakDurations[] = { normalBreakDuration, veganBreakDuration, vipBreakDuration };
 	ORD_TYPE ordTypes[] = { TYPE_NRM, TYPE_VGAN, TYPE_VIP };
 	// initializing the cook ID to 0
@@ -276,7 +275,8 @@ void Restaurant::LoadRestaurant(ifstream& inFile)
 		for (int j = 0; j < cookCounts[i]; ++j)
 		{
 			Cook* pCook = new Cook(++currentID, ordTypes[i], cookSpeeds[i], breakDurations[i], ordersBeforeBreak);
-			cookList.Append(pCook);
+			allCooks.Append(pCook);
+			cookStacks[i].push(pCook);
 		}
 	}
 	
@@ -389,29 +389,29 @@ void Restaurant::SimpleSimulator()
 		ExecuteEvents(totalTimeSteps);
 		pGUI->PrintMessage(to_string(totalTimeSteps));
 		Order* normal,* vegan,* vip;
-		if (normalOrderQueue.peekFront(normal) && numberOfNormalCooks)
+		if (normalOrderQueue.peekFront(normal) && normalCookCount)
 		{
 			normalOrderQueue.dequeue(normal);
 			normal->SetStatus(SRV);
 			normal->SetServTime(totalTimeSteps);
 			servedQueue.enqueue(normal);
-			numberOfNormalCooks--;
+			normalCookCount--;
 		}
-		if (veganOrderQueue.peekFront(vegan) && numberOfVeganCooks)
+		if (veganOrderQueue.peekFront(vegan) && veganCookCount)
 		{
 			veganOrderQueue.dequeue(vegan);
 			vegan->SetStatus(SRV);
 			vegan->SetServTime(totalTimeSteps);
 			servedQueue.enqueue(vegan);
-			numberOfVeganCooks--;
+			veganCookCount--;
 		}
-		if (vipOrderQueue.peekFront(vip) && numberOfVipCooks)
+		if (vipOrderQueue.peekFront(vip) && vipCookCount)
 		{
 			vipOrderQueue.dequeue(vip);
 			vip->SetStatus(SRV);
 			vip->SetServTime(totalTimeSteps);
 			servedQueue.enqueue(vip);
-			numberOfVipCooks--;
+			vipCookCount--;
 		}
 
 		if (totalTimeSteps % 5 == 0)
@@ -428,13 +428,13 @@ void Restaurant::SimpleSimulator()
 					switch (finished->GetType())
 					{
 					case(TYPE_NRM):
-						numberOfNormalCooks++;
+						normalCookCount++;
 						break;
 					case(TYPE_VGAN):
-						numberOfVeganCooks++;
+						veganCookCount++;
 						break;
 					case(TYPE_VIP):
-						numberOfVipCooks++;
+						vipCookCount++;
 						break;
 					}
 				}
