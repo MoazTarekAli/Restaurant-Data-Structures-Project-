@@ -215,11 +215,5 @@ T* Queue<T>::toArray(int& count)
 	}
 	return Arr;
 }
-	// getter for counter to know the number of nodes in queue
-template <typename T>
-int Queue<T>::getCounter()
-{
-	return counter;
-}
 
 #endif
