@@ -5,12 +5,13 @@ using namespace std;
 
 #include "Restaurant.h"
 #include "..\Events\ArrivalEvent.h"
+#include "..\Events\CancellationEvent.h"
 
 
 Restaurant::Restaurant() 
 {
-	ncooks = 0;
-	TimeSteps = 1;
+	numberOfCooks = 0;
+	totalTimeSteps = 1;
 	pGUI = NULL;
 }
 
@@ -22,7 +23,7 @@ void Restaurant::RunSimulation()
 	switch (mode)	//Add a function for each mode in next phases
 	{
 	case MODE_INTR:
-		simpleSimulator();
+		SimpleSimulator();
 		break;
 	case MODE_STEP:
 		break;
@@ -57,31 +58,33 @@ void Restaurant::ExecuteEvents(int CurrentTimeStep)
 
 //void Restaurant::addtoNormalQueue(Order* pOrd)
 //{
-//	NORMAL_Queue.enqueue(pOrd);
+//	normalOrderQueue.enqueue(pOrd);
 //}
 //
 //void Restaurant::addtoVeganQueue(Order* pOrd)
 //{
-//	VEGAN_Queue.enqueue(pOrd);
+//	veganOrderQueue.enqueue(pOrd);
 //}
 //
 //void Restaurant::addtoVIPQueue(Order* pOrd,int prio)
 //{
-//	VIP_Queue.enqueue(pOrd,prio);
+//	vipOrderQueue.enqueue(pOrd,prio);
 //}
 
-void Restaurant::addtoQueue(Order* pOrd,const int prio)
+void Restaurant::AddToQueue(Order* pOrd,const int prio)
 {
 	switch (pOrd->GetType())
 	{
 	case 0:
-		NORMAL_Queue.enqueue(pOrd);
+		normalOrderQueue.enqueue(pOrd);
 		break;
 	case 1:
-		VEGAN_Queue.enqueue(pOrd);
+		veganOrderQueue.enqueue(pOrd);
 		break;
 	case 2:
-		VIP_Queue.enqueue(pOrd, prio);
+		vipOrderQueue.enqueue(pOrd, prio);
+		break;
+	default:
 		break;
 	}
 }
@@ -102,18 +105,18 @@ void Restaurant::FillDrawingList()
 	//To add Cooks it should call function  void GUI::AddToDrawingList(Cook* pCc);
 	
 	//adding cooks to gui
-	for (int i = 0; i < ncooks; i++)
+	for (int i = 0; i < numberOfCooks; i++)
 	{
 
-		pGUI->AddToDrawingList(COOK_LIST.getEntry(i));
+		pGUI->AddToDrawingList(cookList.getEntry(i));
 
 	}
 	
 	//adding unfinished orders
 	int normal_count = 0, vegan_count = 0, vip_count = 0;
-	Order** Normal = NORMAL_Queue.toArray(normal_count);
-	Order** vegan = VEGAN_Queue.toArray(vegan_count);
-	Order** vip = VIP_Queue.toArray(vip_count);
+	Order** Normal = normalOrderQueue.toArray(normal_count);
+	Order** vegan = veganOrderQueue.toArray(vegan_count);
+	Order** vip = vipOrderQueue.toArray(vip_count);
 	int sum = normal_count + vegan_count + vip_count;
 	Order** all_orders =new Order* [sum];
 	for (int i = 0; i < sum; i++)
@@ -130,7 +133,7 @@ void Restaurant::FillDrawingList()
 	{
 		Order* key = all_orders[i];
 		int j = i - 1;
-		while (j >= 0 && (all_orders[j]->getArrTime() > key->getArrTime()))
+		while (j >= 0 && (all_orders[j]->GetArrTime() > key->GetArrTime()))
 		{
 			all_orders[j + 1] = all_orders[j];
 			j = j - 1;
@@ -144,25 +147,25 @@ void Restaurant::FillDrawingList()
 	delete[] all_orders;
 	//adding served orders
 	int served_count = 0;
-	Order** served = served_Queue.toArray(served_count);
+	Order** served = servedQueue.toArray(served_count);
 	for (int i = 0; i < served_count; i++)
 	{
 		pGUI->AddToDrawingList(served[i]);
 	}
 	//adding finished orders
 	int finished_count=0;
-	Order** finished = finished_Queue.toArray(finished_count);
+	Order** finished = finishedQueue.toArray(finished_count);
 	for (int i = 0; i < finished_count; i++)
 	{
 		pGUI->AddToDrawingList(finished[i]);
 	}
 }
 
-void Restaurant::cancel(int ID)
+void Restaurant::CancelOrder(int ID)
 {
 	int count;
 	int flag=-1;
-	Order** NORMAL = NORMAL_Queue.toArray(count);
+	Order** NORMAL = normalOrderQueue.toArray(count);
 	for (int i = 0; i < count; i++)
 	{
 		if (NORMAL[i]->GetID() == ID)
@@ -171,12 +174,12 @@ void Restaurant::cancel(int ID)
 	for (int i = 0; i < count; i++)
 	{
 		Order* x;
-		NORMAL_Queue.dequeue(x);
+		normalOrderQueue.dequeue(x);
 	}
 	for (int i = 0; i < count; i++)
 	{
 		if (i != flag)
-			NORMAL_Queue.enqueue(NORMAL[i]);
+			normalOrderQueue.enqueue(NORMAL[i]);
 	}
 }
 
@@ -187,7 +190,7 @@ void Restaurant::InteractiveMode()
 	
 }
 
-void Restaurant::EventPerformer(int timestep)
+void Restaurant::PerformEvents(int timestep)
 {
 	Event* temp;
 	while (EventsQueue.peekFront(temp))
@@ -199,44 +202,195 @@ void Restaurant::EventPerformer(int timestep)
 	}
 }
 
-void Restaurant::simpleSimulator()
+void Restaurant::LoadRestaurant()
+{
+	string fileName = pGUI->GetString();
+	LoadRestaurant(fileName);
+}
+
+void Restaurant::LoadRestaurant(string fileName)
+{
+	ifstream inFile(fileName, ios::in);
+	if (!inFile.is_open())
+	{
+		pGUI->PrintMessage("Error! Can't open the file!");
+	}
+	else
+	{
+		LoadRestaurant(inFile);
+	}
+}
+
+void Restaurant::LoadRestaurant(ifstream& inFile)
+{
+	// loading values
+
+	// initializing the variables to be used to store the data from the input file
+	int normalCookCount, veganCookCount, vipCookCount;
+	int normalCookSpeed, veganCookSpeed, vipCookSpeed;
+	int ordersBeforeBreak, normalBreakDuration, veganBreakDuration, vipBreakDuration;
+	int stepsBeforeAutoPromotion, numberOfEvents;
+	// creating an array containing pointers to these variables in order to easily loop over them
+	// to store the data from the input file
+	int* inputValues[] =
+	{
+		&normalCookCount, &veganCookCount, &vipCookCount,
+		&normalCookSpeed, &veganCookSpeed, &vipCookSpeed,
+		&ordersBeforeBreak, &normalBreakDuration, &veganBreakDuration, &vipBreakDuration,
+		&stepsBeforeAutoPromotion, &numberOfEvents
+	};
+	// looping over the variables and storing the data from the input file in them
+	for (int i = 0; i < 11; ++i)
+	{
+		if (inFile.eof())
+		{
+			pGUI->PrintMessage("Error! Not enough values in the file!");
+			return;
+		}
+		inFile >> *inputValues[i];
+	}
+
+	// creating cooks
+
+	// updating the number of cooks data member
+	numberOfCooks = normalCookCount + veganCookCount + vipCookCount;
+	// creating arrays of different cook values in order to easily loop over them
+	// to creat the cooks
+	int cookCounts[] = { normalCookCount, veganCookCount, vipCookCount };
+	int cookSpeeds[] = { normalCookSpeed, veganCookSpeed, vipCookSpeed };
+	int breakDurations[] = { normalBreakDuration, veganBreakDuration, vipBreakDuration };
+	ORD_TYPE ordTypes[] = { TYPE_NRM, TYPE_VGAN, TYPE_VIP };
+	// initializing the cook ID to 0
+	int currentID = 0;
+	// creating the cooks
+	for (int i = 0; i < 3; ++i)
+	{
+		for (int j = 0; j < cookCounts[i]; ++j)
+		{
+			Cook* pCook = new Cook(currentID++, ordTypes[i], cookSpeeds[i], breakDurations[i], ordersBeforeBreak);
+			cookList.Append(pCook);
+		}
+	}
+	
+	// creating events
+
+	for (int i = 0; i < numberOfEvents; ++i)
+	{
+		if (inFile.eof())
+		{
+			pGUI->PrintMessage("Error! Not enough values in the file!");
+			return;
+		}
+		char eventType;
+		inFile >> eventType;
+		int eventTimeStep, orderID, orderSize;
+		int* eventInputValues[] = { &eventTimeStep, &orderID, &orderSize };
+		Event* pEvent;
+		switch (eventType)
+		{
+		case 'R':
+			if (inFile.eof())
+			{
+				pGUI->PrintMessage("Error! Not enough values in the file!");
+				return;
+			}
+			char orderTypeInput;
+			ORD_TYPE orderType;
+			switch (orderTypeInput)
+			{
+			case 'N':
+				orderType = TYPE_NRM;
+				break;
+			case 'G':
+				orderType = TYPE_VGAN;
+				break;
+			case 'V':
+				orderType = TYPE_VIP;
+				break;
+			default:
+				pGUI->PrintMessage("Error! Unknown event type!");
+				return;
+			}
+			for (int j = 0; j < 3; ++j)
+			{
+				if (inFile.eof())
+				{
+					pGUI->PrintMessage("Error! Not enough values in the file!");
+					return;
+				}
+				inFile >> *eventInputValues[j];
+			}
+			if (inFile.eof())
+			{
+				pGUI->PrintMessage("Error! Not enough values in the file!");
+				return;
+			}
+			double orderMoney;
+			inFile >> orderMoney;
+			pEvent = new ArrivalEvent(eventTimeStep, orderID, orderType, orderMoney, orderSize);
+			EventsQueue.enqueue(pEvent);
+			break;
+		case 'X':
+			for (int j = 0; j < 2; ++j)
+			{
+				if (inFile.eof())
+				{
+					pGUI->PrintMessage("Error! Not enough values in the file!");
+					return;
+				}
+				inFile >> *eventInputValues[j];
+			}
+			pEvent = new CancellationEvent(eventTimeStep, orderID);
+			EventsQueue.enqueue(pEvent);
+			break;
+		case 'P':
+			pGUI->PrintMessage("Promotion events not implemented yet, please try again in phase 2!");
+			break;
+		default:
+			pGUI->PrintMessage("Error! Unknown event type!");
+			return;
+		}
+	}
+}
+
+void Restaurant::SimpleSimulator()
 {
 
 	//place of loading calling
-	while (!(EventsQueue.isEmpty() && NORMAL_Queue.isEmpty() && VEGAN_Queue.isEmpty() && VIP_Queue.isEmpty() && served_Queue.isEmpty()))
+	while (!(EventsQueue.isEmpty() && normalOrderQueue.isEmpty() && veganOrderQueue.isEmpty() && vipOrderQueue.isEmpty() && servedQueue.isEmpty()))
 	{
-		ExecuteEvents(TimeSteps);
+		ExecuteEvents(totalTimeSteps);
 
 		Order* normal,* vegan,* vip;
-		if (NORMAL_Queue.peekFront(normal))
+		if (normalOrderQueue.peekFront(normal))
 		{
-			NORMAL_Queue.dequeue(normal);
-			normal->setStatus(SRV);
-			served_Queue.enqueue(normal);
+			normalOrderQueue.dequeue(normal);
+			normal->SetStatus(SRV);
+			servedQueue.enqueue(normal);
 		}
-		if (VEGAN_Queue.peekFront(vegan))
+		if (veganOrderQueue.peekFront(vegan))
 		{
-			VEGAN_Queue.dequeue(vegan);
-			vegan->setStatus(SRV);
-			served_Queue.enqueue(vegan);
+			veganOrderQueue.dequeue(vegan);
+			vegan->SetStatus(SRV);
+			servedQueue.enqueue(vegan);
 		}
-		if (VIP_Queue.peekFront(vip))
+		if (vipOrderQueue.peekFront(vip))
 		{
-			VIP_Queue.dequeue(vip);
-			vip->setStatus(SRV);
-			served_Queue.enqueue(vip);
+			vipOrderQueue.dequeue(vip);
+			vip->SetStatus(SRV);
+			servedQueue.enqueue(vip);
 		}
 
-		if (TimeSteps % 5 == 0)
+		if (totalTimeSteps % 5 == 0)
 		{
 			Order* finished;
 			for (int i = 0; i < 3; i++)
 			{
-				if (served_Queue.peekFront(finished))
+				if (servedQueue.peekFront(finished))
 				{
-					served_Queue.dequeue(finished);
-					finished->setStatus(SRV);
-					finished_Queue.enqueue(finished);
+					servedQueue.dequeue(finished);
+					finished->SetStatus(SRV);
+					finishedQueue.enqueue(finished);
 				}
 			}
 
@@ -250,7 +404,7 @@ void Restaurant::simpleSimulator()
 		pGUI->PrintMessage("");
 		pGUI->ResetDrawingList();
 
-		TimeSteps++;
+		totalTimeSteps++;
 	}
 
 
@@ -292,8 +446,8 @@ void Restaurant::Just_A_Demo()
 	for(int i=0; i<C_count; i++)
 	{
 		cID+= (rand()%15+1);	
-		pC[i].setID(cID);
-		pC[i].setType((ORD_TYPE)(rand()%TYPE_CNT));
+		pC[i].SetID(cID);
+		pC[i].SetType((ORD_TYPE)(rand()%TYPE_CNT));
 	}	
 
 		

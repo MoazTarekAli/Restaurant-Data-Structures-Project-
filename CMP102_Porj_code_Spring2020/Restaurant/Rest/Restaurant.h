@@ -13,6 +13,11 @@
 
 #include "Order.h"
 
+#include <fstream>
+#include <string>
+
+using namespace std;
+
 // it is the maestro of the project
 class Restaurant  
 {	
@@ -30,14 +35,14 @@ private:
 	// TODO: Add More Data Members As Needed
 	//
 
-	Queue<Order*> NORMAL_Queue;
-	Queue<Order*> VEGAN_Queue;
-	PriorityQueue<Order*> VIP_Queue;
-	LinkedList<Cook*> COOK_LIST;
-	Queue<Order*> finished_Queue;
-	Queue<Order*> served_Queue;
-	int ncooks;
-	int TimeSteps;
+	Queue<Order*> normalOrderQueue;
+	Queue<Order*> veganOrderQueue;
+	PriorityQueue<Order*> vipOrderQueue;
+	LinkedList<Cook*> cookList;
+	Queue<Order*> finishedQueue;
+	Queue<Order*> servedQueue;
+	int numberOfCooks;
+	int totalTimeSteps;
 public:
 	
 	Restaurant();
@@ -59,10 +64,15 @@ public:
 	//void addtoVeganQueue(Order* pO);
 	//void addtoVIPQueue(Order* pO, int prio);
 
-	void addtoQueue(Order* pO, const int prio=0);
-	void cancel(int ID);
-	void EventPerformer(int);
-	void simpleSimulator();
+	void AddToQueue(Order* pO, const int prio=0);
+	void CancelOrder(int ID);
+	void PerformEvents(int);
+	void SimpleSimulator();
+
+	// load functions
+	void LoadRestaurant(); // to load using input from user
+	void LoadRestaurant(string fileName); // to load using a file name
+	void LoadRestaurant(ifstream& inFile); // to load using a file directly
 	
 
 /// ===================    DEMO-related functions. Should be removed in phases 1&2   ================= 

@@ -11,9 +11,9 @@ class Cook
 	int speed;		//dishes it can prepare in one clock tick (in one timestep)
 
 	//new data members:-
-	int numberOfServedOrders;
-	int maxOrders;
-	int breakTime;
+	int servedOrdersCount;
+	int ordersBeforeBreak;
+	int breakDuration;
 	Order* orderBeingServed;
 	bool available; 
 
@@ -22,16 +22,16 @@ public:
 	virtual ~Cook();
 	int GetID() const;
 	ORD_TYPE GetType() const;
-	void setID(int);
-	void setType(ORD_TYPE) ;
+	void SetID(int);
+	void SetType(ORD_TYPE) ;
 	
 	//new function:-
 
-	Cook(int _ID, ORD_TYPE _type, int _speed, int _breakTime, int _maxOrders);
-	int timeToFinishOrder();
-	void setOrder(Order o);
-	Order* getOrder() const;
-	void setAvailable(bool a);
-	bool getAvailable() const;
-	bool needBreak();
+	Cook(int ID_, ORD_TYPE type_, int speed_, int breakDuration_, int ordersBeforeBreak_);
+	int TimeToFinishOrder();
+	void SetOrder(Order o);
+	Order* GetOrder() const;
+	void SetAvailable(bool a);
+	bool GetAvailable() const;
+	bool NeedBreak();
 };

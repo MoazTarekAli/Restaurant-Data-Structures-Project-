@@ -33,27 +33,27 @@ public:
 	void SetDistance(int d);
 	int GetDistance() const;
 
-	void setStatus(ORD_STATUS s);
-	ORD_STATUS getStatus() const;
+	void SetStatus(ORD_STATUS s);
+	ORD_STATUS GetStatus() const;
 	
 	//
 	// TODO: Add More Member Functions As Needed
 	Order();
 	Order(int id, ORD_TYPE r_Type,int size, double money, int aritime);
-	void setSize(int size);
-	int getSize();
+	void SetSize(int size);
+	int GetSize();
 
-	void setMoney(double money);
-	double getMoney();
+	void SetMoney(double money);
+	double GetMoney();
 
-	void setArrTime(int time);
-	int getArrTime();
+	void SetArrTime(int time);
+	int GetArrTime();
 
-	void setServTime(int time);
-	int getServTime();
+	void SetServTime(int time);
+	int GetServTime();
 
-	void setFinishTime(int time);
-	int getFinishTime();
+	void SetFinishTime(int time);
+	int GetFinishTime();
 
 	//
 

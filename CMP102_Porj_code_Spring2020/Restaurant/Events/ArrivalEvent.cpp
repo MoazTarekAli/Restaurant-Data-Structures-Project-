@@ -2,36 +2,32 @@
 #include "..\Rest\Restaurant.h"
 
 
-ArrivalEvent::ArrivalEvent(int eTime, int oID, ORD_TYPE oType, double oMoney, int s):Event(eTime, oID)
-{
-	OrdType = oType;
-	size = s;
-	OrdMoney = oMoney;
-}
+ArrivalEvent::ArrivalEvent(int eTime, int ordID, ORD_TYPE ordType, double ordMoney, int s) :
+	Event(eTime, ordID), OrdType(ordType), Size(s), OrdMoney(ordMoney), OrdDistance(0) {}
 
 void ArrivalEvent::Execute(Restaurant* pRest)
 {
 	//This function should create an order and fills its data 
 	// Then adds it to normal, vegan, or VIP order lists that you will create in phase1
 	
-	Order* pOrd = new Order(OrderID, OrdType, size, OrdMoney, EventTime);
+	Order* pOrd = new Order(OrderID, OrdType, Size, OrdMoney, EventTime);
 
 	if (OrdType < 2)
 	{
-		pRest->addtoQueue(pOrd);
+		pRest->AddToQueue(pOrd);
 	}
 	else if (OrdType == 2)
 	{
 		int prio = 5;
 
 		// place holder equation for priority until calculated (Read document explaination in next 3 lines)
-		// prio = pOrd->getMoney() * pOrd->getArrTime() / pOrd->getSize();  SHOULD BE CHANGED !!!!!!!!!!!
+		// prio = pOrd->GetMoney() * pOrd->GetArrTime() / pOrd->GetSize();  SHOULD BE CHANGED !!!!!!!!!!!
 		// You should develop a reasonable weighted priority equation depending on at least the
 		// following factors : Order Arrival Time, Order Money, and Order Size.
 
 		
 
-		pRest->addtoQueue(pOrd, prio);
+		pRest->AddToQueue(pOrd, prio);
 	}
 	
 	

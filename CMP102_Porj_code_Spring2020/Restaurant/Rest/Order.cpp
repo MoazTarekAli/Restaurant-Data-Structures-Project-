@@ -34,62 +34,62 @@ int Order::GetDistance() const
 }
 
 
-void Order::setStatus(ORD_STATUS s)
+void Order::SetStatus(ORD_STATUS s)
 {
 	status = s;
 }
 
-ORD_STATUS Order::getStatus() const
+ORD_STATUS Order::GetStatus() const
 {
 	return status;
 }
 
-void Order::setSize(int size)
+void Order::SetSize(int size)
 {
 	Size = size;
 }
 
-int Order::getSize()
+int Order::GetSize()
 {
 	return Size;
 }
 
-void Order::setMoney(double money)
+void Order::SetMoney(double money)
 {
 	totalMoney = money;
 }
 
-double Order::getMoney()
+double Order::GetMoney()
 {
 	return totalMoney;
 }
 
-void Order::setArrTime(int time)
+void Order::SetArrTime(int time)
 {
 	ArrTime = time;
 }
 
-int Order::getArrTime()
+int Order::GetArrTime()
 {
 	return ArrTime;
 }
 
-void Order::setServTime(int time)
+void Order::SetServTime(int time)
 {
 	ServTime = time;
 }
 
-int Order::getServTime()
+int Order::GetServTime()
 {
 	return ServTime;
 }
 
-void Order::setFinishTime(int time)
+void Order::SetFinishTime(int time)
 {
 	FinishTime = time;
 }
 
-int Order::getFinishTime()
+int Order::GetFinishTime()
 {
 	return FinishTime;
 }

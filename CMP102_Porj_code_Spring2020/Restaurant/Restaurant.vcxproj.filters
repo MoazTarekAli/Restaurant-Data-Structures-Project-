@@ -120,6 +120,9 @@
     <ClInclude Include="Generic_DS\PriorityNode.h">
       <Filter>Generic_DS</Filter>
     </ClInclude>
+    <ClInclude Include="Events\CancellationEvent.h">
+      <Filter>Events</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Demo_Main.cpp" />
@@ -245,6 +248,9 @@
     </ClCompile>
     <ClCompile Include="Rest\Cook.cpp">
       <Filter>Restaurant</Filter>
+    </ClCompile>
+    <ClCompile Include="Events\CancellationEvent.cpp">
+      <Filter>Events</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

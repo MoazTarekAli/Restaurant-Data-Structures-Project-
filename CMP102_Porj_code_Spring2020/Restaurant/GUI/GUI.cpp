@@ -227,7 +227,7 @@ void GUI::AddToDrawingList(Order* pOrd)
 	DrawingItem *pDitem=new DrawingItem;
 	pDitem->ID = pOrd->GetID();
 	pDitem->clr = DrawingColors[pOrd->GetType()];
-	ORD_STATUS order_status = pOrd->getStatus();
+	ORD_STATUS order_status = pOrd->GetStatus();
 	GUI_REGION reg;
 
 	switch (order_status)

@@ -36,5 +36,12 @@ enum PROG_MODE	//mode of the program interface
 #define MaxPossibleOrdCnt 999	//max possible order count (arbitrary value)
 #define MaxPossibleMcCnt  100	//max possible cook count (arbitrary value)
 
+enum EVENT_TYPE
+{
+	TYPE_ARIV, // arrival event
+	TYPE_CNCL, // cancellation event
+	TYPE_PRMT, // promotion event
+	EVENT_TYPE_CNT // number of possible event types
+};
 
 #endif

@@ -23,12 +23,12 @@ ORD_TYPE Cook::GetType() const
 }
 
 
-void Cook::setID(int id)
+void Cook::SetID(int id)
 {
 	ID = id;
 }
 
-void Cook::setType(ORD_TYPE t)
+void Cook::SetType(ORD_TYPE t)
 {
 	type = t;
 }
@@ -37,47 +37,47 @@ void Cook::setType(ORD_TYPE t)
 
 //new functions:-
 
-Cook::Cook(int ID_, ORD_TYPE type_, int speed_, int breakTime_, int maxOrders_) :
-	ID(ID_), type(type_), speed(speed_), breakTime(breakTime_), maxOrders(maxOrders_),
-	numberOfServedOrders(0), orderBeingServed(nullptr), available(true) {}
+Cook::Cook(int ID_, ORD_TYPE type_, int speed_, int breakDuration_, int ordersBeforeBreak_) :
+	ID(ID_), type(type_), speed(speed_), breakDuration(breakDuration_), ordersBeforeBreak(ordersBeforeBreak_),
+	servedOrdersCount(0), orderBeingServed(nullptr), available(true) {}
 
-int Cook::timeToFinishOrder()
+int Cook::TimeToFinishOrder()
 {
 	if (available)
 		return 0;
-	double Time = static_cast<double> (orderBeingServed->getSize()) / speed;
+	double Time = static_cast<double> (orderBeingServed->GetSize()) / speed;
 	return ceil(Time);
 }
 
-void Cook::setOrder(Order o)
+void Cook::SetOrder(Order o)
 {
 	if (!available)
 		return;
 	orderBeingServed = &o;
 	available = false;
-	o.setStatus(SRV);
-	numberOfServedOrders++;
+	o.SetStatus(SRV);
+	servedOrdersCount++;
 }
 
-Order* Cook::getOrder() const
+Order* Cook::GetOrder() const
 {
 	return orderBeingServed;
 }
 
-void Cook::setAvailable(bool a)
+void Cook::SetAvailable(bool a)
 {
 	available = a;
 }
 
-bool Cook::getAvailable() const
+bool Cook::GetAvailable() const
 {
 	return available;
 }
 
-bool Cook::needBreak()
+bool Cook::NeedBreak()
 {
-	if (numberOfServedOrders == 0) return false;
-	if (numberOfServedOrders % maxOrders==0)
+	if (servedOrdersCount == 0) return false;
+	if (servedOrdersCount % ordersBeforeBreak==0)
 	{
 		available = false;
 		return true;
