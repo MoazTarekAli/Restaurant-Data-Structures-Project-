@@ -107,7 +107,7 @@ void Restaurant::FillDrawingList()
 	//adding cooks to gui
 	for (int i = 0; i < totalCookCount; ++i)
 	{
-		pGUI->AddToDrawingList(allCooksAvailable.getEntry(i));
+		pGUI->AddToDrawingList(availableCooks.getEntry(i));
 	}
 	
 	//adding unfinished orders
@@ -264,7 +264,7 @@ void Restaurant::LoadRestaurant(ifstream& inFile)
 	// to creat the cooks
 	int cookCounts[] = { normalCookCount, veganCookCount, vipCookCount };
 	int cookSpeeds[] = { normalCookSpeed, veganCookSpeed, vipCookSpeed };
-	Stack<Cook*> cookStacks[] = { normalCookAvailable, veganCookAvailable, vipCookAvailable };
+	Stack<Cook*> cookStacks[] = { normalCooks, veganCooks, vipCooks };
 	int breakDurations[] = { normalBreakDuration, veganBreakDuration, vipBreakDuration };
 	ORD_TYPE ordTypes[] = { TYPE_NRM, TYPE_VGAN, TYPE_VIP };
 	// initializing the cook ID to 0
@@ -275,7 +275,7 @@ void Restaurant::LoadRestaurant(ifstream& inFile)
 		for (int j = 0; j < cookCounts[i]; ++j)
 		{
 			Cook* pCook = new Cook(++currentID, ordTypes[i], cookSpeeds[i], breakDurations[i], ordersBeforeBreak);
-			allCooksAvailable.Append(pCook);
+			availableCooks.Append(pCook);
 			cookStacks[i].push(pCook);
 		}
 	}
