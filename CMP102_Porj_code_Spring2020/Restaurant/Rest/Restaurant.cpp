@@ -433,7 +433,7 @@ void Restaurant::SimpleSimulator()
 		pGUI->PrintMessage("");
 		pGUI->ResetDrawingList();
 
-		totalTimeSteps++;S
+		totalTimeSteps++;
 	}
 	pGUI->waitForClick();
 }
