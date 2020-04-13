@@ -369,7 +369,7 @@ void Restaurant::SimpleSimulator()
 		ExecuteEvents(totalTimeSteps);
 		pGUI->PrintMessage(to_string(totalTimeSteps));
 		Order* normal,* vegan,* vip;
-		if (normalOrderQueue.peekFront(normal))
+		if (normalOrderQueue.peekFront(normal) && numberOfNormalCooks)
 		{
 			normalOrderQueue.dequeue(normal);
 			normal->SetStatus(SRV);
@@ -377,7 +377,7 @@ void Restaurant::SimpleSimulator()
 			servedQueue.enqueue(normal);
 			numberOfNormalCooks--;
 		}
-		if (veganOrderQueue.peekFront(vegan))
+		if (veganOrderQueue.peekFront(vegan) && numberOfVeganCooks)
 		{
 			veganOrderQueue.dequeue(vegan);
 			vegan->SetStatus(SRV);
@@ -385,7 +385,7 @@ void Restaurant::SimpleSimulator()
 			servedQueue.enqueue(vegan);
 			numberOfVeganCooks--;
 		}
-		if (vipOrderQueue.peekFront(vip))
+		if (vipOrderQueue.peekFront(vip) && numberOfVipCooks)
 		{
 			vipOrderQueue.dequeue(vip);
 			vip->SetStatus(SRV);
