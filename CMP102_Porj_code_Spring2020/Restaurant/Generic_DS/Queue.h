@@ -60,7 +60,6 @@ public :
 	bool dequeue(T& frntEntry);  
 	bool peekFront(T& frntEntry)  const;
 	T* toArray(int& count);	//returns array of T (array if items)
-	int getCounter();
 	~Queue();
 };
 /////////////////////////////////////////////////////////////////////////////////////////
