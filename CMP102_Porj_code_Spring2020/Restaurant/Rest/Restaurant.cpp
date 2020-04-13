@@ -161,7 +161,7 @@ void Restaurant::FillDrawingList()
 	}
 	//adding timesteps , number of available cooks , number of waiting orders
 	pGUI->PrintMessage(
-		"Current Time step : " + to_string(totalTimeSteps) + '\n' +
+		"Current time step : " + to_string(totalTimeSteps) + '\n' +
 		"Number of available normal cooks : " + to_string(numberOfNormalCooks) + '\n' +
 		"Number of available vegan cooks : " + to_string(numberOfVeganCooks) + '\n' +
 		"Number of available vip cooks : " + to_string(numberOfVipCooks) + '\n' +
@@ -202,21 +202,11 @@ void Restaurant::InteractiveMode()
 	
 }
 
-void Restaurant::PerformEvents(int timestep)
-{
-	Event* temp;
-	while (EventsQueue.peekFront(temp))
-	{
-		if (timestep < temp->getEventTime())
-			return;
-		temp->Execute(this);
-		EventsQueue.dequeue(temp);
-	}
-}
-
 void Restaurant::LoadRestaurant()
 {
-	pGUI->PrintMessage("Enter the input file name:");
+	pGUI->PrintMessage((string)"[The input file must be placed in the Input_Files folder]\n"+
+		"[test0.txt, test1.txt, test3.txt, test4.txt files are already provided in the folder]\n"+
+		"Enter the input file name:\n");
 	string fileName = pGUI->GetString();
 	fileName = "Input_Files\\" + fileName;
 	LoadRestaurant(fileName);
@@ -259,6 +249,7 @@ void Restaurant::LoadRestaurant(ifstream& inFile)
 		if (inFile.eof())
 		{
 			pGUI->PrintMessage("Error! Not enough values in the file!");
+			pGUI->waitForClick();
 			return;
 		}
 		inFile >> *inputValues[i];
@@ -291,26 +282,34 @@ void Restaurant::LoadRestaurant(ifstream& inFile)
 	
 	// creating events
 
+	// repeats the steps for the given number of events
 	for (int i = 0; i < numberOfEvents; ++i)
 	{
 		if (inFile.eof())
 		{
 			pGUI->PrintMessage("Error! Not enough values in the file!");
+			pGUI->waitForClick();
 			return;
 		}
+		// gets the event type for the current event
 		char eventType;
 		inFile >> eventType;
+		// initializing the variables to be used and creating an areas of pointers to them
 		int eventTimeStep, orderID, orderSize;
 		int* eventInputValues[] = { &eventTimeStep, &orderID, &orderSize };
 		Event* pEvent;
+		// handling the different types of events
 		switch (eventType)
 		{
+		// arrival event
 		case 'R':
 			if (inFile.eof())
 			{
+				pGUI->waitForClick();
 				pGUI->PrintMessage("Error! Not enough values in the file!");
 				return;
 			}
+			// getting the order type
 			char orderTypeInput;
 			inFile >> orderTypeInput;
 			ORD_TYPE orderType;
@@ -327,13 +326,16 @@ void Restaurant::LoadRestaurant(ifstream& inFile)
 				break;
 			default:
 				pGUI->PrintMessage("Error! Unknown event type!");
+				pGUI->waitForClick();
 				return;
 			}
+			// getting the order inputs
 			for (int j = 0; j < 3; ++j)
 			{
 				if (inFile.eof())
 				{
 					pGUI->PrintMessage("Error! Not enough values in the file!");
+					pGUI->waitForClick();
 					return;
 				}
 				inFile >> *eventInputValues[j];
@@ -341,19 +343,23 @@ void Restaurant::LoadRestaurant(ifstream& inFile)
 			if (inFile.eof())
 			{
 				pGUI->PrintMessage("Error! Not enough values in the file!");
+				pGUI->waitForClick();
 				return;
 			}
 			double orderMoney;
 			inFile >> orderMoney;
+			// creating the event
 			pEvent = new ArrivalEvent(eventTimeStep, orderID, orderType, orderMoney, orderSize);
 			EventsQueue.enqueue(pEvent);
 			break;
+		// cancellation event
 		case 'X':
 			for (int j = 0; j < 2; ++j)
 			{
 				if (inFile.eof())
 				{
 					pGUI->PrintMessage("Error! Not enough values in the file!");
+					pGUI->waitForClick();
 					return;
 				}
 				inFile >> *eventInputValues[j];
@@ -361,10 +367,12 @@ void Restaurant::LoadRestaurant(ifstream& inFile)
 			pEvent = new CancellationEvent(eventTimeStep, orderID);
 			EventsQueue.enqueue(pEvent);
 			break;
+		// promotion event
 		case 'P':
 			pGUI->PrintMessage("Promotion events not implemented yet, please try again in phase 2!");
 			break;
 		default:
+			pGUI->waitForClick();
 			pGUI->PrintMessage("Error! Unknown event type!");
 			return;
 		}
@@ -431,8 +439,6 @@ void Restaurant::SimpleSimulator()
 					}
 				}
 			}
-
-
 		}
 		FillDrawingList();
 		pGUI->UpdateInterface();
@@ -444,8 +450,6 @@ void Restaurant::SimpleSimulator()
 		totalTimeSteps++;
 	}
 	pGUI->waitForClick();
-
-
 }
 /*
 //////////////////////////////////////////////////////////////////////////////////////////////

@@ -69,7 +69,6 @@ public:
 
 	void AddToQueue(Order* pO, const int prio=0);
 	void CancelOrder(int ID);
-	void PerformEvents(int);
 	void SimpleSimulator();
 
 	// load functions
