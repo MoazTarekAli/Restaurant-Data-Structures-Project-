@@ -42,6 +42,9 @@ private:
 	Queue<Order*> finishedQueue;
 	Queue<Order*> servedQueue;
 	int numberOfCooks;
+	int numberOfNormalCooks;
+	int	numberOfVeganCooks;
+	int numberOfVipCooks;
 	int totalTimeSteps;
 public:
 	

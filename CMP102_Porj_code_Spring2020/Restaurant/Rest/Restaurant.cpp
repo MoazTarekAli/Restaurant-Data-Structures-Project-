@@ -159,6 +159,8 @@ void Restaurant::FillDrawingList()
 	{
 		pGUI->AddToDrawingList(finished[i]);
 	}
+	//adding timesteps , number of available cooks , number of waiting orders
+	pGUI->PrintMessage("Current Time step : " + to_string(totalTimeSteps) + '\n' + "Number of available normal cooks : " + to_string(numberOfNormalCooks) + '\n' + "Number of available vegan cooks : " + to_string(numberOfVeganCooks) + '\n' + "Number of available vip cooks : " + to_string(numberOfVipCooks) + '\n' + "Number of waiting normal orders : " + to_string(normal_count) + '\n' + "Number of waiting vegan orders : " + to_string(vegan_count) + "\n" + "Number of waiting vip orders : " + to_string(vip_count) + '\n' + "Number of orders in service : " + to_string(served_count) + '\n' + "Number of finished orders : " + to_string(finished_count) + " ");
 }
 
 void Restaurant::CancelOrder(int ID)
@@ -249,10 +251,13 @@ void Restaurant::LoadRestaurant(ifstream& inFile)
 		}
 		inFile >> *inputValues[i];
 	}
-
+	
 	// creating cooks
 
 	// updating the number of cooks data member
+	numberOfNormalCooks = normalCookCount;
+	numberOfVeganCooks = veganCookCount;
+	numberOfVipCooks = vipCookCount;
 	numberOfCooks = normalCookCount + veganCookCount + vipCookCount;
 	// creating arrays of different cook values in order to easily loop over them
 	// to creat the cooks
@@ -370,6 +375,7 @@ void Restaurant::SimpleSimulator()
 			normal->SetStatus(SRV);
 			normal->SetServTime(totalTimeSteps);
 			servedQueue.enqueue(normal);
+			numberOfNormalCooks--;
 		}
 		if (veganOrderQueue.peekFront(vegan))
 		{
@@ -377,6 +383,7 @@ void Restaurant::SimpleSimulator()
 			vegan->SetStatus(SRV);
 			vegan->SetServTime(totalTimeSteps);
 			servedQueue.enqueue(vegan);
+			numberOfVeganCooks--;
 		}
 		if (vipOrderQueue.peekFront(vip))
 		{
@@ -384,6 +391,7 @@ void Restaurant::SimpleSimulator()
 			vip->SetStatus(SRV);
 			vip->SetServTime(totalTimeSteps);
 			servedQueue.enqueue(vip);
+			numberOfVipCooks--;
 		}
 
 		if (totalTimeSteps % 5 == 0)
@@ -397,6 +405,18 @@ void Restaurant::SimpleSimulator()
 					finished->SetStatus(DONE);
 					finished->SetFinishTime(totalTimeSteps);
 					finishedQueue.enqueue(finished);
+					switch (finished->GetType())
+					{
+					case(TYPE_NRM):
+						numberOfNormalCooks++;
+						break;
+					case(TYPE_VGAN):
+						numberOfVeganCooks++;
+						break;
+					case(TYPE_VIP):
+						numberOfVipCooks++;
+						break;
+					}
 				}
 			}
 
@@ -405,8 +425,6 @@ void Restaurant::SimpleSimulator()
 		FillDrawingList();
 		pGUI->UpdateInterface();
 
-		pGUI->PrintMessage("Press to continue");
-		pGUI->PrintMessage(to_string(totalTimeSteps));
 		pGUI->waitForClick();
 		pGUI->PrintMessage("");
 		pGUI->ResetDrawingList();

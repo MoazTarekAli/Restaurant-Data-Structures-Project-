@@ -64,8 +64,28 @@ void GUI::PrintMessage(string msg) const	//Prints a message on status bar
 	
 	pWind->SetPen(DARKRED);
 	pWind->SetFont(18, BOLD , BY_NAME, "Arial");   
-	pWind->DrawString(10, WindHeight - (int) (StatusBarHeight/1.5), msg); // You may need to change these coordinates later 
+	 // You may need to change these coordinates later 
 	                                                                      // to be able to write multi-line
+	int string_size=msg.length();
+	int y = 500;
+	int temp=0;
+	bool printed = false;
+	for (int i = 0; i < string_size; i++)
+	{
+		if (i == string_size - 1 || msg[i]=='\n')
+		{
+
+			pWind->DrawString(10, y, msg.substr(temp, i - temp));
+			temp = i + 1;
+			y += 15;
+			printed = true;
+		}
+
+	}
+	if (string_size == 1 || !printed)
+	{
+		pWind->DrawString(10,y, msg);
+	}
 }
 //////////////////////////////////////////////////////////////////////////////////////////
 void GUI::DrawString(const int iX, const int iY, const string Text)
