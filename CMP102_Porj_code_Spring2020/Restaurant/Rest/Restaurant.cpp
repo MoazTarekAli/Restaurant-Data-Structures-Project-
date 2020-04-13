@@ -363,7 +363,7 @@ void Restaurant::SimpleSimulator()
 {
 
 	//place of loading calling
-	LoadRestaurant("C:\\Users\\3600\\Desktop\\test.txt");
+	LoadRestaurant();
 	while (!(EventsQueue.isEmpty() && normalOrderQueue.isEmpty() && veganOrderQueue.isEmpty() && vipOrderQueue.isEmpty() && servedQueue.isEmpty()))
 	{
 		ExecuteEvents(totalTimeSteps);
