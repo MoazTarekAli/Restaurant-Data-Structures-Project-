@@ -160,7 +160,17 @@ void Restaurant::FillDrawingList()
 		pGUI->AddToDrawingList(finished[i]);
 	}
 	//adding timesteps , number of available cooks , number of waiting orders
-	pGUI->PrintMessage("Current Time step : " + to_string(totalTimeSteps) + '\n' + "Number of available normal cooks : " + to_string(numberOfNormalCooks) + '\n' + "Number of available vegan cooks : " + to_string(numberOfVeganCooks) + '\n' + "Number of available vip cooks : " + to_string(numberOfVipCooks) + '\n' + "Number of waiting normal orders : " + to_string(normal_count) + '\n' + "Number of waiting vegan orders : " + to_string(vegan_count) + "\n" + "Number of waiting vip orders : " + to_string(vip_count) + '\n' + "Number of orders in service : " + to_string(served_count) + '\n' + "Number of finished orders : " + to_string(finished_count) + " ");
+	pGUI->PrintMessage(
+		"Current Time step : " + to_string(totalTimeSteps) + '\n' +
+		"Number of available normal cooks : " + to_string(numberOfNormalCooks) + '\n' +
+		"Number of available vegan cooks : " + to_string(numberOfVeganCooks) + '\n' +
+		"Number of available vip cooks : " + to_string(numberOfVipCooks) + '\n' +
+		"Number of waiting normal orders : " + to_string(normal_count) + '\n' +
+		"Number of waiting vegan orders : " + to_string(vegan_count) + '\n'+
+		"Number of waiting vip orders : " + to_string(vip_count) + '\n' +
+		"Number of orders in service : " + to_string(served_count) + '\n' +
+		"Number of finished orders : " + to_string(finished_count) +'\n');
+
 }
 
 void Restaurant::CancelOrder(int ID)
@@ -206,7 +216,9 @@ void Restaurant::PerformEvents(int timestep)
 
 void Restaurant::LoadRestaurant()
 {
+	pGUI->PrintMessage("Enter the input file name:");
 	string fileName = pGUI->GetString();
+	fileName = "Input_Files\\" + fileName;
 	LoadRestaurant(fileName);
 }
 
@@ -215,7 +227,7 @@ void Restaurant::LoadRestaurant(string fileName)
 	ifstream inFile(fileName, ios::in);
 	if (!inFile.is_open())
 	{
-		pGUI->PrintMessage("Error! Can't open the file!");
+		pGUI->PrintMessage("Error! Can't open the file! The file must be placed inside the Input_Files folder.");
 	}
 	else
 	{
@@ -272,7 +284,7 @@ void Restaurant::LoadRestaurant(ifstream& inFile)
 	{
 		for (int j = 0; j < cookCounts[i]; ++j)
 		{
-			Cook* pCook = new Cook(currentID++, ordTypes[i], cookSpeeds[i], breakDurations[i], ordersBeforeBreak);
+			Cook* pCook = new Cook(++currentID, ordTypes[i], cookSpeeds[i], breakDurations[i], ordersBeforeBreak);
 			cookList.Append(pCook);
 		}
 	}
@@ -363,7 +375,7 @@ void Restaurant::SimpleSimulator()
 {
 
 	//place of loading calling
-	LoadRestaurant("C:\\Users\\3600\\Desktop\\test.txt");
+	LoadRestaurant();
 	while (!(EventsQueue.isEmpty() && normalOrderQueue.isEmpty() && veganOrderQueue.isEmpty() && vipOrderQueue.isEmpty() && servedQueue.isEmpty()))
 	{
 		ExecuteEvents(totalTimeSteps);
