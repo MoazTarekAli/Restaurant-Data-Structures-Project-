@@ -44,7 +44,8 @@ private:
 	LinkedList<Cook*> availableCooks;
 	PriorityQueue<Cook*> unavailableCooks;
 	Queue<Order*> finishedQueue;
-	Queue<Order*> servedQueue;
+	Queue<Order*> InServiceQueue;
+	PriorityQueue<Order*> waitingQueue_test;
 	int totalCookCount;
 	int normalCookCount;
 	int	veganCookCount;
@@ -74,7 +75,8 @@ public:
 	void AddToQueue(Order* pO, const int prio=0);
 	void CancelOrder(int ID);
 	void SimpleSimulator();
-
+	void Assign_to_cook(Order* inorder, int current_time_step);
+	void check_finished_and_break(int current_time_step);
 	// load functions
 	void LoadRestaurant(); // to load using input from user
 	void LoadRestaurant(string fileName); // to load using a file name

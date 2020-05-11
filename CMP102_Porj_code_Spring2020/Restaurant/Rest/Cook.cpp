@@ -39,23 +39,23 @@ void Cook::SetType(ORD_TYPE t)
 
 Cook::Cook(int ID_, ORD_TYPE type_, int speed_, int breakDuration_, int ordersBeforeBreak_) :
 	ID(ID_), type(type_), speed(speed_), breakDuration(breakDuration_), ordersBeforeBreak(ordersBeforeBreak_),
-	servedOrdersCount(0), orderBeingServed(nullptr), available(true) {}
+	servedOrdersCount(0), orderBeingServed(nullptr), IsCooking(true), isResting(false), breakTimeEnd(0) {}
 
 int Cook::TimeToFinishOrder()
 {
-	if (available)
+	if (IsCooking)
 		return 0;
 	double Time = static_cast<double> (orderBeingServed->GetSize()) / speed;
 	return ceil(Time);
 }
 
-void Cook::SetOrder(Order o)
+void Cook::SetOrder(Order* o)
 {
-	if (!available)
+	if (!IsCooking)
 		return;
-	orderBeingServed = &o;
-	available = false;
-	o.SetStatus(SRV);
+	orderBeingServed = o;
+	IsCooking = false;
+	o->SetStatus(SRV);
 	servedOrdersCount++;
 }
 
@@ -64,14 +64,14 @@ Order* Cook::GetOrder() const
 	return orderBeingServed;
 }
 
-void Cook::SetAvailable(bool a)
+void Cook::SetIsCooking(bool a)
 {
-	available = a;
+	IsCooking = a;
 }
 
-bool Cook::GetAvailable() const
+bool Cook::GetIsCooking() const
 {
-	return available;
+	return IsCooking;
 }
 
 bool Cook::NeedBreak()
@@ -79,9 +79,28 @@ bool Cook::NeedBreak()
 	if (servedOrdersCount == 0) return false;
 	if (servedOrdersCount % ordersBeforeBreak==0)
 	{
-		available = false;
+		IsCooking = false;
 		return true;
 	}
 	return false;
 }
 
+bool Cook::GetIsResting()
+{
+	return isResting;
+}
+
+void Cook::SetIsResting(bool is)
+{
+	isResting = is;
+}
+
+int Cook::GetBreakTimeEnd()
+{
+	return breakTimeEnd;
+}
+
+void Cook::setBreakTimeEnd(int time)
+{
+	breakTimeEnd = time;
+}

@@ -145,7 +145,7 @@ void Restaurant::FillDrawingList()
 	delete[] all_orders;
 	//adding served orders
 	int served_count = 0;
-	Order** served = servedQueue.toArray(served_count);
+	Order** served = InServiceQueue.toArray(served_count);
 	for (int i = 0; i < served_count; i++)
 	{
 		pGUI->AddToDrawingList(served[i]);
@@ -379,22 +379,122 @@ void Restaurant::LoadRestaurant(ifstream& inFile)
 	}
 }
 
+void Restaurant::Assign_to_cook(Order* inorder, int current_time_step)
+{
+	Cook* vip_cook, * vegan_cook, * normal_cook;
+	switch (inorder->GetType())
+	{
+	case TYPE_VIP:
+		if (vipCooks.peek(vip_cook))
+		{
+			vipCooks.pop(vip_cook);
+			vip_cook->SetOrder(inorder);
+			unavailableCooks.enqueue(vip_cook, -vip_cook->TimeToFinishOrder() - current_time_step);
+			inorder->SetFinishTime(vip_cook->TimeToFinishOrder() + current_time_step);
+			inorder->SetServTime(current_time_step);
+			inorder->SetStatus(SRV);
+			vip_cook->SetIsCooking(true);
+			vipCookCount--;
+		}
+		else if (normalCooks.peek(normal_cook))
+		{
+			normalCooks.pop(normal_cook);
+			normal_cook->SetOrder(inorder);
+			unavailableCooks.enqueue(normal_cook, -normal_cook->TimeToFinishOrder() - current_time_step);
+			inorder->SetFinishTime(normal_cook->TimeToFinishOrder() + current_time_step);
+			inorder->SetServTime(current_time_step);
+			inorder->SetStatus(SRV);
+			normal_cook->SetIsCooking(true);
+			normalCookCount--;
+		}
+		else if (veganCooks.peek(vegan_cook))
+		{
+			veganCooks.pop(vegan_cook);
+			vegan_cook->SetOrder(inorder);
+			unavailableCooks.enqueue(vegan_cook, -vegan_cook->TimeToFinishOrder() - current_time_step);
+			inorder->SetFinishTime(vegan_cook->TimeToFinishOrder() + current_time_step);
+			inorder->SetServTime(current_time_step);
+			inorder->SetStatus(SRV);
+			vegan_cook->SetIsCooking(true);
+			veganCookCount--;
+		}
+		break;
+	case TYPE_VGAN:
+		if (veganCooks.peek(vegan_cook))
+		{
+			veganCooks.pop(vegan_cook);
+			vegan_cook->SetOrder(inorder);
+			unavailableCooks.enqueue(vegan_cook, -vegan_cook->TimeToFinishOrder() - current_time_step);
+			inorder->SetFinishTime(vegan_cook->TimeToFinishOrder() + current_time_step);
+			inorder->SetServTime(current_time_step);
+			inorder->SetStatus(SRV);
+			vegan_cook->SetIsCooking(true);
+			veganCookCount--;
+		}
+		break;
+	case TYPE_NRM:
+		if (normalCooks.peek(normal_cook))
+		{
+			normalCooks.pop(normal_cook);
+			normal_cook->SetOrder(inorder);
+			unavailableCooks.enqueue(normal_cook, -normal_cook->TimeToFinishOrder() - current_time_step);
+			inorder->SetFinishTime(normal_cook->TimeToFinishOrder() + current_time_step);
+			inorder->SetServTime(current_time_step);
+			inorder->SetStatus(SRV);
+			normal_cook->SetIsCooking(true);
+			normalCookCount--;
+		}
+		else if (vipCooks.peek(vip_cook))
+		{
+			vipCooks.pop(vip_cook);
+			vip_cook->SetOrder(inorder);
+			unavailableCooks.enqueue(vip_cook, -vip_cook->TimeToFinishOrder() - current_time_step);
+			inorder->SetFinishTime(vip_cook->TimeToFinishOrder() + current_time_step);
+			inorder->SetServTime(current_time_step);
+			inorder->SetStatus(SRV);
+			vip_cook->SetIsCooking(true);
+			vipCookCount--;
+		}
+		break;
+	}
+}
+
+void Restaurant::check_finished_and_break(int current_time_step)
+{
+	bool flag = true;
+	Cook* busy_cook;
+	while (unavailableCooks.peekFront(busy_cook)&&flag)
+	{
+		if (busy_cook->GetIsCooking() && (busy_cook->GetOrder())->GetFinishTime() == current_time_step)
+		{
+			
+		}
+		else if (busy_cook->GetIsResting() && busy_cook->GetBreakTimeEnd() == current_time_step)
+		{
+
+		}
+		else
+		{
+			flag = false;
+		}
+	}
+}
+
 void Restaurant::SimpleSimulator()
 {
 
 	//place of loading calling
 	LoadRestaurant();
-	while (!(EventsQueue.isEmpty() && normalOrderQueue.isEmpty() && veganOrderQueue.isEmpty() && vipOrderQueue.isEmpty() && servedQueue.isEmpty()))
+	while (!(EventsQueue.isEmpty() && normalOrderQueue.isEmpty() && veganOrderQueue.isEmpty() && vipOrderQueue.isEmpty() && InServiceQueue.isEmpty()))
 	{
 		ExecuteEvents(totalTimeSteps);
-		pGUI->PrintMessage(to_string(totalTimeSteps));
 		Order* normal,* vegan,* vip;
 		if (normalOrderQueue.peekFront(normal) && normalCookCount)
 		{
 			normalOrderQueue.dequeue(normal);
 			normal->SetStatus(SRV);
 			normal->SetServTime(totalTimeSteps);
-			servedQueue.enqueue(normal);
+			InServiceQueue.enqueue(normal);
 			normalCookCount--;
 		}
 		if (veganOrderQueue.peekFront(vegan) && veganCookCount)
@@ -402,7 +502,7 @@ void Restaurant::SimpleSimulator()
 			veganOrderQueue.dequeue(vegan);
 			vegan->SetStatus(SRV);
 			vegan->SetServTime(totalTimeSteps);
-			servedQueue.enqueue(vegan);
+			InServiceQueue.enqueue(vegan);
 			veganCookCount--;
 		}
 		if (vipOrderQueue.peekFront(vip) && vipCookCount)
@@ -410,7 +510,7 @@ void Restaurant::SimpleSimulator()
 			vipOrderQueue.dequeue(vip);
 			vip->SetStatus(SRV);
 			vip->SetServTime(totalTimeSteps);
-			servedQueue.enqueue(vip);
+			InServiceQueue.enqueue(vip);
 			vipCookCount--;
 		}
 
@@ -419,9 +519,9 @@ void Restaurant::SimpleSimulator()
 			Order* finished;
 			for (int i = 0; i < 3; i++)
 			{
-				if (servedQueue.peekFront(finished))
+				if (InServiceQueue.peekFront(finished))
 				{
-					servedQueue.dequeue(finished);
+					InServiceQueue.dequeue(finished);
 					finished->SetStatus(DONE);
 					finished->SetFinishTime(totalTimeSteps);
 					finishedQueue.enqueue(finished);

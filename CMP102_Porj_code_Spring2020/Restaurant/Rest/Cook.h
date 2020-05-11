@@ -15,8 +15,9 @@ class Cook
 	int ordersBeforeBreak;
 	int breakDuration;
 	Order* orderBeingServed;
-	bool available; 
-
+	bool IsCooking; 
+	bool isResting;
+	int breakTimeEnd;
 public:
 	Cook();
 	virtual ~Cook();
@@ -29,9 +30,13 @@ public:
 
 	Cook(int ID_, ORD_TYPE type_, int speed_, int breakDuration_, int ordersBeforeBreak_);
 	int TimeToFinishOrder();
-	void SetOrder(Order o);
+	void SetOrder(Order* o);
 	Order* GetOrder() const;
-	void SetAvailable(bool a);
-	bool GetAvailable() const;
+	void SetIsCooking(bool a);
+	bool GetIsCooking() const;
 	bool NeedBreak();
+	void SetIsResting(bool ir);
+	bool GetIsResting();
+	void setBreakTimeEnd(int time);
+	int GetBreakTimeEnd();
 };
