@@ -226,14 +226,40 @@ void Restaurant::LoadRestaurant(string fileName)
 void Restaurant::LoadRestaurant(ifstream& inFile)
 {
 	// loading values
+	
+	//	srand to generate a random seed
+	srand(time(NULL));
 
 	// initializing the variables to be used to store the data from the input file
 	int normalCookCountInput, veganCookCountInput, vipCookCountInput;
 	int normalCookSpeed, veganCookSpeed, vipCookSpeed;
 	int ordersBeforeBreak, normalBreakDuration, veganBreakDuration, vipBreakDuration;
 	int stepsBeforeAutoPromotion, numberOfEvents;
+
+	// mazen l 7agat de l7ad mtzabat l load 3shan n3mel generate l random breaks/speeds
+	// 3'YARHA LMA TZBATO
+
+	int minNormalSpeed, minVeganSpeed, minVipSpeed;
+	int maxNormalSpeed, maxVeganSpeed, maxVipSpeed;
+	int minNormalBreak, minVeganBreak, minVipBreak;
+	int maxNormalBreak, maxVeganBreak, maxVipBreak;
+
+	// mazen, this following should be the code that gives every cook their respective speeds
+	// 
+
+	// implement fl code while initializing every cook so they have different speeds/breaks
+
+	int speedNorm = rand() % (maxNormalSpeed - minNormalSpeed + 1) + minNormalSpeed;
+	int	speedVegan = rand() % (maxVeganSpeed - minVeganSpeed + 1) + minVeganSpeed;
+	int speedVip = rand() % (maxVipSpeed - minVipSpeed + 1) + minVipSpeed;
+
+	int breakNorm = rand() % (maxNormalBreak - minNormalBreak + 1) + minNormalBreak;
+	int breakVegan = rand() % (maxVeganBreak - minVeganBreak + 1) + minVeganBreak;
+	int breakVip = rand() % (maxVipBreak - minVipBreak + 1) + minVipBreak;
+
 	// creating an array containing pointers to these variables in order to easily loop over them
 	// to store the data from the input file
+
 	int* inputValues[] =
 	{
 		&normalCookCountInput, &veganCookCountInput, &vipCookCountInput,
@@ -241,7 +267,9 @@ void Restaurant::LoadRestaurant(ifstream& inFile)
 		&ordersBeforeBreak, &normalBreakDuration, &veganBreakDuration, &vipBreakDuration,
 		&stepsBeforeAutoPromotion, &numberOfEvents
 	};
+
 	// looping over the variables and storing the data from the input file in them
+
 	for (int i = 0; i < 12; ++i)
 	{
 		if (inFile.eof())

@@ -51,6 +51,7 @@ private:
 	int	veganCookCount;
 	int vipCookCount;
 	int totalTimeSteps;
+
 public:
 	
 	Restaurant();
