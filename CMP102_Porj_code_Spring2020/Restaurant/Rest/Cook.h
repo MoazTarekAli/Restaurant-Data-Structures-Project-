@@ -37,7 +37,7 @@ public:
 	Order* GetOrder() const;
 	void SetCookingSpeed(int spd);
 	int	GetCookingSpeed() const;
-	void setIsCooking(bool a);
+	void SetIsCooking(bool a);
 	bool GetIsCooking() const;
 	void SetIsResting(bool ir);
 	bool GetIsResting()	const;
@@ -45,5 +45,5 @@ public:
 	bool GetIsInjured()	const;
 	bool NeedBreak();
 	void SetBreakTimeEnd(int time);
-	int GetBreakTimeEnd();
+	int GetBreakTimeEnd() const;
 };
