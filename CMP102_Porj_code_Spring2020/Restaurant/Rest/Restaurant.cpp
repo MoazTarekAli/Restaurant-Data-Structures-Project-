@@ -12,6 +12,7 @@ Restaurant::Restaurant()
 {
 	totalCookCount = 0;
 	totalTimeSteps = 1;
+	countInjured = 0;
 	pGUI = NULL;
 }
 
@@ -233,7 +234,7 @@ void Restaurant::LoadRestaurant(ifstream& inFile)
 	// initializing the variables to be used to store the data from the input file
 	int normalCookCountInput, veganCookCountInput, vipCookCountInput;
 	int normalCookSpeed, veganCookSpeed, vipCookSpeed;
-	int ordersBeforeBreak, normalBreakDuration, veganBreakDuration, vipBreakDuration;
+	int OrdersBeforeBreak, normalBreakDuration, veganBreakDuration, vipBreakDuration;
 	int stepsBeforeAutoPromotion, numberOfEvents;
 
 	// mazen l 7agat de l7ad mtzabat l load 3shan n3mel generate l random breaks/speeds
@@ -264,7 +265,7 @@ void Restaurant::LoadRestaurant(ifstream& inFile)
 	{
 		&normalCookCountInput, &veganCookCountInput, &vipCookCountInput,
 		&normalCookSpeed, &veganCookSpeed, &vipCookSpeed,
-		&ordersBeforeBreak, &normalBreakDuration, &veganBreakDuration, &vipBreakDuration,
+		&OrdersBeforeBreak, &normalBreakDuration, &veganBreakDuration, &vipBreakDuration,
 		&stepsBeforeAutoPromotion, &numberOfEvents
 	};
 
@@ -302,7 +303,7 @@ void Restaurant::LoadRestaurant(ifstream& inFile)
 	{
 		for (int j = 0; j < cookCounts[i]; ++j)
 		{
-			Cook* pCook = new Cook(++currentID, ordTypes[i], cookSpeeds[i], breakDurations[i], ordersBeforeBreak);
+			Cook* pCook = new Cook(++currentID, ordTypes[i], cookSpeeds[i], breakDurations[i], OrdersBeforeBreak);
 			availableCooks.Append(pCook);
 			cookStacks[i].push(pCook);
 		}
@@ -421,7 +422,7 @@ void Restaurant::Assign_to_cook(Order* inorder, int current_time_step)
 			inorder->SetFinishTime(vip_cook->TimeToFinishOrder() + current_time_step);
 			inorder->SetServTime(current_time_step);
 			inorder->SetStatus(SRV);
-			vip_cook->SetIsCooking(true);
+			vip_cook->setIsCooking(true);
 			vipCookCount--;
 		}
 		else if (normalCooks.peek(normal_cook))
@@ -432,7 +433,7 @@ void Restaurant::Assign_to_cook(Order* inorder, int current_time_step)
 			inorder->SetFinishTime(normal_cook->TimeToFinishOrder() + current_time_step);
 			inorder->SetServTime(current_time_step);
 			inorder->SetStatus(SRV);
-			normal_cook->SetIsCooking(true);
+			normal_cook->setIsCooking(true);
 			normalCookCount--;
 		}
 		else if (veganCooks.peek(vegan_cook))
@@ -443,7 +444,7 @@ void Restaurant::Assign_to_cook(Order* inorder, int current_time_step)
 			inorder->SetFinishTime(vegan_cook->TimeToFinishOrder() + current_time_step);
 			inorder->SetServTime(current_time_step);
 			inorder->SetStatus(SRV);
-			vegan_cook->SetIsCooking(true);
+			vegan_cook->setIsCooking(true);
 			veganCookCount--;
 		}
 		break;
@@ -456,7 +457,7 @@ void Restaurant::Assign_to_cook(Order* inorder, int current_time_step)
 			inorder->SetFinishTime(vegan_cook->TimeToFinishOrder() + current_time_step);
 			inorder->SetServTime(current_time_step);
 			inorder->SetStatus(SRV);
-			vegan_cook->SetIsCooking(true);
+			vegan_cook->setIsCooking(true);
 			veganCookCount--;
 		}
 		break;
@@ -469,7 +470,7 @@ void Restaurant::Assign_to_cook(Order* inorder, int current_time_step)
 			inorder->SetFinishTime(normal_cook->TimeToFinishOrder() + current_time_step);
 			inorder->SetServTime(current_time_step);
 			inorder->SetStatus(SRV);
-			normal_cook->SetIsCooking(true);
+			normal_cook->setIsCooking(true);
 			normalCookCount--;
 		}
 		else if (vipCooks.peek(vip_cook))
@@ -480,7 +481,7 @@ void Restaurant::Assign_to_cook(Order* inorder, int current_time_step)
 			inorder->SetFinishTime(vip_cook->TimeToFinishOrder() + current_time_step);
 			inorder->SetServTime(current_time_step);
 			inorder->SetStatus(SRV);
-			vip_cook->SetIsCooking(true);
+			vip_cook->setIsCooking(true);
 			vipCookCount--;
 		}
 		break;
@@ -578,6 +579,31 @@ void Restaurant::SimpleSimulator()
 		totalTimeSteps++;
 	}
 	pGUI->waitForClick();
+}
+void Restaurant::Injury(int currentimestep)
+{
+	Order* pOrder;
+	Cook *pCook;
+	double injProp;	//	to be added from loaded file
+	int restime;	//	to be added from loaded file
+
+	if (((rand() % 100) / 100) <= injProp)
+	{
+		if (unavailableCooks.peekFront(pCook))
+		{
+			unavailableCooks.dequeue(pCook);
+			if (pCook->GetIsCooking())
+			{
+				pCook->SetIsInjured(true);
+				countInjured++;
+				pCook->SetCookingSpeed(pCook->GetCookingSpeed() / 2);
+				pOrder = pCook->GetOrder();
+				pOrder->SetFinishTime(pCook->TimeToFinishOrder()+currentimestep);
+				pCook->SetIsResting(pCook->GetIsInjured());
+				pCook->SetBreakTimeEnd(currentimestep+restime);
+			}
+		}
+	}
 }
 /*
 //////////////////////////////////////////////////////////////////////////////////////////////

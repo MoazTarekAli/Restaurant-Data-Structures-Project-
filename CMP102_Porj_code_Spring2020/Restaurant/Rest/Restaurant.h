@@ -51,6 +51,7 @@ private:
 	int	veganCookCount;
 	int vipCookCount;
 	int totalTimeSteps;
+	int countInjured;
 
 public:
 	
@@ -78,11 +79,13 @@ public:
 	void SimpleSimulator();
 	void Assign_to_cook(Order* inorder, int current_time_step);
 	void check_finished_and_break(int current_time_step);
+
 	// load functions
+
 	void LoadRestaurant(); // to load using input from user
 	void LoadRestaurant(string fileName); // to load using a file name
 	void LoadRestaurant(ifstream& inFile); // to load using a file directly
-	
+	void Injury(int currentimestep);
 
 /// ===================    DEMO-related functions. Should be removed in phases 1&2   ================= 
 
