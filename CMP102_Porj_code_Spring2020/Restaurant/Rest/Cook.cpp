@@ -39,11 +39,11 @@ void Cook::SetType(ORD_TYPE t)
 
 Cook::Cook(int ID_, ORD_TYPE type_, int speed_, int breakDuration_, int ordersBeforeBreak_) :
 	ID(ID_), type(type_), speed(speed_), breakDuration(breakDuration_), ordersBeforeBreak(ordersBeforeBreak_),
-	servedOrdersCount(0), orderBeingServed(nullptr), IsCooking(true), isResting(false), breakTimeEnd(0) {}
+	servedOrdersCount(0), orderBeingServed(nullptr), IsCooking(false), isResting(false), breakTimeEnd(0) {}
 
 int Cook::TimeToFinishOrder()
 {
-	if (IsCooking)
+	if (!IsCooking)
 		return 0;
 	double Time = static_cast<double> (orderBeingServed->GetSize()) / speed;
 	return ceil(Time);
@@ -51,10 +51,8 @@ int Cook::TimeToFinishOrder()
 
 void Cook::SetOrder(Order* o)
 {
-	if (!IsCooking)
-		return;
 	orderBeingServed = o;
-	IsCooking = false;
+	IsCooking = true;
 	o->SetStatus(SRV);
 	servedOrdersCount++;
 }
@@ -90,6 +88,7 @@ bool Cook::NeedBreak()
 	if (servedOrdersCount % ordersBeforeBreak==0)
 	{
 		IsCooking = false;
+		isResting = true;
 		return true;
 	}
 	return false;
