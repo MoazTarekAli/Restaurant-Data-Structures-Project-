@@ -38,14 +38,14 @@ void Cook::SetType(ORD_TYPE t)
 //new functions:-
 
 Cook::Cook(int ID_, ORD_TYPE type_, int speed_, int breakDuration_, int ordersBeforeBreak_) :
-	ID(ID_), type(type_), speed(speed_), breakDuration(breakDuration_), ordersBeforeBreak(ordersBeforeBreak_),
-	servedOrdersCount(0), orderBeingServed(nullptr), IsCooking(true), isResting(false), breakTimeEnd(0) {}
+	ID(ID_), type(type_), speed(speed_), BreakDuration(breakDuration_), OrdersBeforeBreak(ordersBeforeBreak_),
+	ServedOrdersCount(0), OrderBeingServed(nullptr), IsCooking(true), IsResting(false), BreakTimeEnd(0) {}
 
 int Cook::TimeToFinishOrder()
 {
 	if (IsCooking)
 		return 0;
-	double Time = static_cast<double> (orderBeingServed->GetSize()) / speed;
+	double Time = static_cast<double> (OrderBeingServed->GetSize()) / speed;
 	return ceil(Time);
 }
 
@@ -53,15 +53,15 @@ void Cook::SetOrder(Order* o)
 {
 	if (!IsCooking)
 		return;
-	orderBeingServed = o;
+	OrderBeingServed = o;
 	IsCooking = false;
 	o->SetStatus(SRV);
-	servedOrdersCount++;
+	ServedOrdersCount++;
 }
 
 Order* Cook::GetOrder() const
 {
-	return orderBeingServed;
+	return OrderBeingServed;
 }
 
 void Cook::SetCookingSpeed(int spd)
@@ -74,7 +74,7 @@ int Cook::GetCookingSpeed() const
 	return speed;
 }
 
-void Cook::SetIsCooking(bool a)
+void Cook::setIsCooking(bool a)
 {
 	IsCooking = a;
 }
@@ -86,8 +86,8 @@ bool Cook::GetIsCooking() const
 
 bool Cook::NeedBreak()
 {
-	if (servedOrdersCount == 0) return false;
-	if (servedOrdersCount % ordersBeforeBreak==0)
+	if (ServedOrdersCount == 0) return false;
+	if (ServedOrdersCount % OrdersBeforeBreak==0)
 	{
 		IsCooking = false;
 		return true;
@@ -95,22 +95,32 @@ bool Cook::NeedBreak()
 	return false;
 }
 
-bool Cook::GetIsResting()
+bool Cook::GetIsResting() const
 {
-	return isResting;
+	return IsResting;
 }
 
 void Cook::SetIsResting(bool is)
 {
-	isResting = is;
+	IsResting = is;
+}
+
+void Cook::SetIsInjured(bool inj)
+{
+	IsInjured = inj;
+}
+
+bool Cook::GetIsInjured() const
+{
+	return IsInjured;
 }
 
 int Cook::GetBreakTimeEnd()
 {
-	return breakTimeEnd;
+	return BreakTimeEnd;
 }
 
-void Cook::setBreakTimeEnd(int time)
+void Cook::SetBreakTimeEnd(int time)
 {
-	breakTimeEnd = time;
+	BreakTimeEnd = time;
 }
