@@ -579,6 +579,34 @@ void Restaurant::SimpleSimulator()
 	}
 	pGUI->waitForClick();
 }
+void Restaurant::Injury(int currentimestep)
+{
+	Order* pOrd ;
+	Cook *cptr;
+	float InjProp; //to be added from loaded file
+	int restime;   //to be added from loaded file
+	float R;
+	R = (rand()%100)/100;
+	bool Isinjured;
+    int countinjured = 0;
+	if (R <= InjProp)
+	{
+		if (unavailableCooks.peekFront(cptr))
+		{
+			unavailableCooks.dequeue(cptr);
+			if (cptr->GetIsCooking())
+			{
+				Isinjured = true;
+				countinjured++;
+				cptr->SetCookingSpeed(cptr->GetCookingSpeed() / 2);
+				pOrd = cptr->GetOrder();
+				pOrd->SetFinishTime(cptr->TimeToFinishOrder()+currentimestep);
+				cptr->SetIsResting(Isinjured);
+				cptr->setBreakTimeEnd(currentimestep+restime);
+			}
+		}
+	}
+}
 /*
 //////////////////////////////////////////////////////////////////////////////////////////////
 /// ==> 

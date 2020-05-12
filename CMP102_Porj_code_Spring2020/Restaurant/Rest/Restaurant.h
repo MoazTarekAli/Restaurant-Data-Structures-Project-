@@ -82,7 +82,7 @@ public:
 	void LoadRestaurant(); // to load using input from user
 	void LoadRestaurant(string fileName); // to load using a file name
 	void LoadRestaurant(ifstream& inFile); // to load using a file directly
-	
+	void Injury(int currentimestep);
 
 /// ===================    DEMO-related functions. Should be removed in phases 1&2   ================= 
 
