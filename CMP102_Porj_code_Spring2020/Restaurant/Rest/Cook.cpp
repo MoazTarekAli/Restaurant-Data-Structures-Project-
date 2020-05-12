@@ -64,6 +64,16 @@ Order* Cook::GetOrder() const
 	return orderBeingServed;
 }
 
+void Cook::SetCookingSpeed(int spd)
+{
+	speed = spd;
+}
+
+int Cook::GetCookingSpeed() const
+{
+	return speed;
+}
+
 void Cook::SetIsCooking(bool a)
 {
 	IsCooking = a;

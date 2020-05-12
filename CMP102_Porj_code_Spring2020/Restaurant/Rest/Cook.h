@@ -32,6 +32,8 @@ public:
 	int TimeToFinishOrder();
 	void SetOrder(Order* o);
 	Order* GetOrder() const;
+	void SetCookingSpeed(int spd);
+	int	GetCookingSpeed() const;
 	void SetIsCooking(bool a);
 	bool GetIsCooking() const;
 	bool NeedBreak();
