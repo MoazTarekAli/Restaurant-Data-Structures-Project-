@@ -39,7 +39,8 @@ void Cook::SetType(ORD_TYPE t)
 
 Cook::Cook(int ID_, ORD_TYPE type_, int speed_, int breakDuration_, int ordersBeforeBreak_) :
 	ID(ID_), type(type_), speed(speed_), BreakDuration(breakDuration_), OrdersBeforeBreak(ordersBeforeBreak_),
-	ServedOrdersCount(0), OrderBeingServed(nullptr), IsCooking(false), IsResting(false), BreakTimeEnd(0) {}
+	ServedOrdersCount(0), OrderBeingServed(nullptr), IsCooking(false), IsResting(false), BreakTimeEnd(0)
+	, IsInjured(false) {}
 
 int Cook::TimeToFinishOrder()
 {
@@ -48,6 +49,7 @@ int Cook::TimeToFinishOrder()
 	double Time = static_cast<double> (OrderBeingServed->GetSize()) / speed;
 	return ceil(Time);
 }
+
 
 void Cook::SetOrder(Order* o)
 {
@@ -102,6 +104,16 @@ bool Cook::GetIsResting()	const
 void Cook::SetIsResting(bool is)
 {
 	IsResting = is;
+}
+
+void Cook::SetIsInjured(bool injury)
+{
+	IsInjured = injury;
+}
+
+bool Cook::GetIsInjured()	const
+{
+	return IsInjured;
 }
 
 int Cook::GetBreakTimeEnd()	const

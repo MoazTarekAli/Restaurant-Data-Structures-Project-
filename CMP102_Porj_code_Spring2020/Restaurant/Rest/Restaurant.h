@@ -51,8 +51,11 @@ private:
 	int	veganCookCount;
 	int vipCookCount;
 	int totalTimeSteps;
-	int countInjured;
-	int countAutoPromoted;
+	int injuredCount;
+	int autoPromotedCount;
+	int timeAutoPromotion;
+	int totalMoney;
+
 public:
 	
 	Restaurant();
@@ -76,17 +79,17 @@ public:
 
 	void AddToQueue(Order* pO, const int prio=0);
 	void CancelOrder(int ID);
+	void PromoteOrder(int current_time_step, int ID);
 	void SimpleSimulator();
 	void Assign_to_cook(Order* inorder, int current_time_step);
 	void check_finished_and_break(int current_time_step);
+	void Injury(int currentimestep);
 
 	// load functions
 
 	void LoadRestaurant(); // to load using input from user
 	void LoadRestaurant(string fileName); // to load using a file name
 	void LoadRestaurant(ifstream& inFile); // to load using a file directly
-	void Injury(int currentimestep);
-	void Promote(int currentimestep , int extramoney);
 
 /// ===================    DEMO-related functions. Should be removed in phases 1&2   ================= 
 

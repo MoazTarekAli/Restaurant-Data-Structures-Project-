@@ -12,6 +12,7 @@ class ArrivalEvent: public Event
 	ORD_TYPE OrdType;		//order type: Normal, vegan, VIP	                
 	double OrdMoney;	//Total order money
 	int Size;
+
 public:
 	ArrivalEvent(int eTime, int ordID, ORD_TYPE ordType,double ordMoney,int s );
 	//Add more constructors if needed

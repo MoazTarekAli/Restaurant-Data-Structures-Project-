@@ -16,6 +16,10 @@ int Order::GetID()
 	return ID;
 }
 
+void Order::SetType(ORD_TYPE type_)
+{
+	type = type_;
+}
 
 ORD_TYPE Order::GetType() const
 {

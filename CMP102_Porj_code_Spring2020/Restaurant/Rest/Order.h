@@ -19,7 +19,9 @@ protected:
 	
 	//
 	// TODO: Add More Data Members As Needed
-	int Size;
+
+	int Size;	// data member denoting the number of dishes(size) of an order
+
 	//
 
 public:
@@ -28,6 +30,7 @@ public:
 
 	int GetID();
 
+	void SetType(ORD_TYPE Order_Type);
 	ORD_TYPE GetType() const;
 
 	void SetDistance(int d);
