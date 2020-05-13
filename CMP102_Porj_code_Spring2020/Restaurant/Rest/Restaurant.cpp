@@ -278,13 +278,6 @@ void Restaurant::LoadRestaurant(ifstream& inFile)
 	
 	// implement fl code while initializing every cook so they have different speeds/breaks
 
-	int speedNormal = rand() % (maxNormalSpeed - minNormalSpeed + 1) + minNormalSpeed;
-	int	speedVegan = rand() % (maxVeganSpeed - minVeganSpeed + 1) + minVeganSpeed;
-	int speedVip = rand() % (maxVipSpeed - minVipSpeed + 1) + minVipSpeed;
-
-	int breakNormal = rand() % (maxNormalBreak - minNormalBreak + 1) + minNormalBreak;
-	int breakVegan = rand() % (maxVeganBreak - minVeganBreak + 1) + minVeganBreak;
-	int breakVip = rand() % (maxVipBreak - minVipBreak + 1) + minVipBreak;
 
 	// updating the number of cooks data member
 	normalCookCount = normalCookCountInput;
@@ -298,9 +291,9 @@ void Restaurant::LoadRestaurant(ifstream& inFile)
 	// creating arrays of different cook values in order to easily loop over them
 	// to creat the cooks
 	int cookCounts[] = { normalCookCount, veganCookCount, vipCookCount };
-	int cookSpeeds[] = { speedNormal, speedVegan, speedVip };
+	int cookSpeeds[3][2] = { {minNormalSpeed, maxNormalSpeed}, {minVeganSpeed, maxVeganSpeed}, {minVipSpeed, maxVipSpeed} };
+	int cookBreaks[3][2] = { {minNormalBreak, maxNormalBreak}, {minVeganBreak, maxVeganBreak}, {minVipBreak, maxVipBreak} };
 	Stack<Cook*> cookStacks[] = { normalCooks, veganCooks, vipCooks };
-	int breakDurations[] = { breakNormal, breakVegan, breakVip };
 	ORD_TYPE ordTypes[] = { TYPE_NRM, TYPE_VGAN, TYPE_VIP };
 	// initializing the cook ID to 0
 	int currentID = 0;
@@ -309,7 +302,9 @@ void Restaurant::LoadRestaurant(ifstream& inFile)
 	{
 		for (int j = 0; j < cookCounts[i]; ++j)
 		{
-			Cook* pCook = new Cook(++currentID, ordTypes[i], cookSpeeds[i], breakDurations[i], ordersBeforeBreak);
+			int cookSpeed = rand() % (cookSpeeds[i][1] - cookSpeeds[i][0] + 1) + cookSpeeds[i][0];
+			int cookBreak = rand() % (cookBreaks[i][1] - cookBreaks[i][0] + 1) + cookBreaks[i][0];
+			Cook* pCook = new Cook(++currentID, ordTypes[i], cookSpeed, cookBreak, ordersBeforeBreak);
 			availableCooks.Append(pCook);
 			cookStacks[i].push(pCook);
 		}
