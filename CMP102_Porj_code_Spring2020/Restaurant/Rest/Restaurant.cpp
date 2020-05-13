@@ -235,30 +235,18 @@ void Restaurant::LoadRestaurant(ifstream& inFile)
 
 	// initializing the variables to be used to store the data from the input file
 	int normalCookCountInput, veganCookCountInput, vipCookCountInput;
-	int normalCookSpeed, veganCookSpeed, vipCookSpeed;
-	int OrdersBeforeBreak, normalBreakDuration, veganBreakDuration, vipBreakDuration;
-	int stepsBeforeAutoPromotion, numberOfEvents;
+	int minNormalSpeed, minVeganSpeed, minVipSpeed, maxNormalSpeed, maxVeganSpeed, maxVipSpeed;
+	int ordersBeforeBreak, minNormalBreak, minVeganBreak, minVipBreak, maxNormalBreak, maxVeganBreak, maxVipBreak;
+	int injuryProbability, restPeriod;
+	int stepsBeforeAutoPromotion, stepsBeforeUrgent;
+	int numberOfEvents;
 
 	// mazen l 7agat de l7ad mtzabat l load 3shan n3mel generate l random breaks/speeds
 	// 3'YARHA LMA TZBATO
 
-	int minNormalSpeed, minVeganSpeed, minVipSpeed;
-	int maxNormalSpeed, maxVeganSpeed, maxVipSpeed;
-	int minNormalBreak, minVeganBreak, minVipBreak;
-	int maxNormalBreak, maxVeganBreak, maxVipBreak;
 
 	// mazen, this following should be the code that gives every cook their respective speeds
-	// 
 
-	// implement fl code while initializing every cook so they have different speeds/breaks
-
-	int speedNorm = rand() % (maxNormalSpeed - minNormalSpeed + 1) + minNormalSpeed;
-	int	speedVegan = rand() % (maxVeganSpeed - minVeganSpeed + 1) + minVeganSpeed;
-	int speedVip = rand() % (maxVipSpeed - minVipSpeed + 1) + minVipSpeed;
-
-	int breakNorm = rand() % (maxNormalBreak - minNormalBreak + 1) + minNormalBreak;
-	int breakVegan = rand() % (maxVeganBreak - minVeganBreak + 1) + minVeganBreak;
-	int breakVip = rand() % (maxVipBreak - minVipBreak + 1) + minVipBreak;
 
 	// creating an array containing pointers to these variables in order to easily loop over them
 	// to store the data from the input file
@@ -266,14 +254,16 @@ void Restaurant::LoadRestaurant(ifstream& inFile)
 	int* inputValues[] =
 	{
 		&normalCookCountInput, &veganCookCountInput, &vipCookCountInput,
-		&normalCookSpeed, &veganCookSpeed, &vipCookSpeed,
-		&OrdersBeforeBreak, &normalBreakDuration, &veganBreakDuration, &vipBreakDuration,
-		&stepsBeforeAutoPromotion, &numberOfEvents
+		&minNormalSpeed, &maxNormalSpeed, &minVeganSpeed, &maxVeganSpeed, &minVipSpeed, &maxVipSpeed,
+		&ordersBeforeBreak, &minNormalBreak, &maxNormalBreak, &minVeganBreak, &maxVeganBreak, &minVipBreak, &maxVipBreak,
+		&injuryProbability, &restPeriod,
+		&stepsBeforeAutoPromotion, &stepsBeforeUrgent,
+		&numberOfEvents
 	};
 
 	// looping over the variables and storing the data from the input file in them
 
-	for (int i = 0; i < 12; ++i)
+	for (int i = 0; i < 21; ++i)
 	{
 		if (inFile.eof())
 		{
@@ -285,18 +275,32 @@ void Restaurant::LoadRestaurant(ifstream& inFile)
 	}
 	
 	// creating cooks
+	
+	// implement fl code while initializing every cook so they have different speeds/breaks
+
+	int speedNormal = rand() % (maxNormalSpeed - minNormalSpeed + 1) + minNormalSpeed;
+	int	speedVegan = rand() % (maxVeganSpeed - minVeganSpeed + 1) + minVeganSpeed;
+	int speedVip = rand() % (maxVipSpeed - minVipSpeed + 1) + minVipSpeed;
+
+	int breakNormal = rand() % (maxNormalBreak - minNormalBreak + 1) + minNormalBreak;
+	int breakVegan = rand() % (maxVeganBreak - minVeganBreak + 1) + minVeganBreak;
+	int breakVip = rand() % (maxVipBreak - minVipBreak + 1) + minVipBreak;
 
 	// updating the number of cooks data member
 	normalCookCount = normalCookCountInput;
 	veganCookCount = veganCookCountInput;
 	vipCookCount = vipCookCountInput;
 	totalCookCount = normalCookCount + veganCookCount + vipCookCount;
+	autoPromotionSteps = stepsBeforeAutoPromotion;
+	urgentSteps = stepsBeforeUrgent;
+	restSteps = restPeriod;
+
 	// creating arrays of different cook values in order to easily loop over them
 	// to creat the cooks
 	int cookCounts[] = { normalCookCount, veganCookCount, vipCookCount };
-	int cookSpeeds[] = { normalCookSpeed, veganCookSpeed, vipCookSpeed };
+	int cookSpeeds[] = { speedNormal, speedVegan, speedVip };
 	Stack<Cook*> cookStacks[] = { normalCooks, veganCooks, vipCooks };
-	int breakDurations[] = { normalBreakDuration, veganBreakDuration, vipBreakDuration };
+	int breakDurations[] = { breakNormal, breakVegan, breakVip };
 	ORD_TYPE ordTypes[] = { TYPE_NRM, TYPE_VGAN, TYPE_VIP };
 	// initializing the cook ID to 0
 	int currentID = 0;
@@ -305,7 +309,7 @@ void Restaurant::LoadRestaurant(ifstream& inFile)
 	{
 		for (int j = 0; j < cookCounts[i]; ++j)
 		{
-			Cook* pCook = new Cook(++currentID, ordTypes[i], cookSpeeds[i], breakDurations[i], OrdersBeforeBreak);
+			Cook* pCook = new Cook(++currentID, ordTypes[i], cookSpeeds[i], breakDurations[i], ordersBeforeBreak);
 			availableCooks.Append(pCook);
 			cookStacks[i].push(pCook);
 		}
@@ -749,7 +753,7 @@ void Restaurant::PromoteOrder(int current_time_step, int ID)
 		pOrder->SetType(TYPE_VIP);
 		vipOrderQueue.enqueue(pOrder, priority);
 
-		if (currentimestep - pOrder->GetArrTime() >= timeAutoPromotion && extramoney == 0)
+		if (currentimestep - pOrder->GetArrTime() >= autoPromotionSteps && extramoney == 0)
 		{
 			autoPromotedCount++;
 		}

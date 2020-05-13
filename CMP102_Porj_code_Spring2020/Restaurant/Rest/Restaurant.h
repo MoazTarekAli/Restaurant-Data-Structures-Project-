@@ -53,8 +53,11 @@ private:
 	int totalTimeSteps;
 	int injuredCount;
 	int autoPromotedCount;
-	int timeAutoPromotion;
+	int autoPromotionSteps;
 	int totalMoney;
+	int injuryProbability;
+	int urgentSteps;
+	int restSteps;
 
 public:
 	
