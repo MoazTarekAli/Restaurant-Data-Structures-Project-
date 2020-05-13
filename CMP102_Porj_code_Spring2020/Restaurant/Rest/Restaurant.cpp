@@ -276,7 +276,7 @@ void Restaurant::LoadRestaurant(ifstream& inFile)
 	
 	// creating cooks
 	
-	// implement fl code while initializing every cook so they have different speeds/breaks
+	// Initializing every speed variable so they have different speeds/breaks
 
 	int speedNormal = rand() % (maxNormalSpeed - minNormalSpeed + 1) + minNormalSpeed;
 	int	speedVegan = rand() % (maxVeganSpeed - minVeganSpeed + 1) + minVeganSpeed;
@@ -305,6 +305,7 @@ void Restaurant::LoadRestaurant(ifstream& inFile)
 	// initializing the cook ID to 0
 	int currentID = 0;
 	// creating the cooks
+
 	for (int i = 0; i < 3; ++i)
 	{
 		for (int j = 0; j < cookCounts[i]; ++j)
@@ -724,6 +725,7 @@ void Restaurant::PromoteOrder(int current_time_step, int ID)
 	int count;
 	int flag = -1;
 	Order** NORMAL = normalOrderQueue.toArray(count);
+	Order* x;
 	for (int i = 0; i < count; i++)
 	{
 		if (NORMAL[i]->GetID() == ID)
@@ -731,7 +733,6 @@ void Restaurant::PromoteOrder(int current_time_step, int ID)
 	}
 	for (int i = 0; i < count; i++)
 	{
-		Order* x;
 		normalOrderQueue.dequeue(x);
 	}
 	for (int i = 0; i < count; i++)
@@ -742,8 +743,9 @@ void Restaurant::PromoteOrder(int current_time_step, int ID)
 		{
 			// Priority Equation should be added here aswell
 			int priority;
-			NORMAL[i]->SetType(TYPE_VIP);
-			vipOrderQueue.enqueue(NORMAL[i],priority);
+			//	NORMAL[i]->SetType(TYPE_VIP);
+			x->SetType(TYPE_VIP);
+			vipOrderQueue.enqueue(x,priority);
 		}
 	}
 
