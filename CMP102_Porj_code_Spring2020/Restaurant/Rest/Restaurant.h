@@ -52,7 +52,7 @@ private:
 	int vipCookCount;
 	int totalTimeSteps;
 	int countInjured;
-
+	int countAutoPromoted;
 public:
 	
 	Restaurant();
@@ -86,6 +86,7 @@ public:
 	void LoadRestaurant(string fileName); // to load using a file name
 	void LoadRestaurant(ifstream& inFile); // to load using a file directly
 	void Injury(int currentimestep);
+	void Promote(int currentimestep , int extramoney);
 
 /// ===================    DEMO-related functions. Should be removed in phases 1&2   ================= 
 

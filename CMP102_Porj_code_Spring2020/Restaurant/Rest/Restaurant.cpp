@@ -422,7 +422,7 @@ void Restaurant::Assign_to_cook(Order* inorder, int current_time_step)
 			inorder->SetFinishTime(vip_cook->TimeToFinishOrder() + current_time_step);
 			inorder->SetServTime(current_time_step);
 			inorder->SetStatus(SRV);
-			vip_cook->setIsCooking(true);
+			vip_cook->SetIsCooking(true);
 			vipCookCount--;
 		}
 		else if (normalCooks.peek(normal_cook))
@@ -433,7 +433,7 @@ void Restaurant::Assign_to_cook(Order* inorder, int current_time_step)
 			inorder->SetFinishTime(normal_cook->TimeToFinishOrder() + current_time_step);
 			inorder->SetServTime(current_time_step);
 			inorder->SetStatus(SRV);
-			normal_cook->setIsCooking(true);
+			normal_cook->SetIsCooking(true);
 			normalCookCount--;
 		}
 		else if (veganCooks.peek(vegan_cook))
@@ -444,7 +444,7 @@ void Restaurant::Assign_to_cook(Order* inorder, int current_time_step)
 			inorder->SetFinishTime(vegan_cook->TimeToFinishOrder() + current_time_step);
 			inorder->SetServTime(current_time_step);
 			inorder->SetStatus(SRV);
-			vegan_cook->setIsCooking(true);
+			vegan_cook->SetIsCooking(true);
 			veganCookCount--;
 		}
 		break;
@@ -457,7 +457,7 @@ void Restaurant::Assign_to_cook(Order* inorder, int current_time_step)
 			inorder->SetFinishTime(vegan_cook->TimeToFinishOrder() + current_time_step);
 			inorder->SetServTime(current_time_step);
 			inorder->SetStatus(SRV);
-			vegan_cook->setIsCooking(true);
+			vegan_cook->SetIsCooking(true);
 			veganCookCount--;
 		}
 		break;
@@ -470,7 +470,7 @@ void Restaurant::Assign_to_cook(Order* inorder, int current_time_step)
 			inorder->SetFinishTime(normal_cook->TimeToFinishOrder() + current_time_step);
 			inorder->SetServTime(current_time_step);
 			inorder->SetStatus(SRV);
-			normal_cook->setIsCooking(true);
+			normal_cook->SetIsCooking(true);
 			normalCookCount--;
 		}
 		else if (vipCooks.peek(vip_cook))
@@ -481,7 +481,7 @@ void Restaurant::Assign_to_cook(Order* inorder, int current_time_step)
 			inorder->SetFinishTime(vip_cook->TimeToFinishOrder() + current_time_step);
 			inorder->SetServTime(current_time_step);
 			inorder->SetStatus(SRV);
-			vip_cook->setIsCooking(true);
+			vip_cook->SetIsCooking(true);
 			vipCookCount--;
 		}
 		break;
@@ -602,6 +602,31 @@ void Restaurant::Injury(int currentimestep)
 				pCook->SetIsResting(pCook->GetIsInjured());
 				pCook->SetBreakTimeEnd(currentimestep+restime);
 			}
+		}
+	}
+}
+void Restaurant::Promote(int currentimestep ,int extramoney)
+{
+	int time_before_auto_promotion; //to be added from loaded file
+	int wait_time;
+	Order* pOrder;
+	if (normalOrderQueue.peekFront(pOrder))
+	{
+		wait_time = currentimestep - pOrder->GetArrTime();
+		if (wait_time >= time_before_auto_promotion)
+		{
+			normalOrderQueue.dequeue(pOrder);
+			vipOrderQueue.enqueue(pOrder, 0);
+			countAutoPromoted++;
+			return;
+		}
+	}
+	if (extramoney>0)
+	{
+		if (normalOrderQueue.peekFront(pOrder))
+		{
+			normalOrderQueue.dequeue(pOrder);
+			vipOrderQueue.enqueue(pOrder,0);
 		}
 	}
 }
