@@ -50,11 +50,11 @@ private:
 	int normalCookCount;
 	int	veganCookCount;
 	int vipCookCount;
+	int totalMoney;
 	int totalTimeSteps;
 	int injuredCount;
 	int autoPromotedCount;
 	int autoPromotionSteps;
-	int totalMoney;
 	int injuryProbability;
 	int urgentSteps;
 	int restSteps;

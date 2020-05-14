@@ -395,13 +395,12 @@ void Restaurant::LoadRestaurant(ifstream& inFile)
 				}
 				inFile >> *eventInputValues[j];
 			}
+			// creating the event
 			pEvent = new CancellationEvent(eventTimeStep, orderID);
 			EventsQueue.enqueue(pEvent);
 			break;
-
 		// promotion event
 		case 'P':
-			//	pGUI->PrintMessage("Promotion events not implemented yet, please try again in phase 2!");
 			for (int j = 0; j < 2; ++j)
 			{
 				if (inFile.eof())
@@ -427,6 +426,7 @@ void Restaurant::LoadRestaurant(ifstream& inFile)
 				return;
 			}
 			totalMoney += promotionMoney;
+			// creating the event
 			pEvent = new PromotionEvent(eventTimeStep, orderID);
 			EventsQueue.enqueue(pEvent);
 			break;
@@ -686,23 +686,31 @@ void Restaurant::Injury(int current_time_step)
 {
 	Order* pOrder;
 	Cook *pCook;
-	double injProp;	//	to be added from loaded file
-	int restime;	//	to be added from loaded file
 
-	if (((rand() % 100) / 100) <= injProp * 100)
+	if (((rand() % 100) / 100) <= injuryProbability * 100)
 	{
+		// peek check if there are cooks that are unavailable
 		if (unavailableCooks.peekFront(pCook))
 		{
-			unavailableCooks.dequeue(pCook);
+			// check if the cook is cooking an order
 			if (pCook->GetIsCooking())
 			{
+				// Dequeue the cook from the unavailable priority queue, as his time in the unavailable
+				// queue just increased
+				unavailableCooks.dequeue(pCook);
 				pCook->SetIsInjured(true);
+
+				// Increment total number of injuries in the restaurant
 				injuredCount++;
-				pCook->SetCookingSpeed(pCook->GetCookingSpeed() / 2);
+
+
 				pOrder = pCook->GetOrder();
-				pOrder->SetFinishTime(pCook->TimeToFinishOrder()+ current_time_step);
-				pCook->SetIsResting(pCook->GetIsInjured());
-				pCook->SetBreakTimeEnd(current_time_step +restime);
+				pOrder->SetFinishTime(pOrder->GetFinishTime()*2 - current_time_step);
+				
+				// As the cook is now on break, set his break time end
+				pCook->SetBreakTimeEnd(pOrder->GetFinishTime() + restSteps);
+				
+				unavailableCooks.enqueue(pCook, -pCook->GetBreakTimeEnd());
 			}
 		}
 	}
@@ -742,6 +750,7 @@ void Restaurant::PromoteOrder(int ID)
 			autoPromotedCount++;
 
 			// Priority Equation should be added here aswell
+			
 			int priority;
 
 			//	NORMAL[i]->SetType(TYPE_VIP);
