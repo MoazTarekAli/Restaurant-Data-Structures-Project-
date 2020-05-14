@@ -8,7 +8,6 @@ using namespace std;
 #include "..\Events\CancellationEvent.h"
 #include "..\Events\PromotionEvent.h"
 
-
 Restaurant::Restaurant() 
 {
 	totalCookCount = 0;
@@ -241,12 +240,6 @@ void Restaurant::LoadRestaurant(ifstream& inFile)
 	int stepsBeforeAutoPromotion, stepsBeforeUrgent;
 	int numberOfEvents;
 
-	// mazen l 7agat de l7ad mtzabat l load 3shan n3mel generate l random breaks/speeds
-	// 3'YARHA LMA TZBATO
-
-
-	// mazen, this following should be the code that gives every cook their respective speeds
-
 
 	// creating an array containing pointers to these variables in order to easily loop over them
 	// to store the data from the input file
@@ -438,6 +431,64 @@ void Restaurant::LoadRestaurant(ifstream& inFile)
 	}
 }
 
+void Restaurant::SaveRestaurant()
+{
+
+
+	// Prompt the user to enter the name of the savedfile
+	pGUI->PrintMessage((string)"[Enter Name for your save file]\n");
+
+	// Get the string entered by the user and set as the file name
+	ofstream outFile(pGUI->GetString());
+
+	outFile << "FT\tID\tAT\tWT\tST" << endl;
+
+	// Variables for the total waited time and total serving time to calculate the averages
+	double totalWaitingTime = 0, totalServingTime = 0;
+	
+
+	// Loop over the total orders finished in the restaurant to print their respective Finish times
+	// , IDs, etc
+	for (int i = 0; i < totalOrdersCount; i++)
+	{
+		Order* pOrder;
+		finishedQueue.dequeue(pOrder);
+
+		// Print out all the order info in the output file
+
+		outFile << pOrder->GetFinishTime() << "\t" << pOrder->GetID() << "\t" << pOrder->GetArrTime()
+			<< "\t" << pOrder->GetServTime() - pOrder->GetArrTime() << "\t" << pOrder->GetServTime()
+			<< endl;
+
+		// Increment the total waited time and serving time to calculate the averages
+		totalWaitingTime += (pOrder->GetServTime() - pOrder->GetArrTime());
+		totalServingTime += pOrder->GetServTime();
+	}
+
+	// Calculating average waiting time and serving time
+	double averageWaitingTime = totalWaitingTime / totalOrdersCount;
+	double averageServingTime = totalServingTime / totalOrdersCount;
+
+
+	// Printing the total number of orders and number of orders of each type
+	outFile << "Orders: " << totalOrdersCount << "\t" << "[Norm:" << normalOrdersCount
+		<< ", Veg:" << veganOrdersCount << ", VIP:" << vipOrdersCount << "]" << endl;
+
+	// Printing total number of cooks and number of cooks of each type
+	outFile << "cooks: " << totalCookCount << "\t" << "[Norm:" << normalCookCount 
+		<< ", Veg:" << veganCookCount << ", VIP:" << vipCookCount << "]" << endl;
+
+	// Printing average waiting time and average serving time
+	outFile << "Avg Wait = " << averageWaitingTime << ",\t" << "Avg Serv = " << averageServingTime << endl;
+
+	// Printing urgent orders count and percentage of auto promoted orders relative to total orders
+	outFile << "Urgent Orders: " << urgentOrdersCount << ", \t" << "Auto Promoted: " 
+		<< autoPromotedCount / totalOrdersCount << "%" << endl;
+
+	// Closing file
+	outFile.close();
+}
+
 void Restaurant::Assign_to_cook(Order* inorder, int current_time_step)
 {
 	Cook* vip_cook, * vegan_cook, * normal_cook;
@@ -456,7 +507,6 @@ void Restaurant::Assign_to_cook(Order* inorder, int current_time_step)
 			
 			// Set Finish Time for the order
 			inorder->SetFinishTime(vip_cook->TimeToFinishOrder() + current_time_step);
-
 			
 			// Set Service Start Time for the order
 			inorder->SetServTime(current_time_step);
@@ -467,6 +517,7 @@ void Restaurant::Assign_to_cook(Order* inorder, int current_time_step)
 			
 			// Decrement Available VIP Cooks count
 			vipCookCount--;
+
 		}
 		else if (normalCooks.peek(normal_cook))	// If VIP cook isn't available check for Normal Cook
 		{

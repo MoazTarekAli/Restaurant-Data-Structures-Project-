@@ -50,6 +50,11 @@ private:
 	int normalCookCount;
 	int	veganCookCount;
 	int vipCookCount;
+	int totalOrdersCount;
+	int normalOrdersCount;
+	int veganOrdersCount;
+	int vipOrdersCount;
+	int urgentOrdersCount;
 	int totalMoney;
 	int totalTimeSteps;
 	int injuredCount;
@@ -93,6 +98,8 @@ public:
 	void LoadRestaurant(); // to load using input from user
 	void LoadRestaurant(string fileName); // to load using a file name
 	void LoadRestaurant(ifstream& inFile); // to load using a file directly
+	
+	void SaveRestaurant(); // to save the restaurants data
 
 /// ===================    DEMO-related functions. Should be removed in phases 1&2   ================= 
 
