@@ -708,7 +708,7 @@ void Restaurant::Injury(int current_time_step)
 	}
 }
 
-void Restaurant::PromoteOrder(int current_time_step, int ID)
+void Restaurant::PromoteOrder(int ID)
 {
 	// AUTO-PROMOTION IS STILL NOT IMPLEMENTED WAITING FOR INTERACTIVE MODE
 
@@ -721,24 +721,31 @@ void Restaurant::PromoteOrder(int current_time_step, int ID)
 	int flag = -1;
 	Order** NORMAL = normalOrderQueue.toArray(count);
 	Order* x;
+	
 	for (int i = 0; i < count; i++)
 	{
 		if (NORMAL[i]->GetID() == ID)
 			flag = i;
 	}
+
 	for (int i = 0; i < count; i++)
 	{
 		normalOrderQueue.dequeue(x);
 	}
+
 	for (int i = 0; i < count; i++)
 	{
 		if (i != flag)
 			normalOrderQueue.enqueue(NORMAL[i]);
 		else
 		{
+			autoPromotedCount++;
+
 			// Priority Equation should be added here aswell
 			int priority;
+
 			//	NORMAL[i]->SetType(TYPE_VIP);
+
 			x->SetType(TYPE_VIP);
 			vipOrderQueue.enqueue(x,priority);
 		}
@@ -750,7 +757,7 @@ void Restaurant::PromoteOrder(int current_time_step, int ID)
 		pOrder->SetType(TYPE_VIP);
 		vipOrderQueue.enqueue(pOrder, priority);
 
-		if (currentimestep - pOrder->GetArrTime() >= autoPromotionSteps && extramoney == 0)
+		if (currentimestep - pOrder->GetArrTime() >= autoPromotionSteps)
 		{
 			autoPromotedCount++;
 		}

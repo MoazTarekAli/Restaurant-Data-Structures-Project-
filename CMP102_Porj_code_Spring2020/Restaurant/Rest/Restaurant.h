@@ -82,7 +82,7 @@ public:
 
 	void AddToQueue(Order* pO, const int prio=0);
 	void CancelOrder(int ID);
-	void PromoteOrder(int current_time_step, int ID);
+	void PromoteOrder(int ID);
 	void SimpleSimulator();
 	void Assign_to_cook(Order* inorder, int current_time_step);
 	void check_finished_and_break(int current_time_step);
