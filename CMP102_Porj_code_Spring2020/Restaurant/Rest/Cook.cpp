@@ -103,6 +103,12 @@ bool Cook::GetIsResting()	const
 
 void Cook::SetIsResting(bool is)
 {
+	if (is == true)
+	{
+		IsInjured = false;
+		IsCooking = false;
+		OrderBeingServed = NULL;
+	}
 	IsResting = is;
 }
 
@@ -124,4 +130,14 @@ int Cook::GetBreakTimeEnd()	const
 void Cook::SetBreakTimeEnd(int time)
 {
 	BreakTimeEnd = time;
+}
+
+int Cook::GetBreakDuration()
+{
+	return BreakDuration;
+}
+
+void Cook::SetBreakDuration(int bd)
+{
+	BreakDuration = bd;
 }

@@ -599,7 +599,37 @@ void Restaurant::check_finished_and_break(int current_time_step)
 	{
 		if (busy_cook->GetIsCooking() && (busy_cook->GetOrder())->GetFinishTime() == current_time_step)
 		{
-			
+			Order* finished_order = busy_cook->GetOrder();
+			InServiceQueue_test.dequeue(finished_order);
+			finishedQueue.enqueue(finished_order);
+			finished_order->SetStatus(DONE);
+			unavailableCooks.dequeue(busy_cook);
+			busy_cook->SetIsResting(true);
+			if (busy_cook->GetIsInjured())
+			{
+				busy_cook->SetBreakTimeEnd(restSteps + current_time_step);
+				unavailableCooks.enqueue(busy_cook, -restSteps - current_time_step);
+			}
+			else if (busy_cook->NeedBreak())
+			{
+				busy_cook->SetBreakTimeEnd(busy_cook->GetBreakDuration() + current_time_step);
+				unavailableCooks.enqueue(busy_cook, -busy_cook->GetBreakDuration() - current_time_step);
+			}
+			else
+			{
+				switch (busy_cook->GetType())
+				{
+				case TYPE_NRM:
+					normalCooks.push(busy_cook);
+					break;
+				case TYPE_VIP:
+					vipCooks.push(busy_cook);
+					break;
+				case TYPE_VGAN:
+					veganCooks.push(busy_cook);
+					break;
+				}
+			}
 		}
 		else if (busy_cook->GetIsResting() && busy_cook->GetBreakTimeEnd() == current_time_step)
 		{

@@ -46,4 +46,6 @@ public:
 	bool NeedBreak();
 	void SetBreakTimeEnd(int time);
 	int GetBreakTimeEnd() const;
+	void SetBreakDuration(int bd);
+	int GetBreakDuration();
 };

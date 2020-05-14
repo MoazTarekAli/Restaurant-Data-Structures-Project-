@@ -45,7 +45,7 @@ private:
 	PriorityQueue<Cook*> unavailableCooks;
 	Queue<Order*> finishedQueue;
 	Queue<Order*> InServiceQueue;
-	PriorityQueue<Order*> waitingQueue_test;
+	PriorityQueue<Order*> InServiceQueue_test;
 	int totalCookCount;
 	int normalCookCount;
 	int	veganCookCount;
