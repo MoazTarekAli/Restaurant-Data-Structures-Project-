@@ -655,14 +655,28 @@ void Restaurant::check_finished_and_break(int current_time_step)
 			finishedQueue.enqueue(finished_order);
 			finished_order->SetStatus(DONE);
 			unavailableCooks.dequeue(busy_cook);
-			busy_cook->SetIsResting(true);
+			totalOrdersCount++;
+			switch (finished_order->GetType())
+			{
+			case TYPE_NRM:
+				normalOrdersCount++;
+				break;
+			case TYPE_VIP:
+				vipOrdersCount++;
+				break;
+			case TYPE_VGAN:
+				veganOrdersCount++;
+				break;
+			}
 			if (busy_cook->GetIsInjured())
 			{
+				busy_cook->SetIsResting(true);
 				busy_cook->SetBreakTimeEnd(restSteps + current_time_step);
 				unavailableCooks.enqueue(busy_cook, -restSteps - current_time_step);
 			}
 			else if (busy_cook->NeedBreak())
 			{
+				busy_cook->SetIsResting(true);
 				busy_cook->SetBreakTimeEnd(busy_cook->GetBreakDuration() + current_time_step);
 				unavailableCooks.enqueue(busy_cook, -busy_cook->GetBreakDuration() - current_time_step);
 			}
@@ -672,19 +686,40 @@ void Restaurant::check_finished_and_break(int current_time_step)
 				{
 				case TYPE_NRM:
 					normalCooks.push(busy_cook);
+					normalCookCount++;
 					break;
 				case TYPE_VIP:
 					vipCooks.push(busy_cook);
+					vipCookCount++;
 					break;
 				case TYPE_VGAN:
 					veganCooks.push(busy_cook);
+					veganCookCount++;
 					break;
 				}
 			}
 		}
 		else if (busy_cook->GetIsResting() && busy_cook->GetBreakTimeEnd() == current_time_step)
 		{
-
+			if (busy_cook->GetIsInjured())
+			{
+				busy_cook->SetIsInjured(false);///////////////////////////////////////////////////////////
+			}
+			switch (busy_cook->GetType())
+			{
+			case TYPE_NRM:
+				normalCooks.push(busy_cook);
+				normalCookCount++;
+				break;
+			case TYPE_VIP:
+				vipCooks.push(busy_cook);
+				vipCookCount++;
+				break;
+			case TYPE_VGAN:
+				veganCooks.push(busy_cook);
+				veganCookCount++;
+				break;
+			}
 		}
 		else
 		{
@@ -771,7 +806,7 @@ void Restaurant::Injury(int current_time_step)
 	if (((rand() % 100) / 100) <= injuryProbability * 100)
 	{
 		// peek check if there are cooks that are unavailable
-		if (unavailableCooks.peekFront(pCook))
+		if (unavailableCooks.peekFront(pCook) && !pCook->GetIsInjured())
 		{
 			// check if the cook is cooking an order
 			if (pCook->GetIsCooking())
@@ -786,12 +821,9 @@ void Restaurant::Injury(int current_time_step)
 
 
 				pOrder = pCook->GetOrder();
-				pOrder->SetFinishTime(pOrder->GetFinishTime()*2 - current_time_step);
-				
-				// As the cook is now on break, set his break time end
-				pCook->SetBreakTimeEnd(pOrder->GetFinishTime() + restSteps);
-				
-				unavailableCooks.enqueue(pCook, -pCook->GetBreakTimeEnd());
+				pOrder->SetFinishTime(pOrder->GetFinishTime() * 2 - current_time_step);
+
+				unavailableCooks.enqueue(pCook, -(pOrder->GetFinishTime() * 2 - current_time_step));
 			}
 		}
 	}
