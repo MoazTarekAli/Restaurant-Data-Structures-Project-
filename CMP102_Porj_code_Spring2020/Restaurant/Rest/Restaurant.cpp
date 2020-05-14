@@ -243,7 +243,6 @@ void Restaurant::LoadRestaurant(ifstream& inFile)
 
 	// creating an array containing pointers to these variables in order to easily loop over them
 	// to store the data from the input file
-
 	int* inputValues[] =
 	{
 		&normalCookCountInput, &veganCookCountInput, &vipCookCountInput,
@@ -255,7 +254,6 @@ void Restaurant::LoadRestaurant(ifstream& inFile)
 	};
 
 	// looping over the variables and storing the data from the input file in them
-
 	for (int i = 0; i < 21; ++i)
 	{
 		if (inFile.eof())
@@ -318,10 +316,12 @@ void Restaurant::LoadRestaurant(ifstream& inFile)
 		// gets the event type for the current event
 		char eventType;
 		inFile >> eventType;
+
 		// initializing the variables to be used and creating an areas of pointers to them
 		int eventTimeStep, orderID, orderSize;
 		int* eventInputValues[] = { &eventTimeStep, &orderID, &orderSize };
 		Event* pEvent;
+
 		// handling the different types of events
 		switch (eventType)
 		{
