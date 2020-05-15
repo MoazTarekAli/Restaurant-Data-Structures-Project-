@@ -38,26 +38,33 @@ private:
 	Queue<Order*> normalOrderQueue;
 	Queue<Order*> veganOrderQueue;
 	PriorityQueue<Order*> vipOrderQueue;
-	Stack<Cook*> normalCooks;
-	Stack<Cook*> veganCooks;
-	Stack<Cook*> vipCooks;
-	LinkedList<Cook*> availableCooks;
-	PriorityQueue<Cook*> unavailableCooks;
 	Queue<Order*> finishedQueue;
 	Queue<Order*> InServiceQueue;
 	PriorityQueue<Order*> InServiceQueue_test;
+	
+	LinkedList<Cook*> availableCooks;
+	Stack<Cook*> normalCooks;
+	Stack<Cook*> veganCooks;
+	Stack<Cook*> vipCooks;
+	
+	PriorityQueue<Cook*> assignedCooks;
+	PriorityQueue<Cook*> restingCooks;
+	
 	int totalCookCount;
 	int normalCookCount;
 	int	veganCookCount;
 	int vipCookCount;
+	int injuredCount;
+
 	int totalOrdersCount;
 	int normalOrdersCount;
 	int veganOrdersCount;
 	int vipOrdersCount;
 	int urgentOrdersCount;
+	
 	int totalMoney;
 	int totalTimeSteps;
-	int injuredCount;
+	
 	int autoPromotedCount;
 	int autoPromotionSteps;
 	int injuryProbability;
@@ -89,7 +96,7 @@ public:
 	void CancelOrder(int ID);
 	void PromoteOrder(int ID);
 	void SimpleSimulator();
-	void Assign_to_cook(Order* inorder, int current_time_step);
+	bool Assign_to_cook(Order* inorder, int current_time_step);
 	void check_finished_and_break(int current_time_step);
 	void Injury(int currentimestep);
 
