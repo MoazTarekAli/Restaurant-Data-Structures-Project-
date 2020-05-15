@@ -114,6 +114,12 @@ void Cook::SetIsResting(bool is)
 
 void Cook::SetIsInjured(bool injury)
 {
+	if (injury == false)
+	{
+		ServedOrdersCount = 0;
+		IsResting = false;
+		IsCooking = false;
+	}
 	IsInjured = injury;
 }
 

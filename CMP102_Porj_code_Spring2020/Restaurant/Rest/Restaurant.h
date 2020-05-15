@@ -96,8 +96,9 @@ public:
 	void CancelOrder(int ID);
 	void PromoteOrder(int ID);
 	void SimpleSimulator();
-	bool Assign_to_cook(Order* inorder, int current_time_step);
-	void check_finished_and_break(int current_time_step);
+	void Assign_to_cook(int current_time_step);
+	void check_finished_orders(int current_time_step);
+	void check_cooks_breaks(int current_time_step);
 	void Injury(int currentimestep);
 
 	// load functions

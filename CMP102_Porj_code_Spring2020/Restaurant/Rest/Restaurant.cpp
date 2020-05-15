@@ -489,15 +489,19 @@ void Restaurant::SaveRestaurant()
 	outFile.close();
 }
 
-bool Restaurant::Assign_to_cook(Order* inorder, int current_time_step)
+void Restaurant::Assign_to_cook(int current_time_step)
 {
 	bool flag = true;
 	Cook* vip_cook, * vegan_cook, * normal_cook;
-	switch (inorder->GetType())
+	Order* inorder;
+	while (vipOrderQueue.peekFront(inorder) && flag)
 	{
-	case TYPE_VIP:
 		if (vipCooks.peek(vip_cook))	// Check if a VIP Cook is available
 		{
+			// remove the order from the waiting queue to inservice queue
+			vipOrderQueue.dequeue(inorder);
+			InServiceQueue_test.enqueue(inorder, -vip_cook->TimeToFinishOrder() - current_time_step);
+
 			// Pop the VIP cook, assign him an order and add him to the unavailable cooks queue
 			vipCooks.pop(vip_cook);
 			vip_cook->SetOrder(inorder);
@@ -522,6 +526,10 @@ bool Restaurant::Assign_to_cook(Order* inorder, int current_time_step)
 		}
 		else if (normalCooks.peek(normal_cook))	// If VIP cook isn't available check for Normal Cook
 		{
+			// remove the order from the waiting queue to inservice queue
+			vipOrderQueue.dequeue(inorder);
+			InServiceQueue_test.enqueue(inorder, -vip_cook->TimeToFinishOrder() - current_time_step);
+
 			// Pop the Normal cook, assign him an order and add him to the unavailable cooks queue
 			normalCooks.pop(normal_cook);
 			normal_cook->SetOrder(inorder);
@@ -545,6 +553,10 @@ bool Restaurant::Assign_to_cook(Order* inorder, int current_time_step)
 		}
 		else if (veganCooks.peek(vegan_cook))	// If Normal and VIP cooks aren't available Check for Vegan
 		{
+			// remove the order from the waiting queue to inservice queue
+			vipOrderQueue.dequeue(inorder);
+			InServiceQueue_test.enqueue(inorder, -vip_cook->TimeToFinishOrder() - current_time_step);
+
 			// Pop the Vegan cook, assign him an order and add him to the unavailable cooks queue
 			veganCooks.pop(vegan_cook);
 			vegan_cook->SetOrder(inorder);
@@ -568,10 +580,18 @@ bool Restaurant::Assign_to_cook(Order* inorder, int current_time_step)
 		}
 		else
 			flag = false;
-		break;
-	case TYPE_VGAN:
+	}
+
+	flag = true;
+
+	while (veganOrderQueue.peekFront(inorder) && flag)
+	{
 		if (veganCooks.peek(vegan_cook))	// Check for an available Vegan Cook
 		{
+			// remove the order from the waiting queue to inservice queue
+			veganOrderQueue.dequeue(inorder);
+			InServiceQueue_test.enqueue(inorder, -vegan_cook->TimeToFinishOrder() - current_time_step);
+
 			// Pop the vegan cook, assign him an order and add him to the unavailable cooks queue
 			veganCooks.pop(vegan_cook);
 			vegan_cook->SetOrder(inorder);
@@ -595,10 +615,18 @@ bool Restaurant::Assign_to_cook(Order* inorder, int current_time_step)
 		}
 		else
 			flag = false;
-		break;
-	case TYPE_NRM:
+	}
+
+	flag = true;
+
+	while (normalOrderQueue.peekFront(inorder) && flag)
+	{
 		if (normalCooks.peek(normal_cook))	// Check for an Available Normal Cook
 		{
+			// remove the order from the waiting queue to inservice queue
+			normalOrderQueue.dequeue(inorder);
+			InServiceQueue_test.enqueue(inorder, -normal_cook->TimeToFinishOrder() - current_time_step);
+
 			// Pop the vegan cook, assign him an order and add him to the unavailable cooks queue
 			normalCooks.pop(normal_cook);
 			normal_cook->SetOrder(inorder);
@@ -622,6 +650,10 @@ bool Restaurant::Assign_to_cook(Order* inorder, int current_time_step)
 		}
 		else if (vipCooks.peek(vip_cook))	// If Normal Cooks aren't available check for a VIP cook
 		{
+			// remove the order from the waiting queue to inservice queue
+			normalOrderQueue.dequeue(inorder);
+			InServiceQueue_test.enqueue(inorder, -normal_cook->TimeToFinishOrder() - current_time_step);
+
 			// Pop the VIP cook, assign him an order and add him to the unavailable cooks queue
 			vipCooks.pop(vip_cook);
 			vip_cook->SetOrder(inorder);
@@ -645,16 +677,14 @@ bool Restaurant::Assign_to_cook(Order* inorder, int current_time_step)
 		}
 		else
 			flag = false;
-		break;
 	}
-	return flag;
 }
 
-void Restaurant::check_finished_and_break(int current_time_step)
+void Restaurant::check_finished_orders(int current_time_step)
 {
 	bool flag = true;
 	Cook* busy_cook;
-	while (assignedCooks.peekFront(busy_cook)&&flag)
+	while (assignedCooks.peekFront(busy_cook) && flag)
 	{
 		if (busy_cook->GetIsCooking() && (busy_cook->GetOrder())->GetFinishTime() == current_time_step)
 		{
@@ -662,7 +692,7 @@ void Restaurant::check_finished_and_break(int current_time_step)
 			InServiceQueue_test.dequeue(finished_order);
 			finishedQueue.enqueue(finished_order);
 			finished_order->SetStatus(DONE);
-			assignedCooks.dequeue(busy_cook);
+
 			totalOrdersCount++;
 			switch (finished_order->GetType())
 			{
@@ -676,17 +706,19 @@ void Restaurant::check_finished_and_break(int current_time_step)
 				veganOrdersCount++;
 				break;
 			}
+
+			assignedCooks.dequeue(busy_cook);
 			if (busy_cook->GetIsInjured())
 			{
 				busy_cook->SetIsResting(true);
 				busy_cook->SetBreakTimeEnd(restSteps + current_time_step);
-				assignedCooks.enqueue(busy_cook, -restSteps - current_time_step);
+				restingCooks.enqueue(busy_cook, -restSteps - current_time_step);
 			}
 			else if (busy_cook->NeedBreak())
 			{
 				busy_cook->SetIsResting(true);
 				busy_cook->SetBreakTimeEnd(busy_cook->GetBreakDuration() + current_time_step);
-				assignedCooks.enqueue(busy_cook, -busy_cook->GetBreakDuration() - current_time_step);
+				restingCooks.enqueue(busy_cook, -busy_cook->GetBreakDuration() - current_time_step);
 			}
 			else
 			{
@@ -707,7 +739,47 @@ void Restaurant::check_finished_and_break(int current_time_step)
 				}
 			}
 		}
-		else if (busy_cook->GetIsResting() && busy_cook->GetBreakTimeEnd() == current_time_step)
+		else
+			flag = false;
+	}
+}
+
+void Restaurant::check_cooks_breaks(int current_time_step)
+{
+	Cook* busy_cook;
+	bool flag = true;
+	while (restingCooks.peekFront(busy_cook) && flag)
+	{
+		if (busy_cook->GetBreakTimeEnd()==current_time_step)
+		{
+			restingCooks.dequeue(busy_cook);
+
+			if (busy_cook->GetIsInjured())
+			{
+				busy_cook->SetIsInjured(false);
+			}
+
+			switch (busy_cook->GetType())
+			{
+			case TYPE_NRM:
+				normalCooks.push(busy_cook);
+				normalCookCount++;
+				break;
+			case TYPE_VIP:
+				vipCooks.push(busy_cook);
+				vipCookCount++;
+				break;
+			case TYPE_VGAN:
+				veganCooks.push(busy_cook);
+				veganCookCount++;
+				break;
+			}
+		}
+		else
+			flag = false;
+	}
+}
+/*/else if (busy_cook->GetIsResting() && busy_cook->GetBreakTimeEnd() == current_time_step)
 		{
 			if (busy_cook->GetIsInjured())
 			{
@@ -728,14 +800,7 @@ void Restaurant::check_finished_and_break(int current_time_step)
 				veganCookCount++;
 				break;
 			}
-		}
-		else
-		{
-			flag = false;
-		}
-	}
-}
-
+		}*/
 void Restaurant::SimpleSimulator()
 {
 
