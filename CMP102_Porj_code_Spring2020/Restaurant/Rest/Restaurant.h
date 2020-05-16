@@ -102,6 +102,7 @@ public:
 	void check_cooks_breaks(int current_time_step);
 	void Injury(int currentimestep);
 	void UpdateUrgentOrders(int currentTimeStep);
+	void AutoPromote(int currentTimeStep);
 	int calcPriority(Order* O);
 
 	// load functions
