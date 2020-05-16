@@ -943,8 +943,6 @@ void Restaurant::PromoteOrder(int ID)
 
 			x->SetType(TYPE_VIP);
 			vipOrderQueue.enqueue(x,priority);
-			vipOrdersCount++;
-			normalOrdersCount--;
 		}
 	}
 
@@ -972,8 +970,6 @@ void Restaurant::UpdateUrgentOrders(int currentTimeStep)
 		{
 			currentOrder->SetType(TYPE_URGNT);
 			urgentOrderQueue.enqueue(currentOrder, currentOrderPriority);
-			urgentOrdersCount++;
-			vipOrdersCount--;
 		}
 		else
 		{
@@ -991,9 +987,8 @@ void Restaurant::AutoPromote(int currentTimeStep)
 		if (currentTimeStep - currentOrder->GetArrTime() > autoPromotionSteps)
 		{
 			normalOrderQueue.dequeue(currentOrder);
+			currentOrder->SetType(TYPE_VIP);
 			vipOrderQueue.enqueue(currentOrder, calcPriority(currentOrder));
-			vipOrdersCount++;
-			normalCookCount--;
 		}
 		else break;
 	}
