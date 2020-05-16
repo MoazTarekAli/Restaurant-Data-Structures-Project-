@@ -38,6 +38,7 @@ private:
 	Queue<Order*> normalOrderQueue;
 	Queue<Order*> veganOrderQueue;
 	PriorityQueue<Order*> vipOrderQueue;
+	PriorityQueue<Order*> urgentOrderQueue;
 	Queue<Order*> finishedQueue;
 	Queue<Order*> InServiceQueue;
 	PriorityQueue<Order*> InServiceQueue_test;
@@ -100,6 +101,8 @@ public:
 	void check_finished_orders(int current_time_step);
 	void check_cooks_breaks(int current_time_step);
 	void Injury(int currentimestep);
+	void UpdateUrgentOrders(int currentTimeStep);
+	int calcPriority(Order* O);
 
 	// load functions
 

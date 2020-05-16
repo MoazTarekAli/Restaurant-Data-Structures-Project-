@@ -937,7 +937,7 @@ void Restaurant::PromoteOrder(int ID)
 
 			// Priority Equation should be added here aswell
 			
-			int priority;
+			int priority = calcPriority(x);
 
 			//	NORMAL[i]->SetType(TYPE_VIP);
 
@@ -957,6 +957,33 @@ void Restaurant::PromoteOrder(int ID)
 			autoPromotedCount++;
 		}
 	}*/
+}
+
+void Restaurant::UpdateUrgentOrders(int currentTimeStep)
+{
+	PriorityQueue<Order*> newVipOrderQueue;
+	Order* currentOrder;
+	int currentOrderPriority = calcPriority(currentOrder);
+	while (vipOrderQueue.dequeue(currentOrder))
+	{
+		if ((currentTimeStep - currentOrder->GetArrTime()) > urgentSteps)
+		{
+			currentOrder->SetType(TYPE_URGNT);
+			urgentOrderQueue.enqueue(currentOrder, currentOrderPriority);
+			urgentOrdersCount++;
+			vipOrdersCount--;
+		}
+		else
+		{
+			newVipOrderQueue.enqueue(currentOrder, currentOrderPriority);
+		}
+	}
+	vipOrderQueue = newVipOrderQueue;
+}
+
+int Restaurant::calcPriority(Order* O)
+{
+	return (int)(10000 * O->GetMoney() / (O->GetSize() * O->GetArrTime()));
 }
 
 /*
