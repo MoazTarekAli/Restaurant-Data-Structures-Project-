@@ -72,6 +72,16 @@ private:
 	int urgentSteps;
 	int restSteps;
 
+	// private loading functions
+	bool CheckEOF(ifstream& inFile);
+	template <typename T>
+	bool LoadValues(ifstream& inFile, int itemCount, T** items);
+	void LoadCooks(int ordersBeforeBreak, int* cookCounts, int cookSpeeds[3][2], int CookBreaks[3][2]);
+	bool LoadEvents(ifstream& inFile);
+	bool LoadArrivalEvent(ifstream& inFile);
+	bool LoadCancellationEvent(ifstream& inFile);
+	bool LoadPromotionEvent(ifstream& inFile);
+
 public:
 	
 	Restaurant();
@@ -105,8 +115,7 @@ public:
 	void AutoPromote(int currentTimeStep);
 	int calcPriority(Order* O);
 
-	// load functions
-
+	// public load functions
 	void LoadRestaurant(); // to load using input from user
 	void LoadRestaurant(string fileName); // to load using a file name
 	void LoadRestaurant(ifstream& inFile); // to load using a file directly

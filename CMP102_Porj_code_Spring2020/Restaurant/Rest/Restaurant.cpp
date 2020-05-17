@@ -35,7 +35,6 @@ void Restaurant::RunSimulation()
 		//Just_A_Demo();
 
 	};
-
 }
 
 
@@ -202,10 +201,30 @@ void Restaurant::InteractiveMode()
 	
 }
 
+inline bool Restaurant::CheckEOF(ifstream& inFile)
+{
+	if (inFile.eof())
+	{
+		return true;
+	}
+	return false;
+}
+
+template <typename T>
+bool Restaurant::LoadValues(ifstream& inFile, int itemCount, T** items)
+{
+	for (int i; i < itemCount; ++i)
+	{
+		if (CheckEOF(inFile)) return true;
+		cin >> *items[i];
+	}
+	return false;
+}
+
 void Restaurant::LoadRestaurant()
 {
-	pGUI->PrintMessage((string)"[The input file must be placed in the Input_Files folder]\n"+
-		"[test0.txt, test1.txt, test3.txt, test4.txt files are already provided in the folder]\n"+
+	pGUI->PrintMessage((string)"[The input file must be placed in the Input_Files folder]\n" +
+		"[test0.txt, test1.txt, test3.txt, test4.txt files are already provided in the folder]\n" +
 		"Enter the input file name:\n");
 	string fileName = pGUI->GetString();
 	fileName = "Input_Files\\" + fileName;
@@ -228,18 +247,14 @@ void Restaurant::LoadRestaurant(string fileName)
 void Restaurant::LoadRestaurant(ifstream& inFile)
 {
 	// loading values
-	
-	//	srand to generate a random seed
-	srand(time(NULL));
 
-	// initializing the variables to be used to store the data from the input file
+	// declaring the variables to be used to store the data from the input file
 	int normalCookCountInput, veganCookCountInput, vipCookCountInput;
 	int minNormalSpeed, minVeganSpeed, minVipSpeed, maxNormalSpeed, maxVeganSpeed, maxVipSpeed;
 	int ordersBeforeBreak, minNormalBreak, minVeganBreak, minVipBreak, maxNormalBreak, maxVeganBreak, maxVipBreak;
-	int injuryProbability, restPeriod;
-	int stepsBeforeAutoPromotion, stepsBeforeUrgent;
+	int injuryProbability, restStepsInput;
+	int autoPromotionStepsInput, urgentStepsInput;
 	int numberOfEvents;
-
 
 	// creating an array containing pointers to these variables in order to easily loop over them
 	// to store the data from the input file
@@ -248,187 +263,165 @@ void Restaurant::LoadRestaurant(ifstream& inFile)
 		&normalCookCountInput, &veganCookCountInput, &vipCookCountInput,
 		&minNormalSpeed, &maxNormalSpeed, &minVeganSpeed, &maxVeganSpeed, &minVipSpeed, &maxVipSpeed,
 		&ordersBeforeBreak, &minNormalBreak, &maxNormalBreak, &minVeganBreak, &maxVeganBreak, &minVipBreak, &maxVipBreak,
-		&injuryProbability, &restPeriod,
-		&stepsBeforeAutoPromotion, &stepsBeforeUrgent,
-		&numberOfEvents
+		&injuryProbability, &restStepsInput,
+		&autoPromotionStepsInput, &urgentStepsInput,
 	};
 
-	// looping over the variables and storing the data from the input file in them
-	for (int i = 0; i < 21; ++i)
-	{
-		if (inFile.eof())
-		{
-			pGUI->PrintMessage("Error! Not enough values in the file!");
-			pGUI->waitForClick();
-			return;
-		}
-		inFile >> *inputValues[i];
-	}
-	
-	// creating cooks
-	
-	// Initializing every speed variable so they have different speeds/breaks
+	// getting the input values
+	if (LoadValues<int>(inFile, 20, inputValues)) return;
 
-
-	// updating the number of cooks data member
+	// initializing data members
 	normalCookCount = normalCookCountInput;
 	veganCookCount = veganCookCountInput;
 	vipCookCount = vipCookCountInput;
-	totalCookCount = normalCookCount + veganCookCount + vipCookCount;
-	autoPromotionSteps = stepsBeforeAutoPromotion;
-	urgentSteps = stepsBeforeUrgent;
-	restSteps = restPeriod;
+	totalCookCount = normalCookCountInput + veganCookCountInput + vipCookCountInput;
+	autoPromotionSteps = autoPromotionStepsInput;
+	urgentSteps = urgentStepsInput;
+	restSteps = restStepsInput;
 
-	// creating arrays of different cook values in order to easily loop over them
-	// to creat the cooks
+	// creating cooks
 	int cookCounts[] = { normalCookCount, veganCookCount, vipCookCount };
 	int cookSpeeds[3][2] = { {minNormalSpeed, maxNormalSpeed}, {minVeganSpeed, maxVeganSpeed}, {minVipSpeed, maxVipSpeed} };
 	int cookBreaks[3][2] = { {minNormalBreak, maxNormalBreak}, {minVeganBreak, maxVeganBreak}, {minVipBreak, maxVipBreak} };
+	LoadCooks(ordersBeforeBreak, cookCounts, cookSpeeds, cookBreaks);
+
+	// creating events
+	if (LoadEvents(inFile)) return;
+
+	// closing the file
+	inFile.close();
+}
+
+void Restaurant::LoadCooks(int ordersBeforeBreak, int* cookCounts, int cookSpeeds[3][2], int cookBreaks[3][2])
+{
+	// creating the cooks
+
 	Stack<Cook*> cookStacks[] = { normalCooks, veganCooks, vipCooks };
 	ORD_TYPE ordTypes[] = { TYPE_NRM, TYPE_VGAN, TYPE_VIP };
+
 	// initializing the cook ID to 0
 	int currentID = 0;
-	// creating the cooks
 
 	for (int i = 0; i < 3; ++i)
 	{
 		for (int j = 0; j < cookCounts[i]; ++j)
 		{
+			// srand to generate a random seed
+			srand(time(NULL));
+			// generating the random cook speed and break time
 			int cookSpeed = rand() % (cookSpeeds[i][1] - cookSpeeds[i][0] + 1) + cookSpeeds[i][0];
 			int cookBreak = rand() % (cookBreaks[i][1] - cookBreaks[i][0] + 1) + cookBreaks[i][0];
+			// creating the cook
 			Cook* pCook = new Cook(++currentID, ordTypes[i], cookSpeed, cookBreak, ordersBeforeBreak);
+			// adding the cook to the appropriate lists
 			availableCooks.Append(pCook);
 			cookStacks[i].push(pCook);
 		}
 	}
-	
+}
+
+bool Restaurant::LoadEvents(ifstream& inFile)
+{
 	// creating events
 
-	// repeats the steps for the given number of events
+	// getting the number of events
+	if (CheckEOF(inFile)) return true;
+	int numberOfEvents;
+	cin >> numberOfEvents;
+
+	// calling the appropriate functions based on the event type
 	for (int i = 0; i < numberOfEvents; ++i)
 	{
-		if (inFile.eof())
-		{
-			pGUI->PrintMessage("Error! Not enough values in the file!");
-			pGUI->waitForClick();
-			return;
-		}
-		// gets the event type for the current event
+		if (CheckEOF(inFile)) return true;
 		char eventType;
 		inFile >> eventType;
-
-		// initializing the variables to be used and creating an areas of pointers to them
-		int eventTimeStep, orderID, orderSize;
-		int* eventInputValues[] = { &eventTimeStep, &orderID, &orderSize };
-		Event* pEvent;
-
-		// handling the different types of events
 		switch (eventType)
 		{
-		// arrival event
 		case 'R':
-			if (inFile.eof())
-			{
-				pGUI->waitForClick();
-				pGUI->PrintMessage("Error! Not enough values in the file!");
-				return;
-			}
-			// getting the order type
-			char orderTypeInput;
-			inFile >> orderTypeInput;
-			ORD_TYPE orderType;
-			switch (orderTypeInput)
-			{
-			case 'N':
-				orderType = TYPE_NRM;
-				break;
-			case 'G':
-				orderType = TYPE_VGAN;
-				break;
-			case 'V':
-				orderType = TYPE_VIP;
-				break;
-			default:
-				pGUI->PrintMessage("Error! Unknown event type!");
-				pGUI->waitForClick();
-				return;
-			}
-			// getting the order inputs
-			for (int j = 0; j < 3; ++j)
-			{
-				if (inFile.eof())
-				{
-					pGUI->PrintMessage("Error! Not enough values in the file!");
-					pGUI->waitForClick();
-					return;
-				}
-				inFile >> *eventInputValues[j];
-			}
-			if (inFile.eof())
-			{
-				pGUI->PrintMessage("Error! Not enough values in the file!");
-				pGUI->waitForClick();
-				return;
-			}
-			double orderMoney;
-			inFile >> orderMoney;
-			// creating the event
-			pEvent = new ArrivalEvent(eventTimeStep, orderID, orderType, orderMoney, orderSize);
-			EventsQueue.enqueue(pEvent);
+			if (LoadArrivalEvent(inFile)) return true;
 			break;
-		// cancellation event
 		case 'X':
-			for (int j = 0; j < 2; ++j)
-			{
-				if (inFile.eof())
-				{
-					pGUI->PrintMessage("Error! Not enough values in the file!");
-					pGUI->waitForClick();
-					return;
-				}
-				inFile >> *eventInputValues[j];
-			}
-			// creating the event
-			pEvent = new CancellationEvent(eventTimeStep, orderID);
-			EventsQueue.enqueue(pEvent);
+			if (LoadCancellationEvent(inFile)) return true;
 			break;
-		// promotion event
 		case 'P':
-			for (int j = 0; j < 2; ++j)
-			{
-				if (inFile.eof())
-				{
-					pGUI->PrintMessage("Error! Not enough values in the file!");
-					pGUI->waitForClick();
-					return;
-				}
-				inFile >> *eventInputValues[j];
-			}
-			if (inFile.eof())
-			{
-				pGUI->PrintMessage("Error! Not enough values in the file!");
-				pGUI->waitForClick();
-				return;
-			}
-			int promotionMoney;
-			inFile >> promotionMoney;
-			if (promotionMoney < 0)
-			{
-				pGUI->PrintMessage("Error! Wrong values in the file! Money is negative!");
-				pGUI->waitForClick();
-				return;
-			}
-			totalMoney += promotionMoney;
-			// creating the event
-			pEvent = new PromotionEvent(eventTimeStep, orderID);
-			EventsQueue.enqueue(pEvent);
+			if (LoadPromotionEvent(inFile)) return true;
 			break;
 		default:
 			pGUI->waitForClick();
 			pGUI->PrintMessage("Error! Unknown event type!");
-			return;
+			return true;
 		}
 	}
+	return false;
+}
+
+bool Restaurant::LoadArrivalEvent(ifstream& inFile)
+{
+	// loading arrival events
+
+	// getting the order type
+	if (CheckEOF(inFile)) return true;
+	char orderTypeInput;
+	cin >> orderTypeInput;
+	ORD_TYPE orderType;
+	switch (orderTypeInput)
+	{
+	case 'N':
+		orderType = TYPE_NRM;
+		break;
+	case 'G':
+		orderType = TYPE_VGAN;
+		break;
+	case 'V':
+		orderType = TYPE_VIP;
+		break;
+	default:
+		pGUI->PrintMessage("Error! Unknown event type!");
+		pGUI->waitForClick();
+		return true;
+	}
+
+	// getting the order inputs
+	double eventTimeStep, orderID, orderSize, orderMoney;
+	double* eventInputValues[] = { &eventTimeStep, &orderID, &orderSize, &orderMoney };
+	if (LoadValues<double>(inFile, 4, eventInputValues)) return true;
+
+	// creating the event and adding it to the events queue
+	Event* pEvent = new ArrivalEvent(eventTimeStep, orderID, orderType, orderMoney, orderSize);
+	EventsQueue.enqueue(pEvent);
+	
+	return false;
+}
+
+bool Restaurant::LoadCancellationEvent(ifstream& inFile)
+{
+	// getting the order inputs
+	int eventTimeStep, orderID;
+	int* eventInputValues[] = { &eventTimeStep, &orderID };
+	if (LoadValues<int>(inFile, 2, eventInputValues)) return true;
+
+	// creating the event and adding it to the events queue
+	Event* pEvent = new CancellationEvent(eventTimeStep, orderID);
+	EventsQueue.enqueue(pEvent);
+
+	return false;
+}
+
+bool Restaurant::LoadPromotionEvent(ifstream& inFile)
+{
+	// getting the order inputs
+	double eventTimeStep, orderID, promotionMoney;
+	double* eventInputValues[] = { &eventTimeStep, &orderID, &promotionMoney };
+	if (LoadValues<double>(inFile, 3, eventInputValues)) return true;
+
+	// adding the promotion money to the total money
+	totalMoney += promotionMoney;
+
+	// creating the event and adding it to the events queue
+	Event* pEvent = new PromotionEvent(eventTimeStep, orderID);
+	EventsQueue.enqueue(pEvent);
+
+	return false;
 }
 
 void Restaurant::SaveRestaurant()
@@ -894,28 +887,7 @@ void Restaurant::check_cooks_breaks(int current_time_step)
 			flag = false;
 	}
 }
-/*/else if (busy_cook->GetIsResting() && busy_cook->GetBreakTimeEnd() == current_time_step)
-		{
-			if (busy_cook->GetIsInjured())
-			{
-				busy_cook->SetIsInjured(false);///////////////////////////////////////////////////////////
-			}
-			switch (busy_cook->GetType())
-			{
-			case TYPE_NRM:
-				normalCooks.push(busy_cook);
-				normalCookCount++;
-				break;
-			case TYPE_VIP:
-				vipCooks.push(busy_cook);
-				vipCookCount++;
-				break;
-			case TYPE_VGAN:
-				veganCooks.push(busy_cook);
-				veganCookCount++;
-				break;
-			}
-		}*/
+
 void Restaurant::SimpleSimulator()
 {
 
