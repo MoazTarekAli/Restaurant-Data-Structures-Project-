@@ -355,7 +355,7 @@ bool Restaurant::LoadEvents(ifstream& inFile)
 	return false;
 }
 
-bool Restaurant::LoadArrivalEvent(ifstream& inFile)
+inline bool Restaurant::LoadArrivalEvent(ifstream& inFile)
 {
 	// loading arrival events
 
@@ -393,7 +393,7 @@ bool Restaurant::LoadArrivalEvent(ifstream& inFile)
 	return false;
 }
 
-bool Restaurant::LoadCancellationEvent(ifstream& inFile)
+inline bool Restaurant::LoadCancellationEvent(ifstream& inFile)
 {
 	// getting the order inputs
 	int eventTimeStep, orderID;
@@ -407,7 +407,7 @@ bool Restaurant::LoadCancellationEvent(ifstream& inFile)
 	return false;
 }
 
-bool Restaurant::LoadPromotionEvent(ifstream& inFile)
+inline bool Restaurant::LoadPromotionEvent(ifstream& inFile)
 {
 	// getting the order inputs
 	double eventTimeStep, orderID, promotionMoney;
@@ -426,20 +426,18 @@ bool Restaurant::LoadPromotionEvent(ifstream& inFile)
 
 void Restaurant::SaveRestaurant()
 {
-
-
 	// Prompt the user to enter the name of the savedfile
-	pGUI->PrintMessage((string)"[Enter Name for your save file]\n");
+	pGUI->PrintMessage((string)"Enter the output file name:\n");
 
 	// Get the string entered by the user and set as the file name
 	ofstream outFile(pGUI->GetString());
 
+	// Writing the header of the table
 	outFile << "FT\tID\tAT\tWT\tST" << endl;
 
 	// Variables for the total waited time and total serving time to calculate the averages
-	double totalWaitingTime = 0, totalServingTime = 0;
+	int totalWaitingTime = 0, totalServingTime = 0;
 	
-
 	// Loop over the total orders finished in the restaurant to print their respective Finish times
 	// , IDs, etc
 	for (int i = 0; i < totalOrdersCount; i++)
@@ -449,9 +447,11 @@ void Restaurant::SaveRestaurant()
 
 		// Print out all the order info in the output file
 
-		outFile << pOrder->GetFinishTime() << "\t" << pOrder->GetID() << "\t" << pOrder->GetArrTime()
-			<< "\t" << pOrder->GetServTime() - pOrder->GetArrTime() << "\t" << pOrder->GetServTime()
-			<< endl;
+		outFile << pOrder->GetFinishTime() << '\t'
+				<< pOrder->GetID() << '\t'
+				<< pOrder->GetArrTime() << '\t'
+				<< pOrder->GetServTime() - pOrder->GetArrTime() << '\t'
+				<< pOrder->GetServTime() << endl;
 
 		// Increment the total waited time and serving time to calculate the averages
 		totalWaitingTime += (pOrder->GetServTime() - pOrder->GetArrTime());
@@ -459,24 +459,24 @@ void Restaurant::SaveRestaurant()
 	}
 
 	// Calculating average waiting time and serving time
-	double averageWaitingTime = totalWaitingTime / totalOrdersCount;
-	double averageServingTime = totalServingTime / totalOrdersCount;
+	double averageWaitingTime = (double)totalWaitingTime / totalOrdersCount;
+	double averageServingTime = (double)totalServingTime / totalOrdersCount;
 
 
 	// Printing the total number of orders and number of orders of each type
-	outFile << "Orders: " << totalOrdersCount << "\t" << "[Norm:" << normalOrdersCount
-		<< ", Veg:" << veganOrdersCount << ", VIP:" << vipOrdersCount << "]" << endl;
+	outFile << "Orders: " << totalOrdersCount << '\t' << "[Norm:" << normalOrdersCount
+			<< ", Veg:" << veganOrdersCount << ", VIP:" << vipOrdersCount << ']' << endl;
 
 	// Printing total number of cooks and number of cooks of each type
-	outFile << "cooks: " << totalCookCount << "\t" << "[Norm:" << normalCookCount 
-		<< ", Veg:" << veganCookCount << ", VIP:" << vipCookCount << "]" << endl;
+	outFile << "cooks: " << totalCookCount << '\t' << "[Norm:" << normalCookCount 
+			<< ", Veg:" << veganCookCount << ", VIP:" << vipCookCount << ']' << endl;
 
 	// Printing average waiting time and average serving time
 	outFile << "Avg Wait = " << averageWaitingTime << ",\t" << "Avg Serv = " << averageServingTime << endl;
 
 	// Printing urgent orders count and percentage of auto promoted orders relative to total orders
 	outFile << "Urgent Orders: " << urgentOrdersCount << ", \t" << "Auto Promoted: " 
-		<< autoPromotedCount / totalOrdersCount << "%" << endl;
+			<< autoPromotedCount / totalOrdersCount << '%' << endl;
 
 	// Closing file
 	outFile.close();
