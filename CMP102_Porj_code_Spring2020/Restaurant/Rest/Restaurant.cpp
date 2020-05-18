@@ -418,7 +418,7 @@ bool Restaurant::LoadPromotionEvent(ifstream& inFile)
 	totalMoney += promotionMoney;
 
 	// creating the event and adding it to the events queue
-	Event* pEvent = new PromotionEvent(eventTimeStep, orderID);
+	Event* pEvent = new PromotionEvent(eventTimeStep, orderID, promotionMoney);
 	EventsQueue.enqueue(pEvent);
 
 	return false;
@@ -989,7 +989,7 @@ void Restaurant::Injury(int current_time_step)
 	}
 }
 
-void Restaurant::PromoteOrder(int ID)
+void Restaurant::PromoteOrder(int ID, double promotionMoney)
 {
 	// AUTO-PROMOTION IS STILL NOT IMPLEMENTED WAITING FOR INTERACTIVE MODE
 
@@ -1021,14 +1021,9 @@ void Restaurant::PromoteOrder(int ID)
 		else
 		{
 			autoPromotedCount++;
-
-			// Priority Equation should be added here aswell
-			
-			int priority = calcPriority(x);
-
-			//	NORMAL[i]->SetType(TYPE_VIP);
-
 			x->SetType(TYPE_VIP);
+			x->SetMoney(x->GetMoney() + promotionMoney);
+			int priority = calcPriority(x);
 			vipOrderQueue.enqueue(x,priority);
 		}
 	}

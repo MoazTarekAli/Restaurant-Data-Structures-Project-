@@ -105,7 +105,7 @@ public:
 
 	void AddToQueue(Order* pO, const int prio=0);
 	void CancelOrder(int ID);
-	void PromoteOrder(int ID);
+	void PromoteOrder(int ID, double promotionMoney);
 	void SimpleSimulator();
 	void Assign_to_cook(int current_time_step);
 	void check_finished_orders(int current_time_step);
