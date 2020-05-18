@@ -57,21 +57,6 @@ void Restaurant::ExecuteEvents(int CurrentTimeStep)
 
 }
 
-//void Restaurant::addtoNormalQueue(Order* pOrd)
-//{
-//	normalOrderQueue.enqueue(pOrd);
-//}
-//
-//void Restaurant::addtoVeganQueue(Order* pOrd)
-//{
-//	veganOrderQueue.enqueue(pOrd);
-//}
-//
-//void Restaurant::addtoVIPQueue(Order* pOrd,int prio)
-//{
-//	vipOrderQueue.enqueue(pOrd,prio);
-//}
-
 void Restaurant::AddToQueue(Order* pOrd,const int prio)
 {
 	switch (pOrd->GetType())
@@ -89,7 +74,6 @@ void Restaurant::AddToQueue(Order* pOrd,const int prio)
 		break;
 	}
 }
-
 
 Restaurant::~Restaurant()
 {
@@ -414,9 +398,6 @@ inline bool Restaurant::LoadPromotionEvent(ifstream& inFile)
 	double* eventInputValues[] = { &eventTimeStep, &orderID, &promotionMoney };
 	if (LoadValues<double>(inFile, 3, eventInputValues)) return true;
 
-	// adding the promotion money to the total money
-	totalMoney += promotionMoney;
-
 	// creating the event and adding it to the events queue
 	Event* pEvent = new PromotionEvent(eventTimeStep, orderID, promotionMoney);
 	EventsQueue.enqueue(pEvent);
@@ -480,6 +461,63 @@ void Restaurant::SaveRestaurant()
 
 	// Closing file
 	outFile.close();
+}
+bool Restaurant::AssignOrder(int currentTimeStep, Order* pOrder, Stack<Cook*>& cookList)
+{
+	if (cookList.IsEmpty()) return false;
+	Cook* pCook;
+	cookList.pop(pCook);
+	InServiceQueue_test.enqueue(pOrder, -1 * (pCook->TimeToFinishOrder()) - currentTimeStep);
+	assignedCooks.enqueue(pCook, -1 * (pCook->TimeToFinishOrder()) - currentTimeStep);
+	totalMoney += pOrder->GetMoney();
+	pOrder->SetFinishTime(pCook->TimeToFinishOrder() + currentTimeStep);
+	pOrder->SetServTime(currentTimeStep);
+	pOrder->SetStatus(SRV);
+	pCook->SetIsCooking(true);
+	return true;
+}
+
+void Restaurant::AssignToCook(int currentTimeStep)
+{
+	Order* pOrder;
+	while (urgentOrderQueue.dequeue(pOrder) && (!availableCooks.IsEmpty() || !restingCooks.isEmpty()))
+	{
+		if (AssignOrder(currentTimeStep, pOrder, vipCooks)) vipCookCount--;
+		else if (AssignOrder(currentTimeStep, pOrder, normalCooks)) normalCookCount--;
+		else if (AssignOrder(currentTimeStep, pOrder, veganCooks)) veganCookCount--;
+		else if (!restingCooks.isEmpty())
+		{
+			Cook* pCook;
+			restingCooks.dequeue(pCook);
+			InServiceQueue_test.enqueue(pOrder, -1 * (pCook->TimeToFinishOrder()) - currentTimeStep);
+			assignedCooks.enqueue(pCook, -1 * (pCook->TimeToFinishOrder()) - currentTimeStep);
+			totalMoney += pOrder->GetMoney();
+			pOrder->SetFinishTime(pCook->TimeToFinishOrder() + currentTimeStep);
+			pOrder->SetServTime(currentTimeStep);
+			pOrder->SetStatus(SRV);
+			pCook->SetIsResting(false);
+			pCook->SetIsCooking(true);
+		}
+		else break;
+	}
+	while (vipOrderQueue.dequeue(pOrder) && !availableCooks.IsEmpty())
+	{
+		if (AssignOrder(currentTimeStep, pOrder, vipCooks)) vipCookCount--;
+		else if (AssignOrder(currentTimeStep, pOrder, normalCooks)) normalCookCount--;
+		else if (AssignOrder(currentTimeStep, pOrder, veganCooks)) veganCookCount--;
+		else break;
+	}
+	while (veganOrderQueue.dequeue(pOrder) && !availableCooks.IsEmpty())
+	{
+		if (AssignOrder(currentTimeStep, pOrder, veganCooks)) veganCookCount--;
+		else break;
+	}
+	while (normalOrderQueue.dequeue(pOrder) && !availableCooks.IsEmpty())
+	{
+		if (AssignOrder(currentTimeStep, pOrder, normalCooks)) normalCookCount--;
+		else if (AssignOrder(currentTimeStep, pOrder, vipCooks)) vipCookCount--;
+		else break;
+	}
 }
 
 void Restaurant::Assign_to_cook(int current_time_step)

@@ -72,6 +72,8 @@ private:
 	int urgentSteps;
 	int restSteps;
 
+	bool AssignOrder(int currentTimeStep, Order* order, Stack<Cook*>& cookList);
+
 	// private loading functions
 	bool CheckEOF(ifstream& inFile);
 	template <typename T>
@@ -90,8 +92,6 @@ public:
 	void ExecuteEvents(int TimeStep);	//executes all events at current timestep
 	void RunSimulation();
 	void InteractiveMode();
-	
-
 
 	void FillDrawingList();
 
@@ -107,6 +107,7 @@ public:
 	void CancelOrder(int ID);
 	void PromoteOrder(int ID, double promotionMoney);
 	void SimpleSimulator();
+	void AssignToCook(int currentTimeStep);
 	void Assign_to_cook(int current_time_step);
 	void check_finished_orders(int current_time_step);
 	void check_cooks_breaks(int current_time_step);
