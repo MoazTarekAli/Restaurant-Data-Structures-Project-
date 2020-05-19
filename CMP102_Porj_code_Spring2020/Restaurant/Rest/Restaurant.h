@@ -89,9 +89,12 @@ public:
 	Restaurant();
 	~Restaurant();
 	
-	void ExecuteEvents(int TimeStep);	//executes all events at current timestep
+	void ExecuteEvents();	//executes all events at current timestep
 	void RunSimulation();
 	void InteractiveMode();
+	void StepByStepMode();
+	void SilentMode();
+	void SimpleSimulator();
 
 	void FillDrawingList();
 
@@ -106,16 +109,15 @@ public:
 	void AddToQueue(Order* pO, const int prio=0);
 	void CancelOrder(int ID);
 	void PromoteOrder(int ID, double promotionMoney);
-	void SimpleSimulator();
-	void AssignToCook(int currentTimeStep);
-	void check_finished_orders(int current_time_step);
-	void check_cooks_breaks(int current_time_step);
-	void Injury(int currentimestep);
-	void UpdateUrgentOrders(int currentTimeStep);
-	void AutoPromote(int currentTimeStep);
-	int calcPriority(Order* O);
-	void modes(int mode_id);
+	void AssignToCook();
+	void check_finished_orders();
+	void check_cooks_breaks();
+	void Injury();
+	void UpdateUrgentOrders();
+	void AutoPromote();
+	int CalcPriority(Order* O);
 
+	
 	// public load functions
 	void LoadRestaurant(); // to load using input from user
 	void LoadRestaurant(string fileName); // to load using a file name

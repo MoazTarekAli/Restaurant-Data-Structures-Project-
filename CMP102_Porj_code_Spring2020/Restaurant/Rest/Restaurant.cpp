@@ -20,16 +20,19 @@ Restaurant::Restaurant()
 void Restaurant::RunSimulation()
 {
 	pGUI = new GUI;
-	PROG_MODE	mode = pGUI->getGUIMode();
+	PROG_MODE mode = pGUI->getGUIMode();
 	
 	switch (mode)	//Add a function for each mode in next phases
 	{
 	case MODE_INTR:
 		SimpleSimulator();
+		// InteractiveMode();
 		break;
 	case MODE_STEP:
+		StepByStepMode();
 		break;
 	case MODE_SLNT:
+		SilentMode();
 		break;
 	//case MODE_DEMO:
 		//Just_A_Demo();
@@ -42,12 +45,12 @@ void Restaurant::RunSimulation()
 //////////////////////////////////  Event handling functions   /////////////////////////////
 
 //Executes ALL events that should take place at current timestep
-void Restaurant::ExecuteEvents(int CurrentTimeStep)
+void Restaurant::ExecuteEvents()
 {
 	Event *pE;
 	while( EventsQueue.peekFront(pE) )	//as long as there are more events
 	{
-		if(pE->getEventTime() > CurrentTimeStep )	//no more events at current timestep
+		if(pE->getEventTime() > currentTimeSteps)	//no more events at current timestep
 			return;
 
 		pE->Execute(this);
@@ -199,8 +202,66 @@ void Restaurant::CancelOrder(int ID)
 
 void Restaurant::InteractiveMode()
 {
-	Event* pE;
-	
+	LoadRestaurant();
+	currentTimeSteps = 1;
+
+	while (!(EventsQueue.isEmpty() && normalOrderQueue.isEmpty()
+		&& veganOrderQueue.isEmpty() && vipOrderQueue.isEmpty()
+		&& InServiceQueue.isEmpty()))
+	{
+		ExecuteEvents();
+		Injury();
+		check_finished_orders();
+		check_cooks_breaks();
+		UpdateUrgentOrders();
+		AutoPromote();
+		AssignToCook();
+		FillDrawingList();
+		pGUI->waitForClick();
+		currentTimeSteps++;
+	}
+}
+
+void Restaurant::StepByStepMode()
+{
+	LoadRestaurant();
+	currentTimeSteps = 1;
+
+	while (!(EventsQueue.isEmpty() && normalOrderQueue.isEmpty()
+		&& veganOrderQueue.isEmpty() && vipOrderQueue.isEmpty()
+		&& InServiceQueue.isEmpty()))
+	{
+		ExecuteEvents();
+		Injury();
+		check_finished_orders();
+		check_cooks_breaks();
+		UpdateUrgentOrders();
+		AutoPromote();
+		AssignToCook();
+		FillDrawingList();
+		Sleep(1000);
+		currentTimeSteps++;
+	}
+}
+
+void Restaurant::SilentMode()
+{
+	LoadRestaurant();
+	currentTimeSteps = 1;
+
+	while (!(EventsQueue.isEmpty() && normalOrderQueue.isEmpty()
+		&& veganOrderQueue.isEmpty() && vipOrderQueue.isEmpty()
+		&& InServiceQueue.isEmpty()))
+	{
+		ExecuteEvents();
+		Injury();
+		check_finished_orders();
+		check_cooks_breaks();
+		UpdateUrgentOrders();
+		AutoPromote();
+		AssignToCook();
+		currentTimeSteps++;
+	}
 }
 
 inline bool Restaurant::CheckEOF(ifstream& inFile)
@@ -215,7 +276,7 @@ inline bool Restaurant::CheckEOF(ifstream& inFile)
 template <typename T>
 bool Restaurant::LoadValues(ifstream& inFile, int itemCount, T** items)
 {
-	for (int i; i < itemCount; ++i)
+	for (int i = 0; i < itemCount; ++i)
 	{
 		if (CheckEOF(inFile)) return true;
 		cin >> *items[i];
@@ -506,26 +567,26 @@ bool Restaurant::AssignOrder(int currentTimeStep, Order* pOrder, Stack<Cook*>& c
 	return true;
 }
 
-void Restaurant::AssignToCook(int currentTimeStep)
+void Restaurant::AssignToCook()
 {
 	Order* pOrder;
 	
 	// assigning the urgent orders
 	while (urgentOrderQueue.dequeue(pOrder) && (!availableCooks.IsEmpty() || !restingCooks.isEmpty()))
 	{
-		if (AssignOrder(currentTimeStep, pOrder, vipCooks)) vipCookCount--;
-		else if (AssignOrder(currentTimeStep, pOrder, normalCooks)) normalCookCount--;
-		else if (AssignOrder(currentTimeStep, pOrder, veganCooks)) veganCookCount--;
+		if (AssignOrder(currentTimeSteps, pOrder, vipCooks)) vipCookCount--;
+		else if (AssignOrder(currentTimeSteps, pOrder, normalCooks)) normalCookCount--;
+		else if (AssignOrder(currentTimeSteps, pOrder, veganCooks)) veganCookCount--;
 		else if (!restingCooks.isEmpty())
 		{
 			Cook* pCook;
 			restingCooks.dequeue(pCook);
 			pCook->SetOrder(pOrder);
-			InServiceQueue_test.enqueue(pOrder, -1 * (pCook->TimeToFinishOrder()) - currentTimeStep);
-			assignedCooks.enqueue(pCook, -1 * (pCook->TimeToFinishOrder()) - currentTimeStep);
+			InServiceQueue_test.enqueue(pOrder, -1 * (pCook->TimeToFinishOrder()) - currentTimeSteps);
+			assignedCooks.enqueue(pCook, -1 * (pCook->TimeToFinishOrder()) - currentTimeSteps);
 			totalMoney += pOrder->GetMoney();
-			pOrder->SetFinishTime(pCook->TimeToFinishOrder() + currentTimeStep);
-			pOrder->SetServTime(currentTimeStep);
+			pOrder->SetFinishTime(pCook->TimeToFinishOrder() + currentTimeSteps);
+			pOrder->SetServTime(currentTimeSteps);
 			pOrder->SetStatus(SRV);
 			pCook->SetIsResting(false);
 			pCook->SetIsCooking(true);
@@ -536,35 +597,35 @@ void Restaurant::AssignToCook(int currentTimeStep)
 	// assigning the vip orders
 	while (vipOrderQueue.dequeue(pOrder) && !availableCooks.IsEmpty())
 	{
-		if (AssignOrder(currentTimeStep, pOrder, vipCooks)) vipCookCount--;
-		else if (AssignOrder(currentTimeStep, pOrder, normalCooks)) normalCookCount--;
-		else if (AssignOrder(currentTimeStep, pOrder, veganCooks)) veganCookCount--;
+		if (AssignOrder(currentTimeSteps, pOrder, vipCooks)) vipCookCount--;
+		else if (AssignOrder(currentTimeSteps, pOrder, normalCooks)) normalCookCount--;
+		else if (AssignOrder(currentTimeSteps, pOrder, veganCooks)) veganCookCount--;
 		else break;
 	}
 
 	// assigning the vegan orders
 	while (veganOrderQueue.dequeue(pOrder) && !availableCooks.IsEmpty())
 	{
-		if (AssignOrder(currentTimeStep, pOrder, veganCooks)) veganCookCount--;
+		if (AssignOrder(currentTimeSteps, pOrder, veganCooks)) veganCookCount--;
 		else break;
 	}
 
 	// assigning the normal orders
 	while (normalOrderQueue.dequeue(pOrder) && !availableCooks.IsEmpty())
 	{
-		if (AssignOrder(currentTimeStep, pOrder, normalCooks)) normalCookCount--;
-		else if (AssignOrder(currentTimeStep, pOrder, vipCooks)) vipCookCount--;
+		if (AssignOrder(currentTimeSteps, pOrder, normalCooks)) normalCookCount--;
+		else if (AssignOrder(currentTimeSteps, pOrder, vipCooks)) vipCookCount--;
 		else break;
 	}
 }
 
-void Restaurant::check_finished_orders(int current_time_step)
+void Restaurant::check_finished_orders()
 {
 	bool flag = true;
 	Cook* busy_cook;
 	while (assignedCooks.peekFront(busy_cook) && flag)
 	{
-		if (busy_cook->GetIsCooking() && (busy_cook->GetOrder())->GetFinishTime() == current_time_step)
+		if (busy_cook->GetIsCooking() && (busy_cook->GetOrder())->GetFinishTime() == currentTimeSteps)
 		{
 			Order* finished_order = busy_cook->GetOrder();
 			InServiceQueue_test.dequeue(finished_order);
@@ -593,14 +654,14 @@ void Restaurant::check_finished_orders(int current_time_step)
 			{
 				busy_cook->SetIsInjured(false);
 				busy_cook->SetIsResting(true);
-				busy_cook->SetBreakTimeEnd(restSteps + current_time_step);
-				restingCooks.enqueue(busy_cook, -restSteps - current_time_step);
+				busy_cook->SetBreakTimeEnd(restSteps + currentTimeSteps);
+				restingCooks.enqueue(busy_cook, -restSteps - currentTimeSteps);
 			}
 			else if (busy_cook->NeedBreak())
 			{
 				busy_cook->SetIsResting(true);
-				busy_cook->SetBreakTimeEnd(busy_cook->GetBreakDuration() + current_time_step);
-				restingCooks.enqueue(busy_cook, -busy_cook->GetBreakDuration() - current_time_step);
+				busy_cook->SetBreakTimeEnd(busy_cook->GetBreakDuration() + currentTimeSteps);
+				restingCooks.enqueue(busy_cook, -busy_cook->GetBreakDuration() - currentTimeSteps);
 			}
 			else
 			{
@@ -626,13 +687,13 @@ void Restaurant::check_finished_orders(int current_time_step)
 	}
 }
 
-void Restaurant::check_cooks_breaks(int current_time_step)
+void Restaurant::check_cooks_breaks()
 {
 	Cook* busy_cook;
 	bool flag = true;
 	while (restingCooks.peekFront(busy_cook) && flag)
 	{
-		if (busy_cook->GetBreakTimeEnd()==current_time_step)
+		if (busy_cook->GetBreakTimeEnd()==currentTimeSteps)
 		{
 			restingCooks.dequeue(busy_cook);
 
@@ -664,7 +725,7 @@ void Restaurant::SimpleSimulator()
 	LoadRestaurant();
 	while (!(EventsQueue.isEmpty() && normalOrderQueue.isEmpty() && veganOrderQueue.isEmpty() && vipOrderQueue.isEmpty() && InServiceQueue.isEmpty()))
 	{
-		ExecuteEvents(currentTimeSteps);
+		ExecuteEvents();
 		Order* normal,* vegan,* vip;
 		if (normalOrderQueue.peekFront(normal) && normalCookCount)
 		{
@@ -727,7 +788,7 @@ void Restaurant::SimpleSimulator()
 	pGUI->waitForClick();
 }
 
-void Restaurant::Injury(int current_time_step)
+void Restaurant::Injury()
 {
 	Order* pOrder;
 	Cook *pCook;
@@ -750,9 +811,9 @@ void Restaurant::Injury(int current_time_step)
 
 
 				pOrder = pCook->GetOrder();
-				pOrder->SetFinishTime(pOrder->GetFinishTime() * 2 - current_time_step);
+				pOrder->SetFinishTime(pOrder->GetFinishTime() * 2 - currentTimeSteps);
 
-				assignedCooks.enqueue(pCook, -(pOrder->GetFinishTime() * 2 - current_time_step));
+				assignedCooks.enqueue(pCook, -(pOrder->GetFinishTime() * 2 - currentTimeSteps));
 			}
 		}
 	}
@@ -792,20 +853,20 @@ void Restaurant::PromoteOrder(int ID, double promotionMoney)
 			autoPromotedCount++;
 			x->SetType(TYPE_VIP);
 			x->SetMoney(x->GetMoney() + promotionMoney);
-			int priority = calcPriority(x);
+			int priority = CalcPriority(x);
 			vipOrderQueue.enqueue(x,priority);
 		}
 	}
 }
 
-void Restaurant::UpdateUrgentOrders(int currentTimeStep)
+void Restaurant::UpdateUrgentOrders()
 {
 	PriorityQueue<Order*> newVipOrderQueue;
 	Order* currentOrder;
 	while (vipOrderQueue.dequeue(currentOrder))
 	{
-		int currentOrderPriority = calcPriority(currentOrder);
-		if ((currentTimeStep - currentOrder->GetArrTime()) > urgentSteps)
+		int currentOrderPriority = CalcPriority(currentOrder);
+		if ((currentTimeSteps - currentOrder->GetArrTime()) > urgentSteps)
 		{
 			currentOrder->SetType(TYPE_URGNT);
 			urgentOrderQueue.enqueue(currentOrder, currentOrderPriority);
@@ -818,44 +879,26 @@ void Restaurant::UpdateUrgentOrders(int currentTimeStep)
 	vipOrderQueue = newVipOrderQueue;
 }
 
-void Restaurant::AutoPromote(int currentTimeStep)
+void Restaurant::AutoPromote()
 {
 	Order* currentOrder;
 	while (normalOrderQueue.peekFront(currentOrder))
 	{
-		if (currentTimeStep - currentOrder->GetArrTime() > autoPromotionSteps)
+		if (currentTimeSteps - currentOrder->GetArrTime() > autoPromotionSteps)
 		{
 			normalOrderQueue.dequeue(currentOrder);
 			currentOrder->SetType(TYPE_VIP);
-			vipOrderQueue.enqueue(currentOrder, calcPriority(currentOrder));
+			vipOrderQueue.enqueue(currentOrder, CalcPriority(currentOrder));
 		}
 		else break;
 	}
 }
 
-int Restaurant::calcPriority(Order* O)
+int Restaurant::CalcPriority(Order* O)
 {
 	return (10000 * O->GetMoney() / ((double)(O->GetSize()) * O->GetArrTime()));
 }
 
-void Restaurant::modes(int mode_id)
-{
-	currentTimeSteps = 1;
-
-	while (!(EventsQueue.isEmpty() && normalOrderQueue.isEmpty() && veganOrderQueue.isEmpty() && vipOrderQueue.isEmpty() && InServiceQueue.isEmpty()))
-	{
-		ExecuteEvents(currentTimeSteps);
-		Injury(currentTimeSteps);
-		check_finished_orders(currentTimeSteps);
-		check_cooks_breaks(currentTimeSteps);
-		UpdateUrgentOrders(currentTimeSteps);
-		AutoPromote(currentTimeSteps);
-		AssignToCook(currentTimeSteps);
-		FillDrawingList();
-		pGUI->waitForClick();
-		currentTimeSteps++;
-	}
-}
 /*
 //////////////////////////////////////////////////////////////////////////////////////////////
 /// ==> 
