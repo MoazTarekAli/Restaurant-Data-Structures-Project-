@@ -25,8 +25,7 @@ void Restaurant::RunSimulation()
 	switch (mode)	//Add a function for each mode in next phases
 	{
 	case MODE_INTR:
-		SimpleSimulator();
-		// InteractiveMode();
+		InteractiveMode();
 		break;
 	case MODE_STEP:
 		StepByStepMode();
@@ -38,6 +37,7 @@ void Restaurant::RunSimulation()
 		//Just_A_Demo();
 
 	};
+	SaveRestaurant();
 }
 
 
@@ -392,7 +392,7 @@ bool Restaurant::LoadEvents(ifstream& inFile)
 	// getting the number of events
 	if (CheckEOF(inFile)) return true;
 	int numberOfEvents;
-	cin >> numberOfEvents;
+	inFile >> numberOfEvents;
 
 	// calling the appropriate functions based on the event type
 	for (int i = 0; i < numberOfEvents; ++i)
@@ -427,7 +427,7 @@ inline bool Restaurant::LoadArrivalEvent(ifstream& inFile)
 	// getting the order type
 	if (CheckEOF(inFile)) return true;
 	char orderTypeInput;
-	cin >> orderTypeInput;
+	inFile >> orderTypeInput;
 	ORD_TYPE orderType;
 	switch (orderTypeInput)
 	{
