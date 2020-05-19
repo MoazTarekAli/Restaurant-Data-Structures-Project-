@@ -298,7 +298,7 @@ void Restaurant::LoadCooks(int ordersBeforeBreak, int* cookCounts, int cookSpeed
 {
 	// creating the cooks
 
-	Stack<Cook*> cookStacks[] = { normalCooks, veganCooks, vipCooks };
+	Stack<Cook*>* cookStacks[] = { &normalCooks, &veganCooks, &vipCooks };
 	ORD_TYPE ordTypes[] = { TYPE_NRM, TYPE_VGAN, TYPE_VIP };
 
 	// initializing the cook ID to 0
@@ -317,7 +317,7 @@ void Restaurant::LoadCooks(int ordersBeforeBreak, int* cookCounts, int cookSpeed
 			Cook* pCook = new Cook(++currentID, ordTypes[i], cookSpeed, cookBreak, ordersBeforeBreak);
 			// adding the cook to the appropriate lists
 			availableCooks.Append(pCook);
-			cookStacks[i].push(pCook);
+			cookStacks[i]->push(pCook);
 		}
 	}
 }
