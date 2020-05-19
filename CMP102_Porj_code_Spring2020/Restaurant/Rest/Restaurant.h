@@ -91,9 +91,9 @@ public:
 	
 	void ExecuteEvents();	//executes all events at current timestep
 	void RunSimulation();
-	void InteractiveMode();
-	void StepByStepMode();
-	void SilentMode();
+	bool InteractiveMode();
+	bool StepByStepMode();
+	bool SilentMode();
 	void SimpleSimulator();
 
 	void FillDrawingList();
@@ -119,9 +119,9 @@ public:
 
 	
 	// public load functions
-	void LoadRestaurant(); // to load using input from user
-	void LoadRestaurant(string fileName); // to load using a file name
-	void LoadRestaurant(ifstream& inFile); // to load using a file directly
+	bool LoadRestaurant(); // to load using input from user
+	bool LoadRestaurant(string fileName); // to load using a file name
+	bool LoadRestaurant(ifstream& inFile); // to load using a file directly
 	
 	void SaveRestaurant(); // to save the restaurants data
 

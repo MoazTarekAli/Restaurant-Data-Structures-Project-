@@ -25,13 +25,13 @@ void Restaurant::RunSimulation()
 	switch (mode)	//Add a function for each mode in next phases
 	{
 	case MODE_INTR:
-		InteractiveMode();
+		if (InteractiveMode()) return;
 		break;
 	case MODE_STEP:
-		StepByStepMode();
+		if (StepByStepMode()) return;
 		break;
 	case MODE_SLNT:
-		SilentMode();
+		if (SilentMode()) return;
 		break;
 	//case MODE_DEMO:
 		//Just_A_Demo();
@@ -200,9 +200,9 @@ void Restaurant::CancelOrder(int ID)
 }
 
 
-void Restaurant::InteractiveMode()
+bool Restaurant::InteractiveMode()
 {
-	LoadRestaurant();
+	if (LoadRestaurant()) return true;
 	currentTimeSteps = 1;
 
 	while (!(EventsQueue.isEmpty() && normalOrderQueue.isEmpty()
@@ -220,11 +220,12 @@ void Restaurant::InteractiveMode()
 		pGUI->waitForClick();
 		currentTimeSteps++;
 	}
+	return false;
 }
 
-void Restaurant::StepByStepMode()
+bool Restaurant::StepByStepMode()
 {
-	LoadRestaurant();
+	if (LoadRestaurant()) return true;
 	currentTimeSteps = 1;
 
 	while (!(EventsQueue.isEmpty() && normalOrderQueue.isEmpty()
@@ -242,11 +243,12 @@ void Restaurant::StepByStepMode()
 		Sleep(1000);
 		currentTimeSteps++;
 	}
+	return false;
 }
 
-void Restaurant::SilentMode()
+bool Restaurant::SilentMode()
 {
-	LoadRestaurant();
+	if (LoadRestaurant()) return true;
 	currentTimeSteps = 1;
 
 	while (!(EventsQueue.isEmpty() && normalOrderQueue.isEmpty()
@@ -262,6 +264,7 @@ void Restaurant::SilentMode()
 		AssignToCook();
 		currentTimeSteps++;
 	}
+	return false;
 }
 
 inline bool Restaurant::CheckEOF(ifstream& inFile)
@@ -286,30 +289,29 @@ bool Restaurant::LoadValues(ifstream& inFile, int itemCount, T* items[])
 	return false;
 }
 
-void Restaurant::LoadRestaurant()
+bool Restaurant::LoadRestaurant()
 {
 	pGUI->PrintMessage((string)"[The input file must be placed in the Input_Files folder]\n" +
 		"[test0.txt, test1.txt, test3.txt, test4.txt files are already provided in the folder]\n" +
 		"Enter the input file name:\n");
 	string fileName = pGUI->GetString();
 	fileName = "Input_Files\\" + fileName;
-	LoadRestaurant(fileName);
+	return (LoadRestaurant(fileName));
 }
 
-void Restaurant::LoadRestaurant(string fileName)
+bool Restaurant::LoadRestaurant(string fileName)
 {
 	ifstream inFile(fileName, ios::in);
 	if (!inFile.is_open())
 	{
 		pGUI->PrintMessage("Error! Can't open the file! The file must be placed inside the Input_Files folder.");
+		pGUI->waitForClick();
+		return true;
 	}
-	else
-	{
-		LoadRestaurant(inFile);
-	}
+	return (LoadRestaurant(inFile));
 }
 
-void Restaurant::LoadRestaurant(ifstream& inFile)
+bool Restaurant::LoadRestaurant(ifstream& inFile)
 {
 	// loading values
 
@@ -333,7 +335,7 @@ void Restaurant::LoadRestaurant(ifstream& inFile)
 	};
 
 	// getting the input values
-	if (LoadValues<int>(inFile, 20, inputValues)) return;
+	if (LoadValues<int>(inFile, 20, inputValues)) return true;
 
 	// initializing data members
 	normalCookCount = normalCookCountInput;
@@ -351,10 +353,12 @@ void Restaurant::LoadRestaurant(ifstream& inFile)
 	LoadCooks(ordersBeforeBreak, cookCounts, cookSpeeds, cookBreaks);
 
 	// creating events
-	if (LoadEvents(inFile)) return;
+	if (LoadEvents(inFile)) return true;
 
 	// closing the file
 	inFile.close();
+
+	return false;
 }
 
 void Restaurant::LoadCooks(int ordersBeforeBreak, int* cookCounts, int cookSpeeds[3][2], int cookBreaks[3][2])
@@ -492,7 +496,7 @@ void Restaurant::SaveRestaurant()
 	pGUI->PrintMessage((string)"Enter the output file name:\n");
 
 	// Get the string entered by the user and set as the file name
-	ofstream outFile(pGUI->GetString());
+	ofstream outFile("Output_Files\\" + pGUI->GetString());
 
 	// Writing the header of the table
 	outFile << "FT\tID\tAT\tWT\tST" << endl;
