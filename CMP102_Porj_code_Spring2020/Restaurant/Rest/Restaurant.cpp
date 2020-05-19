@@ -268,18 +268,20 @@ inline bool Restaurant::CheckEOF(ifstream& inFile)
 {
 	if (inFile.eof())
 	{
+		pGUI->PrintMessage("Error! Not enough values in the file!");
+		pGUI->waitForClick();
 		return true;
 	}
 	return false;
 }
 
 template <typename T>
-bool Restaurant::LoadValues(ifstream& inFile, int itemCount, T** items)
+bool Restaurant::LoadValues(ifstream& inFile, int itemCount, T* items[])
 {
 	for (int i = 0; i < itemCount; ++i)
 	{
 		if (CheckEOF(inFile)) return true;
-		cin >> *items[i];
+		inFile >> *items[i];
 	}
 	return false;
 }
@@ -313,8 +315,8 @@ void Restaurant::LoadRestaurant(ifstream& inFile)
 
 	// declaring the variables to be used to store the data from the input file
 	int normalCookCountInput, veganCookCountInput, vipCookCountInput;
-	int minNormalSpeed, minVeganSpeed, minVipSpeed, maxNormalSpeed, maxVeganSpeed, maxVipSpeed;
-	int ordersBeforeBreak, minNormalBreak, minVeganBreak, minVipBreak, maxNormalBreak, maxVeganBreak, maxVipBreak;
+	int minNormalSpeed, maxNormalSpeed, minVeganSpeed, maxVeganSpeed, minVipSpeed, maxVipSpeed;
+	int ordersBeforeBreak, minNormalBreak, maxNormalBreak, minVeganBreak, maxVeganBreak, minVipBreak, maxVipBreak;
 	int injuryProbability, restStepsInput;
 	int autoPromotionStepsInput, urgentStepsInput;
 	int numberOfEvents;

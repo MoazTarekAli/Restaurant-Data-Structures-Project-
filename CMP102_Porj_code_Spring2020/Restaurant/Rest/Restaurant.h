@@ -77,7 +77,7 @@ private:
 	// private loading functions
 	bool CheckEOF(ifstream& inFile);
 	template <typename T>
-	bool LoadValues(ifstream& inFile, int itemCount, T** items);
+	bool LoadValues(ifstream& inFile, int itemCount, T* items[]);
 	void LoadCooks(int ordersBeforeBreak, int* cookCounts, int cookSpeeds[3][2], int CookBreaks[3][2]);
 	bool LoadEvents(ifstream& inFile);
 	bool LoadArrivalEvent(ifstream& inFile);
