@@ -64,7 +64,7 @@ private:
 	int urgentOrdersCount;
 	
 	int totalMoney;
-	int totalTimeSteps;
+	int currentTimeSteps;
 	
 	int autoPromotedCount;
 	int autoPromotionSteps;
@@ -108,7 +108,6 @@ public:
 	void PromoteOrder(int ID, double promotionMoney);
 	void SimpleSimulator();
 	void AssignToCook(int currentTimeStep);
-	void Assign_to_cook(int current_time_step);
 	void check_finished_orders(int current_time_step);
 	void check_cooks_breaks(int current_time_step);
 	void Injury(int currentimestep);
@@ -116,6 +115,7 @@ public:
 	void AutoPromote(int currentTimeStep);
 	int calcPriority(Order* O);
 	void modes(int mode_id);
+
 	// public load functions
 	void LoadRestaurant(); // to load using input from user
 	void LoadRestaurant(string fileName); // to load using a file name
