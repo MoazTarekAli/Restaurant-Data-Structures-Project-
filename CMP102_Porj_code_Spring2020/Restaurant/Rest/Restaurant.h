@@ -115,7 +115,7 @@ public:
 	void UpdateUrgentOrders(int currentTimeStep);
 	void AutoPromote(int currentTimeStep);
 	int calcPriority(Order* O);
-
+	void modes(int mode_id);
 	// public load functions
 	void LoadRestaurant(); // to load using input from user
 	void LoadRestaurant(string fileName); // to load using a file name

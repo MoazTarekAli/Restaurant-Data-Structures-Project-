@@ -21,7 +21,7 @@ void Restaurant::RunSimulation()
 {
 	pGUI = new GUI;
 	PROG_MODE	mode = pGUI->getGUIMode();
-		
+	
 	switch (mode)	//Add a function for each mode in next phases
 	{
 	case MODE_INTR:
@@ -90,9 +90,27 @@ void Restaurant::FillDrawingList()
 	//To add Cooks it should call function  void GUI::AddToDrawingList(Cook* pCc);
 	
 	//adding cooks to gui
-	for (int i = 0; i < totalCookCount; ++i)
+	for (int i = 0; i < veganCookCount+vipCookCount+normalCookCount; ++i)
 	{
-		pGUI->AddToDrawingList(availableCooks.getEntry(i));
+		Cook* pcook;
+		if (i < vipCookCount)
+		{
+			vipCooks.pop(pcook);
+			pGUI->AddToDrawingList(pcook);
+			vipCooks.push(pcook);
+		}
+		else if (i < vipCookCount + normalCookCount)
+		{
+			normalCooks.pop(pcook);
+			pGUI->AddToDrawingList(pcook);
+			normalCooks.push(pcook);
+		}
+		else
+		{
+			veganCooks.pop(pcook);
+			pGUI->AddToDrawingList(pcook);
+			veganCooks.push(pcook);
+		}
 	}
 	
 	//adding unfinished orders
@@ -467,6 +485,7 @@ bool Restaurant::AssignOrder(int currentTimeStep, Order* pOrder, Stack<Cook*>& c
 	if (cookList.IsEmpty()) return false;
 	Cook* pCook;
 	cookList.pop(pCook);
+	pCook->SetOrder(pOrder);
 	InServiceQueue_test.enqueue(pOrder, -1 * (pCook->TimeToFinishOrder()) - currentTimeStep);
 	assignedCooks.enqueue(pCook, -1 * (pCook->TimeToFinishOrder()) - currentTimeStep);
 	totalMoney += pOrder->GetMoney();
@@ -489,6 +508,7 @@ void Restaurant::AssignToCook(int currentTimeStep)
 		{
 			Cook* pCook;
 			restingCooks.dequeue(pCook);
+			pCook->SetOrder(pOrder);
 			InServiceQueue_test.enqueue(pOrder, -1 * (pCook->TimeToFinishOrder()) - currentTimeStep);
 			assignedCooks.enqueue(pCook, -1 * (pCook->TimeToFinishOrder()) - currentTimeStep);
 			totalMoney += pOrder->GetMoney();
@@ -1119,6 +1139,24 @@ int Restaurant::calcPriority(Order* O)
 	return (10000 * O->GetMoney() / ((double)(O->GetSize()) * O->GetArrTime()));
 }
 
+void Restaurant::modes(int mode_id)
+{
+	totalTimeSteps = 1;
+
+	while (!(EventsQueue.isEmpty() && normalOrderQueue.isEmpty() && veganOrderQueue.isEmpty() && vipOrderQueue.isEmpty() && InServiceQueue.isEmpty()))
+	{
+		ExecuteEvents(totalTimeSteps);
+		Injury(totalTimeSteps);
+		check_finished_orders(totalTimeSteps);
+		check_cooks_breaks(totalTimeSteps);
+		UpdateUrgentOrders(totalTimeSteps);
+		AutoPromote(totalTimeSteps);
+		AssignToCook(totalTimeSteps);
+		FillDrawingList();
+		pGUI->waitForClick();
+		totalTimeSteps++;
+	}
+}
 /*
 //////////////////////////////////////////////////////////////////////////////////////////////
 /// ==> 
