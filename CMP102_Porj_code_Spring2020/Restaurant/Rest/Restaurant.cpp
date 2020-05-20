@@ -319,23 +319,24 @@ bool Restaurant::LoadRestaurant(ifstream& inFile)
 	int normalCookCountInput, veganCookCountInput, vipCookCountInput;
 	int minNormalSpeed, maxNormalSpeed, minVeganSpeed, maxVeganSpeed, minVipSpeed, maxVipSpeed;
 	int ordersBeforeBreak, minNormalBreak, maxNormalBreak, minVeganBreak, maxVeganBreak, minVipBreak, maxVipBreak;
-	int injuryProbability, restStepsInput;
-	int autoPromotionStepsInput, urgentStepsInput;
-	int numberOfEvents;
+	double injuryProbability;
+	int restStepsInput, autoPromotionStepsInput, urgentStepsInput;
 
 	// creating an array containing pointers to these variables in order to easily loop over them
 	// to store the data from the input file
-	int* inputValues[] =
+	int* inputValuesA[] =
 	{
 		&normalCookCountInput, &veganCookCountInput, &vipCookCountInput,
 		&minNormalSpeed, &maxNormalSpeed, &minVeganSpeed, &maxVeganSpeed, &minVipSpeed, &maxVipSpeed,
-		&ordersBeforeBreak, &minNormalBreak, &maxNormalBreak, &minVeganBreak, &maxVeganBreak, &minVipBreak, &maxVipBreak,
-		&injuryProbability, &restStepsInput,
-		&autoPromotionStepsInput, &urgentStepsInput,
+		&ordersBeforeBreak, &minNormalBreak, &maxNormalBreak, &minVeganBreak, &maxVeganBreak, &minVipBreak, &maxVipBreak
 	};
+	double* inputValuesB[] = { &injuryProbability };
+	int* inputValuesC[] = { &restStepsInput, &autoPromotionStepsInput, &urgentStepsInput };
 
 	// getting the input values
-	if (LoadValues<int>(inFile, 20, inputValues)) return true;
+	if (LoadValues<int>(inFile, 16, inputValuesA)) return true;
+	if (LoadValues<double>(inFile, 1, inputValuesB)) return true;
+	if (LoadValues<int>(inFile, 3, inputValuesC)) return true;
 
 	// initializing data members
 	normalCookCount = normalCookCountInput;
@@ -451,9 +452,12 @@ inline bool Restaurant::LoadArrivalEvent(ifstream& inFile)
 	}
 
 	// getting the order inputs
-	double eventTimeStep, orderID, orderSize, orderMoney;
-	double* eventInputValues[] = { &eventTimeStep, &orderID, &orderSize, &orderMoney };
-	if (LoadValues<double>(inFile, 4, eventInputValues)) return true;
+	int eventTimeStep, orderID, orderSize;
+	double orderMoney;
+	int* eventInputValuesA[] = { &eventTimeStep, &orderID, &orderSize };
+	double* eventInputValuesB[] = { &orderMoney };
+	if (LoadValues<int>(inFile, 3, eventInputValuesA)) return true;
+	if (LoadValues<double>(inFile, 1, eventInputValuesB)) return true;
 
 	// creating the event and adding it to the events queue
 	Event* pEvent = new ArrivalEvent(eventTimeStep, orderID, orderType, orderMoney, orderSize);
@@ -479,9 +483,12 @@ inline bool Restaurant::LoadCancellationEvent(ifstream& inFile)
 inline bool Restaurant::LoadPromotionEvent(ifstream& inFile)
 {
 	// getting the order inputs
-	double eventTimeStep, orderID, promotionMoney;
-	double* eventInputValues[] = { &eventTimeStep, &orderID, &promotionMoney };
-	if (LoadValues<double>(inFile, 3, eventInputValues)) return true;
+	int eventTimeStep, orderID;
+	double promotionMoney;
+	int* eventInputValuesA[] = { &eventTimeStep, &orderID };
+	double* eventInputValuesB[] = { &promotionMoney };
+	if (LoadValues<int>(inFile, 2, eventInputValuesA)) return true;
+	if (LoadValues<double>(inFile, 1, eventInputValuesB)) return true;
 
 	// creating the event and adding it to the events queue
 	Event* pEvent = new PromotionEvent(eventTimeStep, orderID, promotionMoney);
