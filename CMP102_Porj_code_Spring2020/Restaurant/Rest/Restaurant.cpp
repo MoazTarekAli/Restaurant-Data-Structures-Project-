@@ -224,7 +224,8 @@ void Restaurant::FillDrawingList()
 		"Number of waiting vip orders : " + to_string(vip_count) + '\n' +
 		"Number of orders in service : " + to_string(served_count) + '\n' +
 		"Number of finished orders : " + to_string(finished_count) +'\n');
-
+	pGUI->UpdateInterface();
+	pGUI->ResetDrawingList();
 }
 
 void Restaurant::CancelOrder(int ID)
