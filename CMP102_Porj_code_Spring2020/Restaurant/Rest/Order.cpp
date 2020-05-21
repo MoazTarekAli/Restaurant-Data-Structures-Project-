@@ -111,6 +111,7 @@ Order::Order(int id, ORD_TYPE r_Type, int s, double money, int aritime)
 	status = WAIT;
 	totalMoney = money;
 	ArrTime = aritime;
+	WaitTime = 0;
 	ServTime = 0;
 	FinishTime = 0;
 }

@@ -164,7 +164,7 @@ void Restaurant::FillDrawingList()
 		}
 	}
 	
-	//adding unfinished orders
+	//adding waiting orders
 	int normal_count = 0, vegan_count = 0, vip_count = 0;
 	Order** Normal = normalOrderQueue->toArray(normal_count);
 	Order** vegan = veganOrderQueue->toArray(vegan_count);
@@ -197,6 +197,7 @@ void Restaurant::FillDrawingList()
 		pGUI->AddToDrawingList(all_orders[i]);
 	}
 	delete[] all_orders;
+
 	//adding served orders
 	int served_count = 0;
 	Order** served = InServiceQueue_test->toArray(served_count);
