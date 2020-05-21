@@ -43,9 +43,9 @@ private:
 	PriorityQueue<Order*>* InServiceQueue_test;
 	
 	LinkedList<Cook*>* availableCooks;
-	Stack<Cook*>* normalCooks;
-	Stack<Cook*>* veganCooks;
-	Stack<Cook*>* vipCooks;
+	Queue<Cook*>* normalCooks;
+	Queue<Cook*>* veganCooks;
+	Queue<Cook*>* vipCooks;
 	PriorityQueue<Cook*>* assignedCooks;
 	PriorityQueue<Cook*>* restingCooks;
 	
@@ -70,7 +70,7 @@ private:
 	int urgentSteps;
 	int restSteps;
 
-	bool AssignOrder(int currentTimeStep, Order* order, Stack<Cook*>* cookList);
+	bool AssignOrder(int currentTimeStep, Order* order, Queue<Cook*>* cookList);
 
 	// private loading functions
 	bool CheckEOF(ifstream& inFile);
@@ -95,7 +95,7 @@ public:
 	void SimpleSimulator();
 
 	void FillDrawingList();
-
+	void Assign_to_cook();
 	//
 	// TODO: Add More Member Functions As Needed
 	//
