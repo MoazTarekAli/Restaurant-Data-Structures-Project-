@@ -1,6 +1,7 @@
 #include <cstdlib>
 #include <time.h>
 #include <iostream>
+
 using namespace std;
 
 #include "Restaurant.h"
@@ -10,11 +11,25 @@ using namespace std;
 
 Restaurant::Restaurant() 
 {
-	totalCookCount = 0;
 	currentTimeSteps = 1;
 	totalMoney = 0;
 	injuredCount = 0;
 	pGUI = NULL;
+	
+	totalCookCount = 0;
+	normalCookCount = 0;
+	veganCookCount = 0;
+	vipCookCount = 0;
+	injuredCount = 0;
+
+	totalOrdersCount = 0;
+	normalOrdersCount = 0;
+	veganOrdersCount = 0;
+	vipOrdersCount = 0;
+	urgentOrdersCount = 0;
+
+	autoPromotedCount = 0;
+
 
 	EventsQueue = new Queue<Event*>;
 
@@ -42,6 +57,7 @@ void Restaurant::RunSimulation()
 	switch (mode)	//Add a function for each mode in next phases
 	{
 	case MODE_INTR:
+		//	SimpleSimulator();
 		if (InteractiveMode()) return;
 		break;
 	case MODE_STEP:
