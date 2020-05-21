@@ -38,7 +38,6 @@ Restaurant::Restaurant()
 	vipOrderQueue = new PriorityQueue<Order*>;
 	urgentOrderQueue = new PriorityQueue<Order*>;
 	finishedQueue = new Queue<Order*>;
-	InServiceQueue = new Queue<Order*>;
 	InServiceQueue_test = new PriorityQueue<Order*>;
 
 	availableCooks = new LinkedList<Cook*>;
@@ -123,7 +122,6 @@ Restaurant::~Restaurant()
 	delete vipOrderQueue;
 	delete urgentOrderQueue;
 	delete finishedQueue;
-	delete InServiceQueue;
 	delete InServiceQueue_test;
 
 	delete availableCooks;
@@ -258,13 +256,13 @@ bool Restaurant::InteractiveMode()
 
 	while (!(EventsQueue->isEmpty() && normalOrderQueue->isEmpty()
 		&& veganOrderQueue->isEmpty() && vipOrderQueue->isEmpty()
-		&& InServiceQueue->isEmpty()))
+		&& InServiceQueue_test->isEmpty()))
 	{
 		ExecuteEvents();
 		Injury();
 		check_finished_orders();
 		check_cooks_breaks();
-		UpdateUrgentOrders();
+		//UpdateUrgentOrders();
 		AutoPromote();
 		AssignToCook();
 		FillDrawingList();
@@ -281,7 +279,7 @@ bool Restaurant::StepByStepMode()
 
 	while (!(EventsQueue->isEmpty() && normalOrderQueue->isEmpty()
 		&& veganOrderQueue->isEmpty() && vipOrderQueue->isEmpty()
-		&& InServiceQueue->isEmpty()))
+		&& InServiceQueue_test->isEmpty()))
 	{
 		ExecuteEvents();
 		Injury();
@@ -304,7 +302,7 @@ bool Restaurant::SilentMode()
 
 	while (!(EventsQueue->isEmpty() && normalOrderQueue->isEmpty()
 		&& veganOrderQueue->isEmpty() && vipOrderQueue->isEmpty()
-		&& InServiceQueue->isEmpty()))
+		&& InServiceQueue_test->isEmpty()))
 	{
 		ExecuteEvents();
 		Injury();
@@ -787,7 +785,7 @@ void Restaurant::SimpleSimulator()
 
 	// place of loading calling
 	LoadRestaurant();
-	while (!(EventsQueue->isEmpty() && normalOrderQueue->isEmpty() && veganOrderQueue->isEmpty() && vipOrderQueue->isEmpty() && InServiceQueue->isEmpty()))
+	while (!(EventsQueue->isEmpty() && normalOrderQueue->isEmpty() && veganOrderQueue->isEmpty() && vipOrderQueue->isEmpty() && InServiceQueue_test->isEmpty()))
 	{
 		ExecuteEvents();
 		Order* normal,* vegan,* vip;
@@ -796,7 +794,7 @@ void Restaurant::SimpleSimulator()
 			normalOrderQueue->dequeue(normal);
 			normal->SetStatus(SRV);
 			normal->SetServTime(currentTimeSteps);
-			InServiceQueue->enqueue(normal);
+			InServiceQueue_test->enqueue(normal,2);
 			normalCookCount--;
 		}
 		if (veganOrderQueue->peekFront(vegan) && veganCookCount)
@@ -804,7 +802,7 @@ void Restaurant::SimpleSimulator()
 			veganOrderQueue->dequeue(vegan);
 			vegan->SetStatus(SRV);
 			vegan->SetServTime(currentTimeSteps);
-			InServiceQueue->enqueue(vegan);
+			InServiceQueue_test->enqueue(vegan,2);
 			veganCookCount--;
 		}
 		if (vipOrderQueue->peekFront(vip) && vipCookCount)
@@ -812,7 +810,7 @@ void Restaurant::SimpleSimulator()
 			vipOrderQueue->dequeue(vip);
 			vip->SetStatus(SRV);
 			vip->SetServTime(currentTimeSteps);
-			InServiceQueue->enqueue(vip);
+			InServiceQueue_test->enqueue(vip,2);
 			vipCookCount--;
 		}
 
@@ -821,9 +819,9 @@ void Restaurant::SimpleSimulator()
 			Order* finished;
 			for (int i = 0; i < 3; i++)
 			{
-				if (InServiceQueue->peekFront(finished))
+				if (InServiceQueue_test->peekFront(finished))
 				{
-					InServiceQueue->dequeue(finished);
+					InServiceQueue_test->dequeue(finished);
 					finished->SetStatus(DONE);
 					finished->SetFinishTime(currentTimeSteps);
 					finishedQueue->enqueue(finished);
