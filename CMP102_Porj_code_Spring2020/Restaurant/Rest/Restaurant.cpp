@@ -203,7 +203,9 @@ void Restaurant::FillDrawingList()
 	for (int i = 0; i < served_count; i++)
 	{
 		pGUI->AddToDrawingList(served[i]);
+		cout << served[i]->GetFinishTime()<<" ";
 	}
+	cout << endl;
 	//adding finished orders
 	int finished_count=0;
 	Order** finished = finishedQueue->toArray(finished_count);
@@ -217,11 +219,12 @@ void Restaurant::FillDrawingList()
 		"Number of available normal cooks : " + to_string(normalCookCount) + '\n' +
 		"Number of available vegan cooks : " + to_string(veganCookCount) + '\n' +
 		"Number of available vip cooks : " + to_string(vipCookCount) + '\n' +
+		"Number of injured cooks :" + to_string(injuredCount) + '\n' +
 		"Number of waiting normal orders : " + to_string(normal_count) + '\n' +
-		"Number of waiting vegan orders : " + to_string(vegan_count) + '\n'+
+		"Number of waiting vegan orders : " + to_string(vegan_count) + '\n' +
 		"Number of waiting vip orders : " + to_string(vip_count) + '\n' +
 		"Number of orders in service : " + to_string(served_count) + '\n' +
-		"Number of finished orders : " + to_string(finished_count) +'\n');
+		"Number of finished orders : " + to_string(finished_count) + '\n');
 	pGUI->UpdateInterface();
 	pGUI->ResetDrawingList();
 }
@@ -252,14 +255,15 @@ void Restaurant::CancelOrder(int ID)
 bool Restaurant::InteractiveMode()
 {
 	if (LoadRestaurant()) return true;
-	currentTimeSteps = 1;
+	currentTimeSteps = 0;
 
 	while (!(EventsQueue->isEmpty() && normalOrderQueue->isEmpty()
 		&& veganOrderQueue->isEmpty() && vipOrderQueue->isEmpty()
 		&& InServiceQueue_test->isEmpty()))
 	{
+		currentTimeSteps++;
 		ExecuteEvents();
-		//Injury();
+		Injury();
 		check_finished_orders();
 		check_cooks_breaks();
 		//UpdateUrgentOrders();
@@ -267,8 +271,8 @@ bool Restaurant::InteractiveMode()
 		//AssignToCook();
 		Assign_to_cook();
 		FillDrawingList();
+		check_finished_orders();
 		pGUI->waitForClick();
-		currentTimeSteps++;
 	}
 	return false;
 }
@@ -875,9 +879,10 @@ void Restaurant::Injury()
 
 
 				pOrder = pCook->GetOrder();
-				pOrder->SetFinishTime(pOrder->GetFinishTime() * 2 - currentTimeSteps);
-
+				InServiceQueue_test->enqueue(pOrder, -(pOrder->GetFinishTime() * 2 - currentTimeSteps));
 				assignedCooks->enqueue(pCook, -(pOrder->GetFinishTime() * 2 - currentTimeSteps));
+				pOrder->SetFinishTime(pOrder->GetFinishTime() * 2 - currentTimeSteps);
+				InServiceQueue_test->dequeue(pOrder);
 			}
 		}
 	}
@@ -1101,11 +1106,11 @@ void Restaurant::Assign_to_cook()
 		{
 			// remove the order from the urgent queue to inservice queue
 			urgentOrderQueue->dequeue(inorder);
+			vip_cook->SetOrder(inorder);
 			InServiceQueue_test->enqueue(inorder, -vip_cook->TimeToFinishOrder() - currentTimeSteps);
 
 			// Pop the VIP cook, assign him an order and add him to the unavailable cooks queue
 			vipCooks->dequeue(vip_cook);
-			vip_cook->SetOrder(inorder);
 			assignedCooks->enqueue(vip_cook, -vip_cook->TimeToFinishOrder() - currentTimeSteps);
 
 			// Add price of order to total restaurant money
@@ -1129,11 +1134,11 @@ void Restaurant::Assign_to_cook()
 		{
 			// remove the order from the waiting queue to inservice queue
 			urgentOrderQueue->dequeue(inorder);
+			normal_cook->SetOrder(inorder);
 			InServiceQueue_test->enqueue(inorder, -normal_cook->TimeToFinishOrder() - currentTimeSteps);
 
 			// Pop the Normal cook, assign him an order and add him to the unavailable cooks queue
 			normalCooks->dequeue(normal_cook);
-			normal_cook->SetOrder(inorder);
 			assignedCooks->enqueue(normal_cook, -normal_cook->TimeToFinishOrder() - currentTimeSteps);
 
 			// Add price of order to total restaurant money
@@ -1156,11 +1161,11 @@ void Restaurant::Assign_to_cook()
 		{
 			// remove the order from the waiting queue to inservice queue
 			urgentOrderQueue->dequeue(inorder);
+			vegan_cook->SetOrder(inorder);
 			InServiceQueue_test->enqueue(inorder, -vegan_cook->TimeToFinishOrder() - currentTimeSteps);
 
 			// Pop the Vegan cook, assign him an order and add him to the unavailable cooks queue
 			veganCooks->dequeue(vegan_cook);
-			vegan_cook->SetOrder(inorder);
 			assignedCooks->enqueue(vegan_cook, -vegan_cook->TimeToFinishOrder() - currentTimeSteps);
 
 			// Add price of order to total restaurant money
@@ -1183,11 +1188,11 @@ void Restaurant::Assign_to_cook()
 		{
 			// remove the order from the waiting queue to inservice queue
 			urgentOrderQueue->dequeue(inorder);
+			resting_cook->SetOrder(inorder);
 			InServiceQueue_test->enqueue(inorder, -resting_cook->TimeToFinishOrder() - currentTimeSteps);
 
 			// dequeue the resting cook, assign him an order and add him to the unavailable cooks queue
 			restingCooks->dequeue(resting_cook);
-			resting_cook->SetOrder(inorder);
 			assignedCooks->enqueue(resting_cook, -resting_cook->TimeToFinishOrder() - currentTimeSteps);
 
 			// Add price of order to total restaurant money
@@ -1216,11 +1221,11 @@ void Restaurant::Assign_to_cook()
 		{
 			// remove the order from the waiting queue to inservice queue
 			vipOrderQueue->dequeue(inorder);
+			vip_cook->SetOrder(inorder);
 			InServiceQueue_test->enqueue(inorder, -vip_cook->TimeToFinishOrder() - currentTimeSteps);
 
 			// Pop the VIP cook, assign him an order and add him to the unavailable cooks queue
 			vipCooks->dequeue(vip_cook);
-			vip_cook->SetOrder(inorder);
 			assignedCooks->enqueue(vip_cook, -vip_cook->TimeToFinishOrder() - currentTimeSteps);
 
 			// Add price of order to total restaurant money
@@ -1244,11 +1249,11 @@ void Restaurant::Assign_to_cook()
 		{
 			// remove the order from the waiting queue to inservice queue
 			vipOrderQueue->dequeue(inorder);
+			normal_cook->SetOrder(inorder);
 			InServiceQueue_test->enqueue(inorder, -normal_cook->TimeToFinishOrder() - currentTimeSteps);
 
 			// Pop the Normal cook, assign him an order and add him to the unavailable cooks queue
 			normalCooks->dequeue(normal_cook);
-			normal_cook->SetOrder(inorder);
 			assignedCooks->enqueue(normal_cook, -normal_cook->TimeToFinishOrder() - currentTimeSteps);
 
 			// Add price of order to total restaurant money
@@ -1271,11 +1276,11 @@ void Restaurant::Assign_to_cook()
 		{
 			// remove the order from the waiting queue to inservice queue
 			vipOrderQueue->dequeue(inorder);
+			vegan_cook->SetOrder(inorder);
 			InServiceQueue_test->enqueue(inorder, -vegan_cook->TimeToFinishOrder() - currentTimeSteps);
 
 			// Pop the Vegan cook, assign him an order and add him to the unavailable cooks queue
 			veganCooks->dequeue(vegan_cook);
-			vegan_cook->SetOrder(inorder);
 			assignedCooks->enqueue(vegan_cook, -vegan_cook->TimeToFinishOrder() - currentTimeSteps);
 
 			// Add price of order to total restaurant money
@@ -1306,11 +1311,11 @@ void Restaurant::Assign_to_cook()
 		{
 			// remove the order from the waiting queue to inservice queue
 			veganOrderQueue->dequeue(inorder);
+			vegan_cook->SetOrder(inorder);
 			InServiceQueue_test->enqueue(inorder, -vegan_cook->TimeToFinishOrder() - currentTimeSteps);
 
 			// Pop the vegan cook, assign him an order and add him to the unavailable cooks queue
 			veganCooks->dequeue(vegan_cook);
-			vegan_cook->SetOrder(inorder);
 			assignedCooks->enqueue(vegan_cook, -vegan_cook->TimeToFinishOrder() - currentTimeSteps);
 
 			// Add price of order to total restaurant money
@@ -1341,11 +1346,11 @@ void Restaurant::Assign_to_cook()
 		{
 			// remove the order from the waiting queue to inservice queue
 			normalOrderQueue->dequeue(inorder);
+			normal_cook->SetOrder(inorder);
 			InServiceQueue_test->enqueue(inorder, -normal_cook->TimeToFinishOrder() - currentTimeSteps);
 
 			// Pop the vegan cook, assign him an order and add him to the unavailable cooks queue
 			normalCooks->dequeue(normal_cook);
-			normal_cook->SetOrder(inorder);
 			assignedCooks->enqueue(normal_cook, -normal_cook->TimeToFinishOrder() - currentTimeSteps);
 
 			// Add price of order to total restaurant money
@@ -1368,11 +1373,11 @@ void Restaurant::Assign_to_cook()
 		{
 			// remove the order from the waiting queue to inservice queue
 			normalOrderQueue->dequeue(inorder);
+			vip_cook->SetOrder(inorder);
 			InServiceQueue_test->enqueue(inorder, -vip_cook->TimeToFinishOrder() - currentTimeSteps);
 
 			// Pop the VIP cook, assign him an order and add him to the unavailable cooks queue
 			vipCooks->dequeue(vip_cook);
-			vip_cook->SetOrder(inorder);
 			assignedCooks->enqueue(vip_cook, -vip_cook->TimeToFinishOrder() - currentTimeSteps);
 
 			// Add price of order to total restaurant money
