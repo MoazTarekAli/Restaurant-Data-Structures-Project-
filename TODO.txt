@@ -1,4 +1,2 @@
-+ Make the list data members dynamically allocated
-+ Make currentTimeStep a data member
 + Make total money int
 + Use throw/catch instead of return true

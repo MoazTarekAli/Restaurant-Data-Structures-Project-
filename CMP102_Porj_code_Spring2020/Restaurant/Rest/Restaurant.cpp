@@ -15,6 +15,23 @@ Restaurant::Restaurant()
 	totalMoney = 0;
 	injuredCount = 0;
 	pGUI = NULL;
+
+	EventsQueue = new Queue<Event*>;
+
+	normalOrderQueue = new Queue<Order*>;
+	veganOrderQueue = new Queue<Order*>;
+	vipOrderQueue = new PriorityQueue<Order*>;
+	urgentOrderQueue = new PriorityQueue<Order*>;
+	finishedQueue = new Queue<Order*>;
+	InServiceQueue = new Queue<Order*>;
+	InServiceQueue_test = new PriorityQueue<Order*>;
+
+	availableCooks = new LinkedList<Cook*>;
+	normalCooks = new Stack<Cook*>;
+	veganCooks = new Stack<Cook*>;
+	vipCooks = new Stack<Cook*>;
+	assignedCooks = new PriorityQueue<Cook*>;
+	restingCooks = new PriorityQueue<Cook*>;
 }
 
 void Restaurant::RunSimulation()
@@ -48,13 +65,13 @@ void Restaurant::RunSimulation()
 void Restaurant::ExecuteEvents()
 {
 	Event *pE;
-	while( EventsQueue.peekFront(pE) )	//as long as there are more events
+	while( EventsQueue->peekFront(pE) )	//as long as there are more events
 	{
 		if(pE->getEventTime() > currentTimeSteps)	//no more events at current timestep
 			return;
 
 		pE->Execute(this);
-		EventsQueue.dequeue(pE);	//remove event from the queue
+		EventsQueue->dequeue(pE);	//remove event from the queue
 		delete pE;		//deallocate event object from memory
 	}
 
@@ -65,13 +82,13 @@ void Restaurant::AddToQueue(Order* pOrd,const int prio)
 	switch (pOrd->GetType())
 	{
 	case 0:
-		normalOrderQueue.enqueue(pOrd);
+		normalOrderQueue->enqueue(pOrd);
 		break;
 	case 1:
-		veganOrderQueue.enqueue(pOrd);
+		veganOrderQueue->enqueue(pOrd);
 		break;
 	case 2:
-		vipOrderQueue.enqueue(pOrd, prio);
+		vipOrderQueue->enqueue(pOrd, prio);
 		break;
 	default:
 		break;
@@ -80,8 +97,25 @@ void Restaurant::AddToQueue(Order* pOrd,const int prio)
 
 Restaurant::~Restaurant()
 {
-		if (pGUI)
-			delete pGUI;
+	if (pGUI)
+		delete pGUI;
+
+	delete EventsQueue;
+
+	delete normalOrderQueue;
+	delete veganOrderQueue;
+	delete vipOrderQueue;
+	delete urgentOrderQueue;
+	delete finishedQueue;
+	delete InServiceQueue;
+	delete InServiceQueue_test;
+
+	delete availableCooks;
+	delete normalCooks;
+	delete veganCooks;
+	delete vipCooks;
+	delete assignedCooks;
+	delete restingCooks;
 }
 
 void Restaurant::FillDrawingList()
@@ -98,29 +132,29 @@ void Restaurant::FillDrawingList()
 		Cook* pcook;
 		if (i < vipCookCount)
 		{
-			vipCooks.pop(pcook);
+			vipCooks->pop(pcook);
 			pGUI->AddToDrawingList(pcook);
-			vipCooks.push(pcook);
+			vipCooks->push(pcook);
 		}
 		else if (i < vipCookCount + normalCookCount)
 		{
-			normalCooks.pop(pcook);
+			normalCooks->pop(pcook);
 			pGUI->AddToDrawingList(pcook);
-			normalCooks.push(pcook);
+			normalCooks->push(pcook);
 		}
 		else
 		{
-			veganCooks.pop(pcook);
+			veganCooks->pop(pcook);
 			pGUI->AddToDrawingList(pcook);
-			veganCooks.push(pcook);
+			veganCooks->push(pcook);
 		}
 	}
 	
 	//adding unfinished orders
 	int normal_count = 0, vegan_count = 0, vip_count = 0;
-	Order** Normal = normalOrderQueue.toArray(normal_count);
-	Order** vegan = veganOrderQueue.toArray(vegan_count);
-	Order** vip = vipOrderQueue.toArray(vip_count);
+	Order** Normal = normalOrderQueue->toArray(normal_count);
+	Order** vegan = veganOrderQueue->toArray(vegan_count);
+	Order** vip = vipOrderQueue->toArray(vip_count);
 	int sum = normal_count + vegan_count + vip_count;
 	Order** all_orders =new Order* [sum];
 	for (int i = 0; i < sum; i++)
@@ -151,14 +185,14 @@ void Restaurant::FillDrawingList()
 	delete[] all_orders;
 	//adding served orders
 	int served_count = 0;
-	Order** served = InServiceQueue_test.toArray(served_count);
+	Order** served = InServiceQueue_test->toArray(served_count);
 	for (int i = 0; i < served_count; i++)
 	{
 		pGUI->AddToDrawingList(served[i]);
 	}
 	//adding finished orders
 	int finished_count=0;
-	Order** finished = finishedQueue.toArray(finished_count);
+	Order** finished = finishedQueue->toArray(finished_count);
 	for (int i = 0; i < finished_count; i++)
 	{
 		pGUI->AddToDrawingList(finished[i]);
@@ -181,7 +215,7 @@ void Restaurant::CancelOrder(int ID)
 {
 	int count;
 	int flag=-1;
-	Order** NORMAL = normalOrderQueue.toArray(count);
+	Order** NORMAL = normalOrderQueue->toArray(count);
 	for (int i = 0; i < count; i++)
 	{
 		if (NORMAL[i]->GetID() == ID)
@@ -190,12 +224,12 @@ void Restaurant::CancelOrder(int ID)
 	for (int i = 0; i < count; i++)
 	{
 		Order* x;
-		normalOrderQueue.dequeue(x);
+		normalOrderQueue->dequeue(x);
 	}
 	for (int i = 0; i < count; i++)
 	{
 		if (i != flag)
-			normalOrderQueue.enqueue(NORMAL[i]);
+			normalOrderQueue->enqueue(NORMAL[i]);
 	}
 }
 
@@ -205,9 +239,9 @@ bool Restaurant::InteractiveMode()
 	if (LoadRestaurant()) return true;
 	currentTimeSteps = 1;
 
-	while (!(EventsQueue.isEmpty() && normalOrderQueue.isEmpty()
-		&& veganOrderQueue.isEmpty() && vipOrderQueue.isEmpty()
-		&& InServiceQueue.isEmpty()))
+	while (!(EventsQueue->isEmpty() && normalOrderQueue->isEmpty()
+		&& veganOrderQueue->isEmpty() && vipOrderQueue->isEmpty()
+		&& InServiceQueue->isEmpty()))
 	{
 		ExecuteEvents();
 		Injury();
@@ -228,9 +262,9 @@ bool Restaurant::StepByStepMode()
 	if (LoadRestaurant()) return true;
 	currentTimeSteps = 1;
 
-	while (!(EventsQueue.isEmpty() && normalOrderQueue.isEmpty()
-		&& veganOrderQueue.isEmpty() && vipOrderQueue.isEmpty()
-		&& InServiceQueue.isEmpty()))
+	while (!(EventsQueue->isEmpty() && normalOrderQueue->isEmpty()
+		&& veganOrderQueue->isEmpty() && vipOrderQueue->isEmpty()
+		&& InServiceQueue->isEmpty()))
 	{
 		ExecuteEvents();
 		Injury();
@@ -251,9 +285,9 @@ bool Restaurant::SilentMode()
 	if (LoadRestaurant()) return true;
 	currentTimeSteps = 1;
 
-	while (!(EventsQueue.isEmpty() && normalOrderQueue.isEmpty()
-		&& veganOrderQueue.isEmpty() && vipOrderQueue.isEmpty()
-		&& InServiceQueue.isEmpty()))
+	while (!(EventsQueue->isEmpty() && normalOrderQueue->isEmpty()
+		&& veganOrderQueue->isEmpty() && vipOrderQueue->isEmpty()
+		&& InServiceQueue->isEmpty()))
 	{
 		ExecuteEvents();
 		Injury();
@@ -366,7 +400,7 @@ void Restaurant::LoadCooks(int ordersBeforeBreak, int* cookCounts, int cookSpeed
 {
 	// creating the cooks
 
-	Stack<Cook*>* cookStacks[] = { &normalCooks, &veganCooks, &vipCooks };
+	Stack<Cook*>** cookStacks[] = { &normalCooks, &veganCooks, &vipCooks };
 	ORD_TYPE ordTypes[] = { TYPE_NRM, TYPE_VGAN, TYPE_VIP };
 
 	// initializing the cook ID to 0
@@ -384,8 +418,8 @@ void Restaurant::LoadCooks(int ordersBeforeBreak, int* cookCounts, int cookSpeed
 			// creating the cook
 			Cook* pCook = new Cook(++currentID, ordTypes[i], cookSpeed, cookBreak, ordersBeforeBreak);
 			// adding the cook to the appropriate lists
-			availableCooks.Append(pCook);
-			cookStacks[i]->push(pCook);
+			availableCooks->Append(pCook);
+			(*cookStacks[i])->push(pCook);
 		}
 	}
 }
@@ -461,7 +495,7 @@ inline bool Restaurant::LoadArrivalEvent(ifstream& inFile)
 
 	// creating the event and adding it to the events queue
 	Event* pEvent = new ArrivalEvent(eventTimeStep, orderID, orderType, orderMoney, orderSize);
-	EventsQueue.enqueue(pEvent);
+	EventsQueue->enqueue(pEvent);
 	
 	return false;
 }
@@ -475,7 +509,7 @@ inline bool Restaurant::LoadCancellationEvent(ifstream& inFile)
 
 	// creating the event and adding it to the events queue
 	Event* pEvent = new CancellationEvent(eventTimeStep, orderID);
-	EventsQueue.enqueue(pEvent);
+	EventsQueue->enqueue(pEvent);
 
 	return false;
 }
@@ -492,7 +526,7 @@ inline bool Restaurant::LoadPromotionEvent(ifstream& inFile)
 
 	// creating the event and adding it to the events queue
 	Event* pEvent = new PromotionEvent(eventTimeStep, orderID, promotionMoney);
-	EventsQueue.enqueue(pEvent);
+	EventsQueue->enqueue(pEvent);
 
 	return false;
 }
@@ -516,7 +550,7 @@ void Restaurant::SaveRestaurant()
 	for (int i = 0; i < totalOrdersCount; i++)
 	{
 		Order* pOrder;
-		finishedQueue.dequeue(pOrder);
+		finishedQueue->dequeue(pOrder);
 
 		// Print out all the order info in the output file
 
@@ -554,19 +588,19 @@ void Restaurant::SaveRestaurant()
 	// Closing file
 	outFile.close();
 }
-bool Restaurant::AssignOrder(int currentTimeStep, Order* pOrder, Stack<Cook*>& cookList)
+bool Restaurant::AssignOrder(int currentTimeStep, Order* pOrder, Stack<Cook*>* cookList)
 {
 	// checks the list is empty
-	if (cookList.IsEmpty()) return false;
+	if (cookList->IsEmpty()) return false;
 
 	// assigning the order to the cook
 	Cook* pCook;
-	cookList.pop(pCook);
+	cookList->pop(pCook);
 	pCook->SetOrder(pOrder);
 
 	// adding the order to the in service queue and the cook to the assinged cooks
-	InServiceQueue_test.enqueue(pOrder, -1 * (pCook->TimeToFinishOrder()) - currentTimeStep);
-	assignedCooks.enqueue(pCook, -1 * (pCook->TimeToFinishOrder()) - currentTimeStep);
+	InServiceQueue_test->enqueue(pOrder, -1 * (pCook->TimeToFinishOrder()) - currentTimeStep);
+	assignedCooks->enqueue(pCook, -1 * (pCook->TimeToFinishOrder()) - currentTimeStep);
 	
 	// updating the total money
 	totalMoney += pOrder->GetMoney();
@@ -585,18 +619,18 @@ void Restaurant::AssignToCook()
 	Order* pOrder;
 	
 	// assigning the urgent orders
-	while (urgentOrderQueue.dequeue(pOrder) && (!availableCooks.IsEmpty() || !restingCooks.isEmpty()))
+	while (urgentOrderQueue->dequeue(pOrder) && (!availableCooks->IsEmpty() || !restingCooks->isEmpty()))
 	{
 		if (AssignOrder(currentTimeSteps, pOrder, vipCooks)) vipCookCount--;
 		else if (AssignOrder(currentTimeSteps, pOrder, normalCooks)) normalCookCount--;
 		else if (AssignOrder(currentTimeSteps, pOrder, veganCooks)) veganCookCount--;
-		else if (!restingCooks.isEmpty())
+		else if (!restingCooks->isEmpty())
 		{
 			Cook* pCook;
-			restingCooks.dequeue(pCook);
+			restingCooks->dequeue(pCook);
 			pCook->SetOrder(pOrder);
-			InServiceQueue_test.enqueue(pOrder, -1 * (pCook->TimeToFinishOrder()) - currentTimeSteps);
-			assignedCooks.enqueue(pCook, -1 * (pCook->TimeToFinishOrder()) - currentTimeSteps);
+			InServiceQueue_test->enqueue(pOrder, -1 * (pCook->TimeToFinishOrder()) - currentTimeSteps);
+			assignedCooks->enqueue(pCook, -1 * (pCook->TimeToFinishOrder()) - currentTimeSteps);
 			totalMoney += pOrder->GetMoney();
 			pOrder->SetFinishTime(pCook->TimeToFinishOrder() + currentTimeSteps);
 			pOrder->SetServTime(currentTimeSteps);
@@ -608,7 +642,7 @@ void Restaurant::AssignToCook()
 	}
 
 	// assigning the vip orders
-	while (vipOrderQueue.dequeue(pOrder) && !availableCooks.IsEmpty())
+	while (vipOrderQueue->dequeue(pOrder) && !availableCooks->IsEmpty())
 	{
 		if (AssignOrder(currentTimeSteps, pOrder, vipCooks)) vipCookCount--;
 		else if (AssignOrder(currentTimeSteps, pOrder, normalCooks)) normalCookCount--;
@@ -617,14 +651,14 @@ void Restaurant::AssignToCook()
 	}
 
 	// assigning the vegan orders
-	while (veganOrderQueue.dequeue(pOrder) && !availableCooks.IsEmpty())
+	while (veganOrderQueue->dequeue(pOrder) && !availableCooks->IsEmpty())
 	{
 		if (AssignOrder(currentTimeSteps, pOrder, veganCooks)) veganCookCount--;
 		else break;
 	}
 
 	// assigning the normal orders
-	while (normalOrderQueue.dequeue(pOrder) && !availableCooks.IsEmpty())
+	while (normalOrderQueue->dequeue(pOrder) && !availableCooks->IsEmpty())
 	{
 		if (AssignOrder(currentTimeSteps, pOrder, normalCooks)) normalCookCount--;
 		else if (AssignOrder(currentTimeSteps, pOrder, vipCooks)) vipCookCount--;
@@ -636,13 +670,13 @@ void Restaurant::check_finished_orders()
 {
 	bool flag = true;
 	Cook* busy_cook;
-	while (assignedCooks.peekFront(busy_cook) && flag)
+	while (assignedCooks->peekFront(busy_cook) && flag)
 	{
 		if (busy_cook->GetIsCooking() && (busy_cook->GetOrder())->GetFinishTime() == currentTimeSteps)
 		{
 			Order* finished_order = busy_cook->GetOrder();
-			InServiceQueue_test.dequeue(finished_order);
-			finishedQueue.enqueue(finished_order);
+			InServiceQueue_test->dequeue(finished_order);
+			finishedQueue->enqueue(finished_order);
 			finished_order->SetStatus(DONE);
 
 			totalOrdersCount++;
@@ -662,34 +696,34 @@ void Restaurant::check_finished_orders()
 				break;
 			}
 
-			assignedCooks.dequeue(busy_cook);
+			assignedCooks->dequeue(busy_cook);
 			if (busy_cook->GetIsInjured())
 			{
 				busy_cook->SetIsInjured(false);
 				busy_cook->SetIsResting(true);
 				busy_cook->SetBreakTimeEnd(restSteps + currentTimeSteps);
-				restingCooks.enqueue(busy_cook, -restSteps - currentTimeSteps);
+				restingCooks->enqueue(busy_cook, -restSteps - currentTimeSteps);
 			}
 			else if (busy_cook->NeedBreak())
 			{
 				busy_cook->SetIsResting(true);
 				busy_cook->SetBreakTimeEnd(busy_cook->GetBreakDuration() + currentTimeSteps);
-				restingCooks.enqueue(busy_cook, -busy_cook->GetBreakDuration() - currentTimeSteps);
+				restingCooks->enqueue(busy_cook, -busy_cook->GetBreakDuration() - currentTimeSteps);
 			}
 			else
 			{
 				switch (busy_cook->GetType())
 				{
 				case TYPE_NRM:
-					normalCooks.push(busy_cook);
+					normalCooks->push(busy_cook);
 					normalCookCount++;
 					break;
 				case TYPE_VIP:
-					vipCooks.push(busy_cook);
+					vipCooks->push(busy_cook);
 					vipCookCount++;
 					break;
 				case TYPE_VGAN:
-					veganCooks.push(busy_cook);
+					veganCooks->push(busy_cook);
 					veganCookCount++;
 					break;
 				}
@@ -704,24 +738,24 @@ void Restaurant::check_cooks_breaks()
 {
 	Cook* busy_cook;
 	bool flag = true;
-	while (restingCooks.peekFront(busy_cook) && flag)
+	while (restingCooks->peekFront(busy_cook) && flag)
 	{
 		if (busy_cook->GetBreakTimeEnd()==currentTimeSteps)
 		{
-			restingCooks.dequeue(busy_cook);
+			restingCooks->dequeue(busy_cook);
 
 			switch (busy_cook->GetType())
 			{
 			case TYPE_NRM:
-				normalCooks.push(busy_cook);
+				normalCooks->push(busy_cook);
 				normalCookCount++;
 				break;
 			case TYPE_VIP:
-				vipCooks.push(busy_cook);
+				vipCooks->push(busy_cook);
 				vipCookCount++;
 				break;
 			case TYPE_VGAN:
-				veganCooks.push(busy_cook);
+				veganCooks->push(busy_cook);
 				veganCookCount++;
 				break;
 			}
@@ -736,32 +770,32 @@ void Restaurant::SimpleSimulator()
 
 	// place of loading calling
 	LoadRestaurant();
-	while (!(EventsQueue.isEmpty() && normalOrderQueue.isEmpty() && veganOrderQueue.isEmpty() && vipOrderQueue.isEmpty() && InServiceQueue.isEmpty()))
+	while (!(EventsQueue->isEmpty() && normalOrderQueue->isEmpty() && veganOrderQueue->isEmpty() && vipOrderQueue->isEmpty() && InServiceQueue->isEmpty()))
 	{
 		ExecuteEvents();
 		Order* normal,* vegan,* vip;
-		if (normalOrderQueue.peekFront(normal) && normalCookCount)
+		if (normalOrderQueue->peekFront(normal) && normalCookCount)
 		{
-			normalOrderQueue.dequeue(normal);
+			normalOrderQueue->dequeue(normal);
 			normal->SetStatus(SRV);
 			normal->SetServTime(currentTimeSteps);
-			InServiceQueue.enqueue(normal);
+			InServiceQueue->enqueue(normal);
 			normalCookCount--;
 		}
-		if (veganOrderQueue.peekFront(vegan) && veganCookCount)
+		if (veganOrderQueue->peekFront(vegan) && veganCookCount)
 		{
-			veganOrderQueue.dequeue(vegan);
+			veganOrderQueue->dequeue(vegan);
 			vegan->SetStatus(SRV);
 			vegan->SetServTime(currentTimeSteps);
-			InServiceQueue.enqueue(vegan);
+			InServiceQueue->enqueue(vegan);
 			veganCookCount--;
 		}
-		if (vipOrderQueue.peekFront(vip) && vipCookCount)
+		if (vipOrderQueue->peekFront(vip) && vipCookCount)
 		{
-			vipOrderQueue.dequeue(vip);
+			vipOrderQueue->dequeue(vip);
 			vip->SetStatus(SRV);
 			vip->SetServTime(currentTimeSteps);
-			InServiceQueue.enqueue(vip);
+			InServiceQueue->enqueue(vip);
 			vipCookCount--;
 		}
 
@@ -770,12 +804,12 @@ void Restaurant::SimpleSimulator()
 			Order* finished;
 			for (int i = 0; i < 3; i++)
 			{
-				if (InServiceQueue.peekFront(finished))
+				if (InServiceQueue->peekFront(finished))
 				{
-					InServiceQueue.dequeue(finished);
+					InServiceQueue->dequeue(finished);
 					finished->SetStatus(DONE);
 					finished->SetFinishTime(currentTimeSteps);
-					finishedQueue.enqueue(finished);
+					finishedQueue->enqueue(finished);
 					switch (finished->GetType())
 					{
 					case(TYPE_NRM):
@@ -809,14 +843,14 @@ void Restaurant::Injury()
 	if (((rand() % 100) / 100) <= injuryProbability * 100)
 	{
 		// peek check if there are cooks that are unavailable
-		if (assignedCooks.peekFront(pCook) && !pCook->GetIsInjured())
+		if (assignedCooks->peekFront(pCook) && !pCook->GetIsInjured())
 		{
 			// check if the cook is cooking an order
 			if (pCook->GetIsCooking())
 			{
 				// Dequeue the cook from the unavailable priority queue, as his time in the unavailable
 				// queue just increased
-				assignedCooks.dequeue(pCook);
+				assignedCooks->dequeue(pCook);
 				pCook->SetIsInjured(true);
 
 				// Increment total number of injuries in the restaurant
@@ -826,7 +860,7 @@ void Restaurant::Injury()
 				pOrder = pCook->GetOrder();
 				pOrder->SetFinishTime(pOrder->GetFinishTime() * 2 - currentTimeSteps);
 
-				assignedCooks.enqueue(pCook, -(pOrder->GetFinishTime() * 2 - currentTimeSteps));
+				assignedCooks->enqueue(pCook, -(pOrder->GetFinishTime() * 2 - currentTimeSteps));
 			}
 		}
 	}
@@ -843,7 +877,7 @@ void Restaurant::PromoteOrder(int ID, double promotionMoney)
 
 	int count;
 	int flag = -1;
-	Order** NORMAL = normalOrderQueue.toArray(count);
+	Order** NORMAL = normalOrderQueue->toArray(count);
 	Order* x;
 	
 	for (int i = 0; i < count; i++)
@@ -854,54 +888,55 @@ void Restaurant::PromoteOrder(int ID, double promotionMoney)
 
 	for (int i = 0; i < count; i++)
 	{
-		normalOrderQueue.dequeue(x);
+		normalOrderQueue->dequeue(x);
 	}
 
 	for (int i = 0; i < count; i++)
 	{
 		if (i != flag)
-			normalOrderQueue.enqueue(NORMAL[i]);
+			normalOrderQueue->enqueue(NORMAL[i]);
 		else
 		{
 			autoPromotedCount++;
 			x->SetType(TYPE_VIP);
 			x->SetMoney(x->GetMoney() + promotionMoney);
 			int priority = CalcPriority(x);
-			vipOrderQueue.enqueue(x,priority);
+			vipOrderQueue->enqueue(x,priority);
 		}
 	}
 }
 
 void Restaurant::UpdateUrgentOrders()
 {
-	PriorityQueue<Order*> newVipOrderQueue;
+	PriorityQueue<Order*>* newVipOrderQueue = new PriorityQueue<Order*>;
 	Order* currentOrder;
-	while (vipOrderQueue.dequeue(currentOrder))
+	while (vipOrderQueue->dequeue(currentOrder))
 	{
 		int currentOrderPriority = CalcPriority(currentOrder);
 		if ((currentTimeSteps - currentOrder->GetArrTime()) > urgentSteps)
 		{
 			currentOrder->SetType(TYPE_URGNT);
-			urgentOrderQueue.enqueue(currentOrder, currentOrderPriority);
+			urgentOrderQueue->enqueue(currentOrder, currentOrderPriority);
 		}
 		else
 		{
-			newVipOrderQueue.enqueue(currentOrder, currentOrderPriority);
+			newVipOrderQueue->enqueue(currentOrder, currentOrderPriority);
 		}
 	}
+	delete vipOrderQueue;
 	vipOrderQueue = newVipOrderQueue;
 }
 
 void Restaurant::AutoPromote()
 {
 	Order* currentOrder;
-	while (normalOrderQueue.peekFront(currentOrder))
+	while (normalOrderQueue->peekFront(currentOrder))
 	{
 		if (currentTimeSteps - currentOrder->GetArrTime() > autoPromotionSteps)
 		{
-			normalOrderQueue.dequeue(currentOrder);
+			normalOrderQueue->dequeue(currentOrder);
 			currentOrder->SetType(TYPE_VIP);
-			vipOrderQueue.enqueue(currentOrder, CalcPriority(currentOrder));
+			vipOrderQueue->enqueue(currentOrder, CalcPriority(currentOrder));
 		}
 		else break;
 	}

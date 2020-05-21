@@ -23,7 +23,7 @@ class Restaurant
 {	
 private:
 	GUI *pGUI;
-	Queue<Event*> EventsQueue;	//Queue of all events that will be loaded from file
+	Queue<Event*>* EventsQueue;	//Queue of all events that will be loaded from file
 
 	
 	/// ==> 
@@ -35,21 +35,20 @@ private:
 	// TODO: Add More Data Members As Needed
 	//
 
-	Queue<Order*> normalOrderQueue;
-	Queue<Order*> veganOrderQueue;
-	PriorityQueue<Order*> vipOrderQueue;
-	PriorityQueue<Order*> urgentOrderQueue;
-	Queue<Order*> finishedQueue;
-	Queue<Order*> InServiceQueue;
-	PriorityQueue<Order*> InServiceQueue_test;
+	Queue<Order*>* normalOrderQueue;
+	Queue<Order*>* veganOrderQueue;
+	PriorityQueue<Order*>* vipOrderQueue;
+	PriorityQueue<Order*>* urgentOrderQueue;
+	Queue<Order*>* finishedQueue;
+	Queue<Order*>* InServiceQueue;
+	PriorityQueue<Order*>* InServiceQueue_test;
 	
-	LinkedList<Cook*> availableCooks;
-	Stack<Cook*> normalCooks;
-	Stack<Cook*> veganCooks;
-	Stack<Cook*> vipCooks;
-	
-	PriorityQueue<Cook*> assignedCooks;
-	PriorityQueue<Cook*> restingCooks;
+	LinkedList<Cook*>* availableCooks;
+	Stack<Cook*>* normalCooks;
+	Stack<Cook*>* veganCooks;
+	Stack<Cook*>* vipCooks;
+	PriorityQueue<Cook*>* assignedCooks;
+	PriorityQueue<Cook*>* restingCooks;
 	
 	int totalCookCount;
 	int normalCookCount;
@@ -72,7 +71,7 @@ private:
 	int urgentSteps;
 	int restSteps;
 
-	bool AssignOrder(int currentTimeStep, Order* order, Stack<Cook*>& cookList);
+	bool AssignOrder(int currentTimeStep, Order* order, Stack<Cook*>* cookList);
 
 	// private loading functions
 	bool CheckEOF(ifstream& inFile);
