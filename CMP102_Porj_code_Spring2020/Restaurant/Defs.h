@@ -7,10 +7,10 @@
 
 enum ORD_TYPE	//types of orders
 {
-	TYPE_NRM,	//normal order
-	TYPE_VGAN,	//vegan
-	TYPE_VIP,	//VIP
-	TYPE_URGNT,
+	TYPE_NRM,	//Normal order
+	TYPE_VGAN,	//Vegan	order
+	TYPE_VIP,	//VIP	order
+	TYPE_URGNT,	//Urgent order
 	TYPE_CNT	//Number of types
 
 };

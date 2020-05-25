@@ -139,9 +139,9 @@ void Restaurant::FillDrawingList()
 	//It should get orders from orders lists/queues/stacks/whatever (same for Cooks)
 	//To add orders it should call function  void GUI::AddToDrawingList(Order* pOrd);
 	//To add Cooks it should call function  void GUI::AddToDrawingList(Cook* pCc);
-	
+
 	//adding cooks to gui
-	for (int i = 0; i < veganCookCount+vipCookCount+normalCookCount; ++i)
+	for (int i = 0; i < veganCookCount + vipCookCount + normalCookCount; ++i)
 	{
 		Cook* pcook;
 		if (i < vipCookCount)
@@ -163,14 +163,15 @@ void Restaurant::FillDrawingList()
 			veganCooks->enqueue(pcook);
 		}
 	}
-	
+
 	//adding waiting orders
-	int normal_count = 0, vegan_count = 0, vip_count = 0;
+	int normal_count = 0, vegan_count = 0, vip_count = 0, urgent_count = 0;
 	Order** Normal = normalOrderQueue->toArray(normal_count);
 	Order** vegan = veganOrderQueue->toArray(vegan_count);
 	Order** vip = vipOrderQueue->toArray(vip_count);
-	int sum = normal_count + vegan_count + vip_count;
-	Order** all_orders =new Order* [sum];
+	Order** urgent = urgentOrderQueue->toArray(urgent_count);
+	int sum = normal_count + vegan_count + vip_count + urgent_count;
+	Order** all_orders = new Order * [sum];
 	for (int i = 0; i < sum; i++)
 	{
 		if (i < normal_count)
@@ -179,6 +180,12 @@ void Restaurant::FillDrawingList()
 			all_orders[i] = vegan[i - normal_count];
 		else if (i < normal_count + vegan_count + vip_count)
 			all_orders[i] = vip[i - normal_count - vegan_count];
+		else if (i < normal_count + vegan_count + vip_count + urgent_count)
+			all_orders[i] = urgent[i - normal_count + vegan_count + vip_count + urgent_count];
+
+		// Moaz check rabi3 condition kda lw mashy b nafs l system l enta 3ayzo, edit it out if it's not the same
+		// 3shan ana msh mragi3 3aleha awi tbh ba2y l 7agat et3adelet 3la asas urgent 5las mi4 fadel 3'er de 
+		// w 3maltelhom line lw7do f print
 	}
 
 	for (int i = 1; i < sum; i++)
@@ -204,11 +211,11 @@ void Restaurant::FillDrawingList()
 	for (int i = 0; i < served_count; i++)
 	{
 		pGUI->AddToDrawingList(served[i]);
-		cout << served[i]->GetFinishTime()<<" ";
+		cout << served[i]->GetFinishTime() << " ";
 	}
 	cout << endl;
 	//adding finished orders
-	int finished_count=0;
+	int finished_count = 0;
 	Order** finished = finishedQueue->toArray(finished_count);
 	for (int i = 0; i < finished_count; i++)
 	{
@@ -224,6 +231,7 @@ void Restaurant::FillDrawingList()
 		"Number of waiting normal orders : " + to_string(normal_count) + '\n' +
 		"Number of waiting vegan orders : " + to_string(vegan_count) + '\n' +
 		"Number of waiting vip orders : " + to_string(vip_count) + '\n' +
+		"Number of waiting urgent orders :" + to_string(urgent_count) + '\n' +
 		"Number of orders in service : " + to_string(served_count) + '\n' +
 		"Number of finished orders : " + to_string(finished_count) + '\n');
 	pGUI->UpdateInterface();
@@ -712,7 +720,7 @@ void Restaurant::check_finished_orders()
 			case TYPE_VGAN:
 				veganOrdersCount++;
 				break;
-			case(TYPE_URGNT):
+			case TYPE_URGNT:
 				vipCookCount++;
 				urgentOrdersCount++;
 				break;
