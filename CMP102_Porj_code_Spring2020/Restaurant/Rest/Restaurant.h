@@ -114,7 +114,7 @@ public:
 	void UpdateUrgentOrders();
 	void AutoPromote();
 	int CalcPriority(Order* O);
-
+	void UpdateWaitingTime();
 	
 	// public load functions
 	bool LoadRestaurant(); // to load using input from user

@@ -53,11 +53,16 @@ public:
 	void SetArrTime(int time);
 	int GetArrTime();
 
+	void SetWaitTime(int time);
+	int GetWaitTime();
+
 	void SetServTime(int time);
 	int GetServTime();
 
 	void SetFinishTime(int time);
 	int GetFinishTime();
+
+
 
 	//
 

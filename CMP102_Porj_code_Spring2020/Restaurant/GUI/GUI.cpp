@@ -12,7 +12,7 @@ GUI::GUI()
 	DrawingColors[TYPE_NRM] =  RED;	          //normal-order color
 	DrawingColors[TYPE_VGAN] = DARKBLUE;     //vegan-order color
 	DrawingColors[TYPE_VIP] = VIOLET;		//VIP-order color					
-	DrawingColors[TYPE_URGNT] = BLACK;     //urgent-order color
+	DrawingColors[TYPE_URGNT] = DARKGREEN;     //urgent-order color
 	ClearStatusBar();
 	ClearDrawingArea(); 
 	DrawRestArea();  

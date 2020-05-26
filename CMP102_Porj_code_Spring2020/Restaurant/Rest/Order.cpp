@@ -78,6 +78,16 @@ int Order::GetArrTime()
 	return ArrTime;
 }
 
+void Order::SetWaitTime(int time)
+{
+	WaitTime = time;
+}
+
+int Order::GetWaitTime()
+{
+	return WaitTime;
+}
+
 void Order::SetServTime(int time)
 {
 	ServTime = time;
