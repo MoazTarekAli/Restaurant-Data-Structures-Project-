@@ -1,2 +1,4 @@
 + Make total money int
 + Use throw/catch instead of return true
++ Test cases
++ Remove cout calls

@@ -233,7 +233,7 @@ void Restaurant::FillDrawingList()
 				break;
 			}
 
-			assigned_orders += to_string(last_cooks[i]->GetID());
+			assigned_orders += (to_string(last_cooks[i]->GetID()) + "(");
 
 			switch ((last_cooks[i]->GetOrder())->GetType())
 			{
@@ -252,7 +252,7 @@ void Restaurant::FillDrawingList()
 			}
 
 			assigned_orders += to_string((last_cooks[i]->GetOrder())->GetID());
-			assigned_orders += "   ";
+			assigned_orders += ") ";
 		}
 	}
 
@@ -275,7 +275,8 @@ void Restaurant::FillDrawingList()
 		"Number of waiting vip orders : " + to_string(vip_count) + '\n' +
 		"Number of waiting urgent orders :" + to_string(urgent_count) + '\n' +
 		"Number of orders in service : " + to_string(served_count) + '\n' +
-		"Number of finished orders : " + to_string(finished_count) + '\n'+assigned_orders);
+		"Orders served in the last timestep : " + assigned_orders + '\n' +
+		"Number of finished orders : " + to_string(finished_count) + '\n');
 	pGUI->UpdateInterface();
 	pGUI->ResetDrawingList();
 }
