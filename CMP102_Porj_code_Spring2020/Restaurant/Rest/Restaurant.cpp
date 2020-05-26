@@ -181,7 +181,7 @@ void Restaurant::FillDrawingList()
 		else if (i < normal_count + vegan_count + vip_count)
 			all_orders[i] = vip[i - normal_count - vegan_count];
 		else if (i < normal_count + vegan_count + vip_count + urgent_count)
-			all_orders[i] = urgent[i - normal_count + vegan_count + vip_count + urgent_count];
+			all_orders[i] = urgent[i - normal_count - vegan_count - vip_count];
 
 		// Moaz check rabi3 condition kda lw mashy b nafs l system l enta 3ayzo, edit it out if it's not the same
 		// 3shan ana msh mragi3 3aleha awi tbh ba2y l 7agat et3adelet 3la asas urgent 5las mi4 fadel 3'er de 
@@ -268,14 +268,14 @@ bool Restaurant::InteractiveMode()
 
 	while (!(EventsQueue->isEmpty() && normalOrderQueue->isEmpty()
 		&& veganOrderQueue->isEmpty() && vipOrderQueue->isEmpty()
-		&& InServiceQueue_test->isEmpty()))
+		&& InServiceQueue_test->isEmpty()&&restingCooks->isEmpty()))
 	{
 		currentTimeSteps++;
 		ExecuteEvents();
 		Injury();
 		check_finished_orders();
 		check_cooks_breaks();
-		//UpdateUrgentOrders();
+		UpdateUrgentOrders();
 		AutoPromote();
 		//AssignToCook();
 		Assign_to_cook();
@@ -721,7 +721,7 @@ void Restaurant::check_finished_orders()
 				veganOrdersCount++;
 				break;
 			case TYPE_URGNT:
-				vipCookCount++;
+				vipOrdersCount++;
 				urgentOrdersCount++;
 				break;
 			}
