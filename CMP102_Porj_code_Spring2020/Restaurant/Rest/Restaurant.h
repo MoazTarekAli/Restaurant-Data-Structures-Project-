@@ -39,8 +39,8 @@ private:
 	Queue<Order*>* veganOrderQueue;
 	PriorityQueue<Order*>* vipOrderQueue;
 	PriorityQueue<Order*>* urgentOrderQueue;
-	Queue<Order*>* finishedQueue;
 	PriorityQueue<Order*>* InServiceQueue;
+	Queue<Order*>* finishedQueue;
 	
 	LinkedList<Cook*>* availableCooks;
 	Queue<Cook*>* normalCooks;
@@ -70,9 +70,10 @@ private:
 	int urgentSteps;
 	int restSteps;
 
-	bool AssignOrder(int currentTimeStep, Order* order, Queue<Cook*>* cookList);
+	// bool AssignOrder(int currentTimeStep, Order* order, Queue<Cook*>* cookList);
 
 	// private loading functions
+
 	bool CheckEOF(ifstream& inFile);
 	template <typename T>
 	bool LoadValues(ifstream& inFile, int itemCount, T* items[]);
@@ -87,48 +88,47 @@ public:
 	Restaurant();
 	~Restaurant();
 	
-	void ExecuteEvents();	//executes all events at current timestep
-	void RunSimulation();
-	bool InteractiveMode();
-	bool StepByStepMode();
-	bool SilentMode();
-	void SimpleSimulator();
+	void ExecuteEvents();	// Executes all events at current timestep
+	void RunSimulation();	// Promopts the user to pick one of the available three modes
+	bool InteractiveMode();	// First available mode, moves timesteps by mouseclicks
+	bool StepByStepMode();	// Second available mode, moves a single timestep every second
+	bool SilentMode();		// Third available mode, finishes the runtime on it's own
 
 	void FillDrawingList();
-	void Assign_to_cook();
+	void AssignToCook();
+
+	void AssignToCook2();
+	void AssignUrgent();
+	void AssignVIP();
+	void AssignNormal();
+	void AssignVegan();
+
 	//
 	// TODO: Add More Member Functions As Needed
 	//
 
-	//void addtoNormalQueue(Order* pO);
-	//void addtoVeganQueue(Order* pO);
-	//void addtoVIPQueue(Order* pO, int prio);
-
 	void AddToQueue(Order* pO, const int prio=0);
 	void CancelOrder(int ID);
 	void PromoteOrder(int ID, double promotionMoney);
-	void AssignToCook();
-	void check_finished_orders();
-	void check_cooks_breaks();
+
+	//void AssignToCook();
+
+	void CheckFinishedOrders();
+	void CheckCooksBreaks();
 	void Injury();
 	void UpdateUrgentOrders();
 	void AutoPromote();
-	int CalcPriority(Order* O);
 	void UpdateWaitingTime();
+	int CalcPriority(Order* O);
 	
+
 	// public load functions
+
 	bool LoadRestaurant(); // to load using input from user
 	bool LoadRestaurant(string fileName); // to load using a file name
 	bool LoadRestaurant(ifstream& inFile); // to load using a file directly
 	
 	void SaveRestaurant(); // to save the restaurants data
-
-/// ===================    DEMO-related functions. Should be removed in phases 1&2   ================= 
-
-	//void Just_A_Demo();	//just to show a demo and should be removed in phase1 1 & 2
-	//void AddtoDemoQueue(Order* po);	//adds an order to the demo queue
-
-/// ================================================================================================== 
 
 
 
