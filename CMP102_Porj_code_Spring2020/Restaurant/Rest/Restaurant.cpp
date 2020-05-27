@@ -919,7 +919,7 @@ void Restaurant::Injury()
 	Order* pOrder;
 	Cook *pCook;
 
-	if (((rand() % 100) / 100) <= injuryProbability * 100)
+	if (((rand() % 100)) <= injuryProbability * 100)
 	{
 		// peek check if there are cooks that are unavailable
 		if (assignedCooks->peekFront(pCook) && !pCook->GetIsInjured())
