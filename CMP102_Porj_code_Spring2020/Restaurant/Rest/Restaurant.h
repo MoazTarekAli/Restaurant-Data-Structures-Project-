@@ -40,7 +40,7 @@ private:
 	PriorityQueue<Order*>* vipOrderQueue;
 	PriorityQueue<Order*>* urgentOrderQueue;
 	Queue<Order*>* finishedQueue;
-	PriorityQueue<Order*>* InServiceQueue_test;
+	PriorityQueue<Order*>* InServiceQueue;
 	
 	LinkedList<Cook*>* availableCooks;
 	Queue<Cook*>* normalCooks;
