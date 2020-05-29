@@ -398,7 +398,7 @@ bool Restaurant::LoadValues(ifstream& inFile, int itemCount, T* items[])
 bool Restaurant::LoadRestaurant()
 {
 	pGUI->PrintMessage((string)"[The input file must be placed in the Input_Files folder]\n" +
-		"[test0.txt, test1.txt, test3.txt, test4.txt files are already provided in the folder]\n" +
+		"[test0, test1, test3, test4, files are already provided in the folder]\n" +
 		"Enter the input file name:\n");
 	string fileName = pGUI->GetString();
 	fileName = "Input_Files\\" + fileName;
