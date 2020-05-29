@@ -225,7 +225,7 @@ void Restaurant::FillDrawingList()
 				assigned_orders += "N";
 				break;
 			case TYPE_VGAN:
-				assigned_orders += "VG";
+				assigned_orders += "G";
 				break;
 			case TYPE_VIP:
 				assigned_orders += "V";
@@ -240,7 +240,7 @@ void Restaurant::FillDrawingList()
 				assigned_orders += "N";
 				break;
 			case TYPE_VGAN:
-				assigned_orders += "VG";
+				assigned_orders += "G";
 				break;
 			case TYPE_VIP:
 				assigned_orders += "V";
