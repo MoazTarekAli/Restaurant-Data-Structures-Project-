@@ -69,7 +69,7 @@ void GUI::PrintMessage(string msg) const	//Prints a message on status bar
 	//pWind->DrawString(10, WindHeight - (int)(StatusBarHeight / 1.5), msg); // You may need to change these coordinates later 
 	                                                                      // to be able to write multi-line
 	int string_size=msg.length();
-	int y = WindHeight - (int)(StatusBarHeight / 1.2);
+	int y = WindHeight - (int)(StatusBarHeight / 1.2)-40;
 	int temp=0;
 	bool printed = false;
 	for (int i = 0; i < string_size; i++)

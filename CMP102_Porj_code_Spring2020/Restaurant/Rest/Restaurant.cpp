@@ -647,15 +647,15 @@ void Restaurant::SaveRestaurant()
 			<< ", Veg:" << veganOrdersCount << ", VIP:" << vipOrdersCount << ']' << endl;
 
 	// Printing total number of cooks and number of cooks of each type
-	outFile << "cooks: " << totalCookCount << '\t' << "[Norm:" << normalCookCount 
-			<< ", Veg:" << veganCookCount << ", VIP:" << vipCookCount << ']' << endl;
+	outFile << "cooks: " << totalCookCount << '\t' << "[Norm:" << normalCookCount
+		<< ", Veg:" << veganCookCount << ", VIP:" << vipCookCount << ", injured:" << injuredCount << ']' << endl;
 
 	// Printing average waiting time and average serving time
 	outFile << "Avg Wait = " << averageWaitingTime << ",\t" << "Avg Serv = " << averageServingTime << endl;
 
 	// Printing urgent orders count and percentage of auto promoted orders relative to total orders
 	outFile << "Urgent Orders: " << urgentOrdersCount << ", \t" << "Auto Promoted: " 
-			<< autoPromotedCount / totalOrdersCount << '%' << endl;
+			<< autoPromotedCount / normalOrdersCount << '%' << endl;
 
 	// Closing file
 	outFile.close();
