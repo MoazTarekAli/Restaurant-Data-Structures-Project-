@@ -425,7 +425,7 @@ bool Restaurant::LoadRestaurant(ifstream& inFile)
 	int normalCookCountInput, veganCookCountInput, vipCookCountInput;
 	int minNormalSpeed, maxNormalSpeed, minVeganSpeed, maxVeganSpeed, minVipSpeed, maxVipSpeed;
 	int ordersBeforeBreak, minNormalBreak, maxNormalBreak, minVeganBreak, maxVeganBreak, minVipBreak, maxVipBreak;
-	double injuryProbability;
+	double injuryProb;
 	int restStepsInput, autoPromotionStepsInput, urgentStepsInput;
 
 	// creating an array containing pointers to these variables in order to easily loop over them
@@ -436,7 +436,7 @@ bool Restaurant::LoadRestaurant(ifstream& inFile)
 		&minNormalSpeed, &maxNormalSpeed, &minVeganSpeed, &maxVeganSpeed, &minVipSpeed, &maxVipSpeed,
 		&ordersBeforeBreak, &minNormalBreak, &maxNormalBreak, &minVeganBreak, &maxVeganBreak, &minVipBreak, &maxVipBreak
 	};
-	double* inputValuesB[] = { &injuryProbability };
+	double* inputValuesB[] = { &injuryProb };
 	int* inputValuesC[] = { &restStepsInput, &autoPromotionStepsInput, &urgentStepsInput };
 
 	// getting the input values
@@ -452,6 +452,7 @@ bool Restaurant::LoadRestaurant(ifstream& inFile)
 	autoPromotionSteps = autoPromotionStepsInput;
 	urgentSteps = urgentStepsInput;
 	restSteps = restStepsInput;
+	injuryProbability = injuryProb;
 
 	// creating cooks
 	int cookCounts[] = { normalCookCount, veganCookCount, vipCookCount };
@@ -609,7 +610,7 @@ void Restaurant::SaveRestaurant()
 	pGUI->PrintMessage((string)"Enter the output file name:\n");
 
 	// Get the string entered by the user and set as the file name
-	ofstream outFile("Output_Files\\" + pGUI->GetString());
+	ofstream outFile("Output_Files\\" + pGUI->GetString() + ".txt");
 
 	// Writing the header of the table
 	outFile << "FT\tID\tAT\tWT\tST" << endl;
@@ -844,8 +845,9 @@ void Restaurant::Injury()
 {
 	Order* pOrder;
 	Cook *pCook;
-
-	if (((rand() % 100)) <= injuryProbability * 100)
+	
+	int test = rand();
+	if ((( test % 100)) <= injuryProbability * 100)
 	{
 		// peek check if there are cooks that are unavailable
 		if (assignedCooks->peekFront(pCook) && !pCook->GetIsInjured())

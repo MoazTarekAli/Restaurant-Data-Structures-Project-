@@ -66,7 +66,7 @@ private:
 	
 	int autoPromotedCount;
 	int autoPromotionSteps;
-	int injuryProbability;
+	double injuryProbability;
 	int urgentSteps;
 	int restSteps;
 
