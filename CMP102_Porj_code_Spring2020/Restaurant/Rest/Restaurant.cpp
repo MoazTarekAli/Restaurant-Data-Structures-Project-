@@ -523,8 +523,8 @@ bool Restaurant::LoadEvents(ifstream& inFile)
 			if (LoadPromotionEvent(inFile)) return true;
 			break;
 		default:
-			pGUI->waitForClick();
 			pGUI->PrintMessage("Error! Unknown event type!");
+			pGUI->waitForClick();
 			return true;
 		}
 	}
