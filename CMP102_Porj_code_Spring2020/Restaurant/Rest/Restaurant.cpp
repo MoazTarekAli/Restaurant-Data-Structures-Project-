@@ -656,7 +656,7 @@ void Restaurant::SaveRestaurant()
 
 	// Printing urgent orders count and percentage of auto promoted orders relative to total orders
 	outFile << "Urgent Orders: " << urgentOrdersCount << ", \t" << "Auto Promoted: " 
-			<< autoPromotedCount / normalOrdersCount << '%' << endl;
+			<< (double)autoPromotedCount / (normalOrdersCount+autoPromotedCount)*100 << '%' << endl;
 
 	// Closing file
 	outFile.close();
@@ -902,7 +902,6 @@ void Restaurant::PromoteOrder(int ID, double promotionMoney)
 			normalOrderQueue->enqueue(normal[i]);
 		else
 		{
-			autoPromotedCount++;
 			toBePromoted->SetType(TYPE_VIP);
 			toBePromoted->SetWaitTime(0);
 			toBePromoted->SetMoney(toBePromoted->GetMoney() + promotionMoney);
@@ -940,6 +939,7 @@ void Restaurant::AutoPromote()
 	{
 		if (currentTimeSteps - currentOrder->GetArrTime() >= autoPromotionSteps)
 		{
+			autoPromotedCount++;
 			normalOrderQueue->dequeue(currentOrder);
 			currentOrder->SetType(TYPE_VIP);
 			currentOrder->SetWaitTime(0);
