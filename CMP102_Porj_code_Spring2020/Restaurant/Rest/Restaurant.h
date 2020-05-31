@@ -96,12 +96,6 @@ public:
 	bool AssignOrder(int currentTimeStep, Order* order, Queue<Cook*>* cookList);
 	void AssignToCook();
 
-	void AssignToCook2();
-	void AssignUrgent();
-	void AssignVIP();
-	void AssignNormal();
-	void AssignVegan();
-
 	//
 	// TODO: Add More Member Functions As Needed
 	//
@@ -127,8 +121,6 @@ public:
 	bool LoadRestaurant(ifstream& inFile); // to load using a file directly
 	
 	void SaveRestaurant(); // to save the restaurants data
-
-
 
 };
 
