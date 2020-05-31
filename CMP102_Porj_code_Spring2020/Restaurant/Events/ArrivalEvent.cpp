@@ -12,27 +12,12 @@ void ArrivalEvent::Execute(Restaurant* pRest)
 	
 	Order* pOrd = new Order(OrderID, OrdType, Size, OrdMoney, EventTime);
 
-	if (OrdType < 2)
+	if (OrdType != TYPE_VIP)
 	{
 		pRest->AddToQueue(pOrd);
 	}
-	else if (OrdType == 2)
+	else if (OrdType == TYPE_VIP)
 	{
-		int prio = 5;
-
-		// place holder equation for priority until calculated (Read document explaination in next 3 lines)
-		// prio = pOrd->GetMoney() * pOrd->GetArrTime() / pOrd->GetSize();  SHOULD BE CHANGED !!!!!!!!!!!
-		// You should develop a reasonable weighted priority equation depending on at least the
-		// following factors : Order Arrival Time, Order Money, and Order Size.
-
-		
-
-		pRest->AddToQueue(pOrd, prio);
+		pRest->AddToQueue(pOrd, pRest->CalcPriority(pOrd));
 	}
-	
-	
-	///For the sake of demo, this function will just create an order and add it to DemoQueue
-	///Remove the next code lines in phases 1&2
-	//Order* pOrd = new Order(OrderID,OrdType);
-	//	pRest->AddtoDemoQueue(pOrd);
 }
