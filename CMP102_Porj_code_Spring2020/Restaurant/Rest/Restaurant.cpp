@@ -310,7 +310,7 @@ bool Restaurant::InteractiveMode()
 
 	while (!(EventsQueue->isEmpty() && normalOrderQueue->isEmpty()
 		&& veganOrderQueue->isEmpty() && vipOrderQueue->isEmpty()
-		&& InServiceQueue->isEmpty()&&restingCooks->isEmpty()))
+		&& InServiceQueue->isEmpty() && restingCooks->isEmpty()))
 	{
 		currentTimeSteps++;
 		UpdateWaitingTime();
