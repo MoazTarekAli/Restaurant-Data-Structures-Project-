@@ -70,8 +70,6 @@ private:
 	int urgentSteps;
 	int restSteps;
 
-	// bool AssignOrder(int currentTimeStep, Order* order, Queue<Cook*>* cookList);
-
 	// private loading functions
 
 	bool CheckEOF(ifstream& inFile);
@@ -95,6 +93,8 @@ public:
 	bool SilentMode();		// Third available mode, finishes the runtime on it's own
 
 	void FillDrawingList();
+
+	bool AssignOrder(int currentTimeStep, Order* order, Queue<Cook*>* cookList);
 	void AssignToCook();
 
 	void AssignToCook2();
@@ -125,7 +125,6 @@ public:
 	// public load functions
 
 	bool LoadRestaurant(); // to load using input from user
-	bool LoadRestaurant(string fileName); // to load using a file name
 	bool LoadRestaurant(ifstream& inFile); // to load using a file directly
 	
 	void SaveRestaurant(); // to save the restaurants data
