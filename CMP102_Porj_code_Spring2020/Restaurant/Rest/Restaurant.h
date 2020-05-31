@@ -93,7 +93,7 @@ public:
 
 	void FillDrawingList();
 
-	bool AssignOrder(int currentTimeStep, Order* order, Queue<Cook*>* cookList);
+	bool AssignOrder(Order* order, Queue<Cook*>* cookList);
 	void AssignToCook();
 
 	//
