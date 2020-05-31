@@ -42,7 +42,6 @@ private:
 	PriorityQueue<Order*>* InServiceQueue;
 	Queue<Order*>* finishedQueue;
 	
-	LinkedList<Cook*>* availableCooks;
 	Queue<Cook*>* normalCooks;
 	Queue<Cook*>* veganCooks;
 	Queue<Cook*>* vipCooks;

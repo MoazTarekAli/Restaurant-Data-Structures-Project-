@@ -40,7 +40,6 @@ Restaurant::Restaurant()
 	finishedQueue = new Queue<Order*>;
 	InServiceQueue = new PriorityQueue<Order*>;
 
-	availableCooks = new LinkedList<Cook*>;
 	normalCooks = new Queue<Cook*>;
 	veganCooks = new Queue<Cook*>;
 	vipCooks = new Queue<Cook*>;
@@ -124,7 +123,6 @@ Restaurant::~Restaurant()
 	delete finishedQueue;
 	delete InServiceQueue;
 
-	delete availableCooks;
 	delete normalCooks;
 	delete veganCooks;
 	delete vipCooks;
@@ -485,8 +483,7 @@ void Restaurant::LoadCooks(int ordersBeforeBreak, int* cookCounts, int cookSpeed
 			int cookBreak = rand() % (cookBreaks[i][1] - cookBreaks[i][0] + 1) + cookBreaks[i][0];
 			// creating the cook
 			Cook* pCook = new Cook(++currentID, ordTypes[i], cookSpeed, cookBreak, ordersBeforeBreak);
-			// adding the cook to the appropriate lists
-			availableCooks->Append(pCook);
+			// adding the cook to the appropriate queue
 			(*cookStacks[i])->enqueue(pCook);
 		}
 	}
@@ -670,7 +667,7 @@ bool Restaurant::AssignOrder(int currentTimeStep, Order* pOrder, Queue<Cook*>* c
 	// adding the order to the in service queue and the cook to the assinged cooks
 	InServiceQueue->enqueue(pOrder, -1 * (pCook->TimeToFinishOrder()) - currentTimeStep);
 	assignedCooks->enqueue(pCook, -1 * (pCook->TimeToFinishOrder()) - currentTimeStep);
-	
+
 	// updating the total money
 	totalMoney += pOrder->GetMoney();
 	
@@ -686,10 +683,11 @@ bool Restaurant::AssignOrder(int currentTimeStep, Order* pOrder, Queue<Cook*>* c
 void Restaurant::AssignToCook()
 {
 	Order* pOrder;
-	
+
 	// assigning the urgent orders
-	while (urgentOrderQueue->dequeue(pOrder) && (!availableCooks->IsEmpty() || !restingCooks->isEmpty()))
+	while (!urgentOrderQueue->isEmpty() && (!normalCooks->isEmpty() || !veganCooks->isEmpty() || !vipCooks->isEmpty() || !restingCooks->isEmpty()))
 	{
+		urgentOrderQueue->dequeue(pOrder);
 		if (AssignOrder(currentTimeSteps, pOrder, vipCooks)) vipCookCount--;
 		else if (AssignOrder(currentTimeSteps, pOrder, normalCooks)) normalCookCount--;
 		else if (AssignOrder(currentTimeSteps, pOrder, veganCooks)) veganCookCount--;
@@ -711,8 +709,9 @@ void Restaurant::AssignToCook()
 	}
 
 	// assigning the vip orders
-	while (vipOrderQueue->dequeue(pOrder) && !availableCooks->IsEmpty())
+	while (!vipOrderQueue->isEmpty() && (!normalCooks->isEmpty() || !veganCooks->isEmpty() || !vipCooks->isEmpty()))
 	{
+		vipOrderQueue->dequeue(pOrder);
 		if (AssignOrder(currentTimeSteps, pOrder, vipCooks)) vipCookCount--;
 		else if (AssignOrder(currentTimeSteps, pOrder, normalCooks)) normalCookCount--;
 		else if (AssignOrder(currentTimeSteps, pOrder, veganCooks)) veganCookCount--;
@@ -720,15 +719,17 @@ void Restaurant::AssignToCook()
 	}
 
 	// assigning the vegan orders
-	while (veganOrderQueue->dequeue(pOrder) && !availableCooks->IsEmpty())
+	while (!veganOrderQueue->isEmpty() && !veganCooks->isEmpty())
 	{
+		veganOrderQueue->dequeue(pOrder);
 		if (AssignOrder(currentTimeSteps, pOrder, veganCooks)) veganCookCount--;
 		else break;
 	}
 
 	// assigning the normal orders
-	while (normalOrderQueue->dequeue(pOrder) && !availableCooks->IsEmpty())
+	while (!normalOrderQueue->isEmpty() && (!normalCooks->isEmpty() || !vipCooks->isEmpty()))
 	{
+		normalOrderQueue->dequeue(pOrder);
 		if (AssignOrder(currentTimeSteps, pOrder, normalCooks)) normalCookCount--;
 		else if (AssignOrder(currentTimeSteps, pOrder, vipCooks)) vipCookCount--;
 		else break;
