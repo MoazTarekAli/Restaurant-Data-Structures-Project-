@@ -396,7 +396,8 @@ inline bool Restaurant::LoadValues(ifstream& inFile, int itemCount, T* items[])
 bool Restaurant::LoadRestaurant()
 {
 	pGUI->PrintMessage((string)"[The input file must be placed in the Input_Files folder]\n" +
-		"[test0, test1, test3, test4, files are already provided in the folder]\n" +
+		"[test0, test1, test3, test4, and test5 files are already provided in the folder]\n" +
+		"[NOTE: .txt extension is automatically appended to the filename you enter]\n" +
 		"Enter the input file name:\n");
 	string fileName = pGUI->GetString();
 	fileName = "Input_Files\\" + fileName;
@@ -599,7 +600,8 @@ inline bool Restaurant::LoadPromotionEvent(ifstream& inFile)
 void Restaurant::SaveRestaurant()
 {
 	// Prompt the user to enter the name of the savedfile
-	pGUI->PrintMessage((string)"Enter the output file name:\n");
+	pGUI->PrintMessage((string)"[NOTE: .txt extension is automatically appended to the filename you enter]\n" +
+		"Enter the output file name:\n");
 
 	// Get the string entered by the user and set as the file name
 	ofstream outFile("Output_Files\\" + pGUI->GetString() + ".txt");

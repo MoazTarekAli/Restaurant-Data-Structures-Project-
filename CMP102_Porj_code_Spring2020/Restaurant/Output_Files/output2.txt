@@ -1,5 +1,0 @@
-FT	ID	AT	WT	ST
-Orders: -842150449	[Norm:-842150449, Veg:-842150451, VIP:-842150451]
-cooks: 9	[Norm:0, Veg:0, VIP:0]
-Avg Wait = -0,	Avg Serv = -0
-Urgent Orders: -842150451, 	Auto Promoted: 1%

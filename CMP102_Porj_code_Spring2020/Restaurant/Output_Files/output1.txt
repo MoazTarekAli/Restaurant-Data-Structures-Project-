@@ -1,4 +1,0 @@
-FT	ID	AT	WT	ST
-Orders: 0	[Norm:0, Veg:0, VIP:0]
-cooks: 9	[Norm:5, Veg:3, VIP:1]
-Avg Wait = -nan(ind),	Avg Serv = -nan(ind)
