@@ -44,6 +44,7 @@ public:
 
 	Order();
 	Order(int id, ORD_TYPE r_Type,int size, double money, int aritime);
+
 	void SetSize(int size);
 	int GetSize();
 
@@ -61,8 +62,6 @@ public:
 
 	void SetFinishTime(int time);
 	int GetFinishTime();
-
-
 
 	//
 

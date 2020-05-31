@@ -33,16 +33,22 @@ public:
 
 	Cook(int ID_, ORD_TYPE type_, int speed_, int breakDuration_, int ordersBeforeBreak_);
 	int TimeToFinishOrder();
+
 	void SetOrder(Order* o);
 	Order* GetOrder() const;
+
 	void SetCookingSpeed(int spd);
 	int	GetCookingSpeed() const;
+
 	void SetIsCooking(bool a);
 	bool GetIsCooking() const;
+
 	void SetIsResting(bool ir);
 	bool GetIsResting()	const;
+
 	void SetIsInjured(bool inj);
 	bool GetIsInjured()	const;
+
 	bool NeedBreak();
 	void SetBreakTimeEnd(int time);
 	int GetBreakTimeEnd() const;

@@ -104,8 +104,6 @@ public:
 	void CancelOrder(int ID);
 	void PromoteOrder(int ID, double promotionMoney);
 
-	//void AssignToCook();
-
 	void CheckFinishedOrders();
 	void CheckCooksBreaks();
 	void Injury();
